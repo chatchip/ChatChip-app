@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatChip - Cüzdan</title>
+    <meta name="theme-color" content="#7BD3C9">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/cuzdan.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="logo">
+                <img src="/assets/logo.svg" alt="ChatChip" width="32" height="32">
+                <span>ChatChip</span>
+            </div>
+            <div class="header-actions">
+                <a href="/backoffice.html" class="nav-btn">← Backoffice</a>
+                <a href="/index.html" class="nav-btn">💬 Sohbet</a>
+                <button class="btn-profile" id="profileBtn">👤</button>
+            </div>
+        </header>
+
+        <main class="cuzdan-content" id="cuzdanContent">
+            <!-- Finansal veriler buraya gelecek -->
+            <div id="walletStats">
+                <div class="loading">⏳ Yükleniyor...</div>
+            </div>
+
+            <!-- Güvenlik Uyarısı -->
+            <div style="background:#FEF3C7; border-left:4px solid #F59E0B; border-radius:var(--radius-sm); padding:10px 14px; margin:12px 0; font-size:0.75rem; color:#92400E;">
+                <strong>⚠️ Güvenlik Uyarısı</strong><br>
+                Yalnızca kendi adınıza ait IBAN'a çekim yapabilirsiniz. 
+                Farklı bir hesaba yapılan çekim talepleri <strong>onaylanmayacaktır</strong>.
+            </div>
+
+            <!-- Banka Bilgileri -->
+            <div class="section-title">💳 Banka Bilgileri</div>
+            <div id="bankInfoForm" style="background:rgba(255,255,255,0.5); border-radius:var(--radius-sm); padding:16px; border:1px solid var(--border);">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--text-light); display:block; margin-bottom:3px;">Banka Adı</label>
+                        <input type="text" id="bankName" class="form-input" placeholder="Örn: Ziraat Bankası" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.8rem;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--text-light); display:block; margin-bottom:3px;">IBAN</label>
+                        <input type="text" id="ibanInput" class="form-input" placeholder="TR00 0000 0000 0000 0000 0000 00" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.8rem;">
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--text-light); display:block; margin-bottom:3px;">TC Kimlik No</label>
+                        <input type="text" id="tcNo" class="form-input" placeholder="TC Kimlik No" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.8rem;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.7rem; color:var(--text-light); display:block; margin-bottom:3px;">Hesap Sahibi</label>
+                        <input type="text" id="accountHolder" class="form-input" placeholder="Ad Soyad" style="width:100%; padding:6px 10px; border:1px solid var(--border); border-radius:6px; font-size:0.8rem; background:#f0f0f0; color:#555;" readonly>
+                    </div>
+                </div>
+                <button onclick="saveBankInfo()" style="margin-top:12px; padding:8px 20px; border-radius:8px; border:none; background:var(--primary); color:white; font-weight:600; cursor:pointer; width:100%;">
+                    💾 Kaydet
+                </button>
+                <div id="bankInfoStatus" style="margin-top:8px; font-size:0.8rem; text-align:center; display:none;"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/datamanager.js"></script>
+    <script>
+        // 🔥 Giriş kontrolü
+        (function checkAuth() {
+            const token = localStorage.getItem('chatchip_token');
+            const user = JSON.parse(localStorage.getItem('chatchip_user') || 'null');
+            
+            if (!token || !user) {
+                window.location.href = '/index.html';
+                return;
+            }
+        })();
+    </script>
+    <script src="/js/cuzdan.js"></script>
+</body>
+</html>

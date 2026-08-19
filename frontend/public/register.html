@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatChip - Kayıt</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/register.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="logo">
+                <img src="/assets/logo.svg" alt="ChatChip" width="28" height="28">
+                <span>ChatChip</span>
+            </div>
+            <div class="header-actions">
+                <a href="/index.html" class="nav-btn">💬 Sohbet</a>
+            </div>
+        </header>
+
+        <main class="register-content">
+            <div class="register-box">
+                <h2>📝 Hesap Oluştur</h2>
+                <p style="color:var(--text-light); font-size:0.85rem; margin-bottom:16px;">
+                    Davet linki ile kayıt oluyorsunuz.
+                </p>
+                
+                <div id="message" style="display:none; padding:10px; border-radius:8px; margin-bottom:12px;"></div>
+
+                <!-- SPONSOR BİLGİLERİ -->
+                <div id="sponsorInfo" style="background:#E8F5E9; padding:12px; border-radius:8px; margin-bottom:16px; display:none; border:1px solid #82E0AA;">
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+                        <span style="font-size:1.1rem;">🎯</span>
+                        <span style="font-weight:600;">Sponsor:</span>
+                        <span id="sponsorDisplay" style="font-weight:500;">-</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.1rem;">📍</span>
+                        <span style="font-weight:600;">Pozisyon:</span>
+                        <span id="positionDisplay" style="font-weight:500;">-</span>
+                        <span style="font-size:0.75rem; color:var(--text-light); margin-left:4px;">(değiştirilemez)</span>
+                    </div>
+                </div>
+
+                <form id="registerForm">
+                    <input type="hidden" id="sponsorInput" value="">
+                    <input type="hidden" id="positionInput" value="">
+
+                    <div class="form-group">
+                        <label>Ad Soyad <span style="color:red;">*</span></label>
+                        <input type="text" id="nameInput" class="form-input" placeholder="Ad Soyad" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>E-posta <span style="color:red;">*</span></label>
+                        <input type="email" id="emailInput" class="form-input" placeholder="ornek@mail.com" required>
+                    </div>
+
+                    <!-- 🔥 TELEFON - TÜM ÜLKE KODLARI -->
+                    <div class="form-group">
+                        <label>Telefon <span style="color:red;">*</span></label>
+                        <div style="display:flex; gap:8px;">
+                            <select id="countryCode" style="width:180px; padding:10px 8px; border:1.5px solid var(--border); border-radius:var(--radius-sm); font-size:0.8rem; background:rgba(255,255,255,0.5); color:var(--text); outline:none;"></select>
+                            <input type="tel" id="phoneInput" class="form-input" placeholder="5XX XXX XX XX" required style="flex:1;">
+                        </div>
+                    </div>
+
+                    <!-- 🔥 ŞİFRE KURALLARI -->
+                    <div class="form-group">
+                        <label>Şifre <span style="color:red;">*</span></label>
+                        <input type="password" id="passwordInput" class="form-input" placeholder="••••••••••••" required>
+                        <div style="margin-top:6px; font-size:0.65rem; color:var(--text-light); line-height:1.6;">
+                            <div id="passRuleLength" style="display:flex; align-items:center; gap:4px;">
+                                <span id="passLengthIcon">⬜</span> En az 12 karakter
+                            </div>
+                            <div id="passRuleUpper" style="display:flex; align-items:center; gap:4px;">
+                                <span id="passUpperIcon">⬜</span> En az 1 büyük harf
+                            </div>
+                            <div id="passRuleLower" style="display:flex; align-items:center; gap:4px;">
+                                <span id="passLowerIcon">⬜</span> En az 1 küçük harf
+                            </div>
+                            <div id="passRuleSpecial" style="display:flex; align-items:center; gap:4px;">
+                                <span id="passSpecialIcon">⬜</span> En az 1 özel karakter (!@#$%^&*)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Şifre Tekrar <span style="color:red;">*</span></label>
+                        <input type="password" id="passwordConfirmInput" class="form-input" placeholder="••••••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="termsInput"> Kayıt koşullarını kabul ediyorum
+                        </label>
+                    </div>
+
+                    <button type="submit" class="register-btn" id="registerBtn">🚀 Kaydol</button>
+                </form>
+
+                <div class="login-link">
+                    Zaten hesabın var mı? <a href="/index.html">Giriş yap</a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/country-codes.js"></script>
+    <script>
+        // ============================================================
+        // 🔥 ÜLKE KODLARINI DOLDUR
+        // ============================================================
+        (function populateCountryCodes() {
+            const select = document.getElementById('countryCode');
+            if (!select) return;
+            
+            // COUNTRY_CODES array'i country-codes.js'den gelir
+            if (typeof COUNTRY_CODES === 'undefined') {
+                console.error('COUNTRY_CODES yüklenemedi!');
+                return;
+            }
+            
+            // Türkiye'yi varsayılan olarak işaretle
+            let hasTurkey = false;
+            
+            COUNTRY_CODES.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country.code;
+                option.textContent = `${country.flag} ${country.name} ${country.code}`;
+                if (country.code === '+90') {
+                    option.selected = true;
+                    hasTurkey = true;
+                }
+                select.appendChild(option);
+            });
+            
+            // Eğer Türkiye yoksa ilk seçeneği seç
+            if (!hasTurkey && select.options.length > 0) {
+                select.options[0].selected = true;
+            }
+            
+            console.log(`✅ ${select.options.length} ülke kodu yüklendi`);
+        })();
+
+        // ============================================================
+        // 🔥 URL'DEN POSİSYON OKU
+        // ============================================================
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const position = urlParams.get('position');
+
+            console.log('🔍 Position:', position);
+
+            if (!position) {
+                alert('Geçersiz kayıt linki! Lütfen davet linkini kullanın.');
+                window.location.href = '/index.html';
+                return;
+            }
+
+            fetchSponsor(position);
+        })();
+
+        // ============================================================
+        // 🔍 SPONSOR BUL
+        // ============================================================
+        async function fetchSponsor(position) {
+            console.log(`📡 Sponsor aranıyor: ${position}`);
+
+            try {
+                const token = localStorage.getItem('chatchip_token') || '';
+                const response = await fetch(`http://10.163.196.216:5000/api/auth/find-sponsor/${position}`, {
+                    headers: {
+                        'Authorization': token ? `Bearer ${token}` : '',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                console.log('🔍 Sponsor sonucu:', result);
+
+                if (result.success && result.sponsor) {
+                    document.getElementById('sponsorInput').value = result.sponsor.id;
+                    document.getElementById('positionInput').value = position;
+
+                    const sponsorDisplay = document.getElementById('sponsorDisplay');
+                    const positionDisplay = document.getElementById('positionDisplay');
+                    const sponsorInfo = document.getElementById('sponsorInfo');
+
+                    sponsorDisplay.textContent = `${result.sponsor.name} (ID: ${result.sponsor.id})`;
+                    positionDisplay.textContent = position === 'left' ? '🟦 Sol Organizasyon' : '🟩 Sağ Organizasyon';
+                    sponsorInfo.style.display = 'block';
+
+                    console.log(`✅ Sponsor bulundu: ${result.sponsor.id}, Pozisyon: ${position}`);
+                } else {
+                    alert('Uygun sponsor bulunamadı! Lütfen daha sonra tekrar deneyin.');
+                    window.location.href = '/index.html';
+                }
+            } catch (error) {
+                console.error('Sponsor bulma hatası:', error);
+                alert('Bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+                window.location.href = '/index.html';
+            }
+        }
+
+        // ============================================================
+        // 🔥 ŞİFRE KURAL KONTROLÜ
+        // ============================================================
+        function checkPasswordStrength(password) {
+            const rules = {
+                length: password.length >= 12,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+            };
+            return rules;
+        }
+
+        function updatePasswordUI(password) {
+            const rules = checkPasswordStrength(password);
+            
+            document.getElementById('passLengthIcon').textContent = rules.length ? '✅' : '⬜';
+            document.getElementById('passRuleLength').style.color = rules.length ? '#10B981' : 'var(--text-light)';
+            
+            document.getElementById('passUpperIcon').textContent = rules.upper ? '✅' : '⬜';
+            document.getElementById('passRuleUpper').style.color = rules.upper ? '#10B981' : 'var(--text-light)';
+            
+            document.getElementById('passLowerIcon').textContent = rules.lower ? '✅' : '⬜';
+            document.getElementById('passRuleLower').style.color = rules.lower ? '#10B981' : 'var(--text-light)';
+            
+            document.getElementById('passSpecialIcon').textContent = rules.special ? '✅' : '⬜';
+            document.getElementById('passRuleSpecial').style.color = rules.special ? '#10B981' : 'var(--text-light)';
+            
+            return rules;
+        }
+
+        // ============================================================
+        // 🔥 KAYIT FORMU
+        // ============================================================
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const msg = document.getElementById('message');
+            const btn = document.getElementById('registerBtn');
+            
+            msg.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = '⏳ Kaydediliyor...';
+
+            const name = document.getElementById('nameInput').value.trim();
+            const email = document.getElementById('emailInput').value.trim();
+            const countryCode = document.getElementById('countryCode').value;
+            const phone = document.getElementById('phoneInput').value.trim();
+            const fullPhone = countryCode + phone.replace(/\s/g, '');
+            const password = document.getElementById('passwordInput').value;
+            const passwordConfirm = document.getElementById('passwordConfirmInput').value;
+            
+            const sponsorId = parseInt(document.getElementById('sponsorInput').value);
+            const position = document.getElementById('positionInput').value;
+            const terms = document.getElementById('termsInput').checked;
+
+            function showMessage(text, type) {
+                msg.textContent = text;
+                msg.className = type;
+                msg.style.display = 'block';
+                msg.style.background = type === 'success' ? '#D5F5E3' : '#FADBD8';
+                msg.style.color = type === 'success' ? '#1E8449' : '#922B21';
+                msg.style.border = '1px solid ' + (type === 'success' ? '#82E0AA' : '#F1948A');
+            }
+
+            // Validasyonlar
+            if (!sponsorId || isNaN(sponsorId) || sponsorId <= 0) {
+                showMessage('❌ Geçersiz kayıt linki! Lütfen davet linkini kullanın.', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+
+            if (!name || !email || !phone || !password) {
+                showMessage('❌ Tüm alanları doldurun.', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+
+            // 🔥 ŞİFRE KONTROLÜ
+            const passwordRules = checkPasswordStrength(password);
+            if (!passwordRules.length) {
+                showMessage('❌ Şifre en az 12 karakter olmalı!', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+            if (!passwordRules.upper) {
+                showMessage('❌ Şifre en az 1 BÜYÜK harf içermeli!', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+            if (!passwordRules.lower) {
+                showMessage('❌ Şifre en az 1 küçük harf içermeli!', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+            if (!passwordRules.special) {
+                showMessage('❌ Şifre en az 1 özel karakter (!@#$%^&*) içermeli!', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showMessage('❌ Şifreler eşleşmiyor!', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+
+            if (!terms) {
+                showMessage('❌ Kayıt koşullarını kabul edin.', 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://10.163.196.216:5000/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        phone: fullPhone,
+                        password,
+                        sponsor_id: sponsorId,
+                        position: position
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(`✅ Kayıt başarılı! Hoş geldin ${name}!`, 'success');
+                    localStorage.setItem('chatchip_token', data.token);
+                    localStorage.setItem('chatchip_user', JSON.stringify(data.user));
+                    setTimeout(() => {
+                        window.location.href = '/backoffice.html';
+                    }, 1500);
+                } else {
+                    showMessage('❌ ' + (data.error || 'Kayıt başarısız!'), 'error');
+                    btn.disabled = false;
+                    btn.textContent = '🚀 Kaydol';
+                }
+            } catch(error) {
+                console.error('Hata:', error);
+                showMessage('❌ ' + error.message, 'error');
+                btn.disabled = false;
+                btn.textContent = '🚀 Kaydol';
+            }
+        });
+
+        // ============================================================
+        // 🔥 ŞİFRE INPUT CANLI KONTROL
+        // ============================================================
+        document.getElementById('passwordInput').addEventListener('input', function() {
+            updatePasswordUI(this.value);
+        });
+    </script>
+</body>
+</html>

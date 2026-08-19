@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatChip - Binary Ağaç</title>
+    <meta name="theme-color" content="#7BD3C9">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/tree-detail.css">
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="logo">
+                <img src="/assets/logo.svg" alt="ChatChip" width="32" height="32">
+                <span>ChatChip</span>
+            </div>
+            <div class="header-actions">
+                <a href="/backoffice.html" class="nav-btn">← Backoffice</a>
+                <button class="btn-profile" id="profileBtn">👤</button>
+            </div>
+        </header>
+
+        <main class="tree-content" id="treeContent">
+            <div class="tree-header">
+                <span class="tree-title">🧬 Binary Ağaç</span>
+                <span class="tree-stats" id="treeStats">0 üye</span>
+            </div>
+
+            <div class="breadcrumb" id="breadcrumbBar">
+                <span>📍 <strong id="rootName">Yükleniyor...</strong></span>
+                <button class="reset-btn" onclick="goToParent()" title="Bir üst seviyeye çık">⬆️ Bir Üst</button>
+                <button class="reset-btn" onclick="resetToRoot()">🏠 Kök</button>
+            </div>
+
+            <div class="tree-wrapper" id="treeWrapper">
+                <div class="loading">⏳ Ağaç yükleniyor...</div>
+            </div>
+
+            <div class="tree-tools">
+                <input type="text" id="searchInput" placeholder="🔍 ID veya isim ara..." onkeyup="searchNode(event)">
+                <button class="btn" onclick="loadTree()">🔄 Yenile</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="/js/datamanager.js"></script>
+    <script>
+        // 🔥 Giriş kontrolü
+        (function checkAuth() {
+            const token = localStorage.getItem('chatchip_token');
+            const user = JSON.parse(localStorage.getItem('chatchip_user') || 'null');
+            
+            if (!token || !user) {
+                window.location.href = '/index.html';
+                return;
+            }
+        })();
+    </script>
+    <script src="/js/tree-detail.js"></script>
+</body>
+</html>

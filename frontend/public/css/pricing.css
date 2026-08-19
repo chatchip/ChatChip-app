@@ -1,0 +1,209 @@
+/* PRICING STYLES */
+.pricing-content {
+    flex: 1;
+    padding: 16px 20px;
+    overflow-y: auto;
+    background: var(--primary-bg);
+}
+
+.pricing-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.pricing-header h2 {
+    font-size: 1.3rem;
+    color: var(--text);
+}
+
+.pricing-header p {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-top: 4px;
+}
+
+/* Period Selector */
+.period-selector {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(4px);
+    border-radius: 24px;
+    padding: 4px;
+    border: 1px solid var(--border);
+}
+
+.period-btn {
+    padding: 6px 20px;
+    border-radius: 20px;
+    border: none;
+    background: transparent;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-light);
+    transition: all 0.2s;
+}
+
+.period-btn.active {
+    background: var(--primary);
+    color: white;
+}
+
+.period-btn:hover:not(.active) {
+    background: rgba(255,255,255,0.5);
+}
+
+/* Plans Grid */
+.plans-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 480px) {
+    .plans-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.plan-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1.5px solid var(--border);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.plan-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+}
+
+.plan-card.popular {
+    border-color: var(--primary);
+    background: rgba(123, 211, 201, 0.08);
+}
+
+.plan-card .popular-badge {
+    position: absolute;
+    top: -10px;
+    right: 16px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 2px 14px;
+    border-radius: 12px;
+}
+
+.plan-card .plan-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.plan-card .plan-price {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-deep);
+    margin: 8px 0 2px;
+}
+
+.plan-card .plan-price span {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text-light);
+}
+
+.plan-card .plan-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 8px 0;
+}
+
+.plan-card .plan-stats .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+    padding: 4px 10px;
+}
+
+.plan-card .plan-stats .stat-item .label {
+    font-size: 0.5rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    letter-spacing: 0.3px;
+}
+
+.plan-card .plan-stats .stat-item .value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.plan-card .features {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+}
+
+.plan-card .features li {
+    padding: 4px 0;
+    font-size: 0.75rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.plan-card .features li::before {
+    content: '✅';
+    font-size: 0.7rem;
+}
+
+.plan-card .buy-btn {
+    width: 100%;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.plan-card .buy-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.01);
+}
+
+.plan-card .buy-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.info-box {
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(4px);
+    border-radius: var(--radius-sm);
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-light);
+    text-align: center;
+}
+
+.info-box strong {
+    color: var(--text);
+}

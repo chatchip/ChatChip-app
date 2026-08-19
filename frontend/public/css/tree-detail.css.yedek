@@ -1,0 +1,596 @@
+/* TREE DETAIL - MODERN VE ŞIK */
+
+.tree-content {
+    flex: 1;
+    padding: 12px 16px;
+    overflow-y: auto;
+    background: var(--primary-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+.tree-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    margin-bottom: 4px;
+}
+
+.tree-title { 
+    font-size: 1.1rem; 
+    font-weight: 700; 
+    color: var(--text); 
+}
+
+.tree-stats { 
+    font-size: 0.7rem; 
+    color: var(--text-light); 
+    background: rgba(255,255,255,0.6); 
+    padding: 4px 14px; 
+    border-radius: 20px; 
+    border: 1px solid var(--border);
+    backdrop-filter: blur(4px);
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(255,255,255,0.6);
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin: 4px 0 10px 0;
+    min-height: 38px;
+}
+
+.breadcrumb strong { 
+    color: var(--text); 
+    font-weight: 600;
+}
+
+.breadcrumb .reset-btn { 
+    margin-left: auto; 
+    padding: 4px 14px; 
+    border-radius: 14px; 
+    border: 1px solid var(--border); 
+    background: white; 
+    font-size: 0.65rem; 
+    cursor: pointer; 
+    transition: all 0.2s; 
+    font-weight: 500;
+}
+
+.breadcrumb .reset-btn:hover { 
+    background: var(--primary); 
+    color: white; 
+    border-color: var(--primary); 
+}
+
+.tree-wrapper {
+    flex: 1;
+    padding: 8px 4px;
+    overflow-x: auto;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 400px;
+}
+
+.tree-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 4px 0;
+    gap: 16px;
+}
+
+/* ===== MODERN NODE ===== */
+.node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+/* ===== MODERN KART ===== */
+.node-card {
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    padding: 12px 16px;
+    text-align: center;
+    min-width: 120px;
+    max-width: 180px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04), 0 1px 4px rgba(0,0,0,0.02);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.node-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    opacity: 0.4;
+}
+
+.node-card:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08), 0 4px 12px rgba(123,211,201,0.1); 
+    border-color: rgba(123,211,201,0.3);
+}
+
+.node-card.root { 
+    border-color: #F59E0B; 
+    background: rgba(245,158,11,0.06);
+}
+.node-card.root::before {
+    background: linear-gradient(90deg, transparent, #F59E0B, transparent);
+    opacity: 0.6;
+}
+
+/* Kart İçeriği */
+.node-card .node-header { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 6px; 
+    flex-wrap: wrap; 
+    margin-bottom: 2px;
+}
+
+.node-card .name { 
+    font-weight: 700; 
+    font-size: 0.85rem; 
+    color: var(--text); 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 80px; 
+}
+
+.node-card .id-badge {
+    font-size: 0.5rem;
+    font-weight: 600;
+    color: var(--text-light);
+    background: rgba(0,0,0,0.04);
+    padding: 1px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.node-card .career { 
+    font-size: 0.55rem; 
+    font-weight: 600; 
+    padding: 2px 10px; 
+    border-radius: 12px; 
+    white-space: nowrap; 
+}
+
+/* İstatistikler - Modern Grid */
+.node-card .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.node-card .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.4);
+    border-radius: 6px;
+    padding: 3px 2px;
+    transition: background 0.2s;
+}
+
+.node-card .stat-item:hover {
+    background: rgba(255,255,255,0.7);
+}
+
+.node-card .stat-item .label {
+    font-size: 0.4rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    letter-spacing: 0.3px;
+    font-weight: 600;
+}
+
+.node-card .stat-item .value {
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.node-card .stat-item .value.kv { color: #8B5CF6; }
+.node-card .stat-item .value.cv { color: #3B82F6; }
+.node-card .stat-item .value.pv { color: #10B981; }
+
+/* Durum - Tam genişlik */
+.node-card .status-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(0,0,0,0.04);
+    font-size: 0.55rem;
+    font-weight: 600;
+}
+
+.node-card .status-row .badge {
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 0.5rem;
+}
+
+.node-card .status-row .badge.active {
+    color: #10B981;
+    background: rgba(16,185,129,0.1);
+}
+
+.node-card .status-row .badge.passive {
+    color: #EF4444;
+    background: rgba(239,68,68,0.08);
+}
+
+/* Expand ikonu */
+.node-card .expand-icon {
+    font-size: 0.55rem;
+    color: var(--text-light);
+    margin-left: 2px;
+}
+
+/* ===== BRANCH ===== */
+.children {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    position: relative;
+    width: 100%;
+    padding-top: 16px;
+    flex-wrap: wrap;
+}
+
+.children::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 16px;
+    background: rgba(0,0,0,0.06);
+    transform: translateX(-50%);
+}
+
+.branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    gap: 6px;
+    flex: 1;
+    min-width: 80px;
+    max-width: 200px;
+}
+
+.branch::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 16px;
+    border-top: 2px solid rgba(0,0,0,0.05);
+}
+
+.branch.left::before { 
+    left: 50%; 
+    border-left: 2px solid rgba(0,0,0,0.05); 
+    border-radius: 6px 0 0 0; 
+}
+.branch.right::before { 
+    right: 50%; 
+    border-right: 2px solid rgba(0,0,0,0.05); 
+    border-radius: 0 6px 0 0; 
+}
+
+.branch .leg-label {
+    font-size: 0.5rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+.branch.left .leg-label { color: #3B82F6; }
+.branch.right .leg-label { color: #10B981; }
+
+/* ===== BOŞ KOL ===== */
+.branch.empty .leg-label {
+    cursor: pointer;
+    padding: 6px 18px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px dashed;
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(4px);
+}
+
+.branch.empty .leg-label:hover {
+    transform: scale(1.06);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.branch.left.empty .leg-label {
+    background: rgba(59,130,246,0.06);
+    color: #2563eb;
+    border-color: rgba(59,130,246,0.25);
+}
+.branch.left.empty .leg-label:hover {
+    background: rgba(59,130,246,0.12);
+    border-color: #3B82F6;
+}
+
+.branch.right.empty .leg-label {
+    background: rgba(16,185,129,0.06);
+    color: #059669;
+    border-color: rgba(16,185,129,0.25);
+}
+.branch.right.empty .leg-label:hover {
+    background: rgba(16,185,129,0.12);
+    border-color: #10B981;
+}
+
+/* ===== TOOLS ===== */
+.tree-tools {
+    display: flex;
+    gap: 6px;
+    padding: 6px 0;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+.tree-tools input {
+    flex: 1;
+    padding: 8px 14px;
+    border-radius: 18px;
+    border: 1.5px solid var(--border);
+    background: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    outline: none;
+    color: var(--text);
+    min-height: 34px;
+    transition: all 0.2s;
+}
+.tree-tools input:focus { border-color: var(--primary); background: white; box-shadow: var(--shadow-sm); }
+.tree-tools input::placeholder { color: var(--text-light); }
+
+.tree-tools .btn {
+    padding: 8px 18px;
+    border-radius: 18px;
+    border: 1.5px solid var(--border);
+    background: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: var(--text);
+    min-height: 34px;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+.tree-tools .btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+
+.loading { text-align: center; padding: 30px 0; color: var(--text-light); font-size: 0.8rem; }
+.empty-state { text-align: center; padding: 30px; color: var(--text-light); }
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; opacity: 0.5; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .tree-content { padding: 6px 10px; }
+    .children { 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 14px;
+        padding-top: 10px;
+    }
+    .children::before { display: none; }
+    .branch::before { display: none; }
+    .node-card { 
+        min-width: 90px; 
+        max-width: 140px; 
+        padding: 8px 12px; 
+    }
+    .node-card .name { 
+        font-size: 0.7rem; 
+        max-width: 60px; 
+    }
+    .node-card .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2px 4px;
+    }
+    .branch { max-width: 140px; }
+    .branch.empty .leg-label { 
+        font-size: 0.65rem; 
+        padding: 5px 14px; 
+    }
+}
+
+/* STATS ROW - SATIR SATIR */
+.node-card .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 8px;
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px solid rgba(0,0,0,0.04);
+}
+
+.node-card .stats-row:first-of-type {
+    border-top: none;
+    margin-top: 6px;
+}
+
+.node-card .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255,255,255,0.3);
+    border-radius: 6px;
+    padding: 3px 2px;
+    transition: background 0.2s;
+}
+
+.node-card .stat-item:hover {
+    background: rgba(255,255,255,0.6);
+}
+
+.node-card .stat-item .label {
+    font-size: 0.4rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    letter-spacing: 0.3px;
+    font-weight: 600;
+}
+
+.node-card .stat-item .value {
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.node-card .stat-item .value.kv { color: #8B5CF6; }
+.node-card .stat-item .value.cv { color: #3B82F6; }
+.node-card .stat-item .value.pv { color: #10B981; }
+
+/* Expand ikonu */
+.node-card .expand-icon {
+    font-size: 0.55rem;
+    color: var(--text-light);
+    margin-top: 4px;
+    text-align: center;
+}
+
+/* 🔥 Boş kol butonlarını gizle */
+.branch.right.empty {
+}
+
+/* ============================================================
+   🟦 BOŞ KOL GÖSTERİMİ
+   ============================================================ */
+
+.branch.empty .leg-label {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text-light);
+    font-size: 0.6rem;
+    font-weight: 600;
+    border: 1.5px dashed var(--border);
+    cursor: default;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.branch.empty .leg-label:hover {
+    opacity: 0.8;
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.branch.left.empty .leg-label {
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #3B82F6;
+}
+
+.branch.right.empty .leg-label {
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #10B981;
+}
+
+/* ============================================================
+   🟦 BOŞ KOL - SADECE GÖRSEL (TIKLANAMAZ)
+   ============================================================ */
+
+.branch.empty .leg-label {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-light);
+    font-size: 0.6rem;
+    font-weight: 600;
+    border: 1.5px dashed var(--border);
+    cursor: default !important;
+    pointer-events: none !important;
+    opacity: 0.5;
+    transition: none !important;
+    user-select: none;
+}
+
+.branch.empty .leg-label:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.branch.left.empty .leg-label {
+    border-color: rgba(59, 130, 246, 0.25);
+    color: #93A3B8;
+}
+
+.branch.right.empty .leg-label {
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #93A3B8;
+}
+
+/* ============================================================
+   🟦 BOŞ KOL - SADECE GÖRSEL (TIKLANAMAZ)
+   ============================================================ */
+
+.branch.empty .leg-label {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-light);
+    font-size: 0.6rem;
+    font-weight: 600;
+    border: 1.5px dashed var(--border);
+    cursor: default !important;
+    pointer-events: none !important;
+    opacity: 0.5;
+    transition: none !important;
+    user-select: none;
+}
+
+.branch.empty .leg-label:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: rgba(0, 0, 0, 0.03) !important;
+}
+
+.branch.left.empty .leg-label {
+    border-color: rgba(59, 130, 246, 0.25);
+    color: #93A3B8;
+}
+
+.branch.right.empty .leg-label {
+    border-color: rgba(16, 185, 129, 0.25);
+    color: #93A3B8;
+}

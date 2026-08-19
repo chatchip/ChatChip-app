@@ -1,0 +1,160 @@
+/* REGISTER STYLES */
+.register-content {
+    flex: 1;
+    padding: 16px 20px;
+    overflow-y: auto;
+    background: var(--primary-bg);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.register-box {
+    max-width: 400px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.register-box h2 {
+    font-size: 1.3rem;
+    color: var(--text);
+    text-align: center;
+}
+
+.register-box .subtitle {
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+}
+
+.sponsor-info {
+    background: var(--primary-light);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sponsor-info .sponsor-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.sponsor-info .sponsor-name {
+    font-weight: 600;
+    color: var(--primary-deep);
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--text);
+    outline: none;
+    transition: all 0.2s;
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.form-input::placeholder {
+    color: var(--text-light);
+    opacity: 0.6;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.register-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--primary);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+}
+
+.register-btn:hover {
+    background: var(--primary-dark);
+    transform: scale(1.01);
+}
+
+.register-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.login-link a {
+    color: var(--primary-deep);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+#message.success {
+    background: #D5F5E3;
+    color: #1E8449;
+    border: 1px solid #82E0AA;
+}
+
+#message.error {
+    background: #FADBD8;
+    color: #922B21;
+    border: 1px solid #F1948A;
+}
+
+@media (max-width: 480px) {
+    .register-box {
+        padding: 16px;
+        border-radius: var(--radius-sm);
+    }
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}

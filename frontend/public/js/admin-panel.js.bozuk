@@ -1,0 +1,692 @@
+// ADMIN PANEL - TAM FONKSİYONLU
+
+let usersData = [];
+let currentUser = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+    loadAdmin();
+});
+
+async function checkAuth() {
+    const dm = window.DataManager;
+    const token = dm.getToken();
+    currentUser = dm.currentUser;
+
+    if (!token || !currentUser) {
+        window.location.href = '/index.html';
+        return;
+    }
+
+    if (!currentUser.is_admin) {
+        alert('❌ Bu sayfaya erişim yetkiniz yok!');
+        window.location.href = '/index.html';
+        return;
+    }
+
+    const profileBtn = document.getElementById('profileBtn');
+    if (profileBtn && currentUser) {
+        profileBtn.textContent = currentUser.name?.charAt(0).toUpperCase() || '👤';
+    }
+}
+
+async function loadAdmin() {
+    const content = document.getElementById('adminContent');
+    content.innerHTML = '<div class="loading">⏳ Admin panel yükleniyor...</div>';
+
+    try {
+        const dm = window.DataManager;
+        
+        const usersResponse = await fetch('http://10.163.196.216:5000/api/admin/users', {
+            headers: dm.getHeaders()
+        });
+        const users = await usersResponse.json();
+        usersData = Array.isArray(users) ? users : [];
+        console.log('📥 Kullanıcılar yüklendi:', usersData.length);
+
+        renderAdmin(usersData);
+    } catch (error) {
+        console.error('Admin yükleme hatası:', error);
+        content.innerHTML = `
+            <div class="loading" style="color:#ef4444;">
+                ❌ Veriler yüklenemedi: ${error.message}
+                <br><br>
+                <button onclick="loadAdmin()" style="padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:white; cursor:pointer;">🔄 Yenile</button>
+            </div>
+        `;
+    }
+}
+
+function renderAdmin(users) {
+    const content = document.getElementById('adminContent');
+
+    const totalUsers = Array.isArray(users) ? users.length : 0;
+    const totalKV = Array.isArray(users) ? users.reduce((sum, u) => sum + parseFloat(u.kv || 0), 0) : 0;
+    const adminCount = Array.isArray(users) ? users.filter(u => u.is_admin).length : 0;
+    const starterCount = Array.isArray(users) ? users.filter(u => u.career_level === 'Starter').length : 0;
+
+    let html = `
+        <div class="admin-stats">
+            <div class="stat-card"><div class="number">${totalUsers}</div><div class="label">Toplam Kullanıcı</div></div>
+            <div class="stat-card"><div class="number">${totalKV.toFixed(1)}</div><div class="label">Toplam KV</div></div>
+            <div class="stat-card"><div class="number">${adminCount}</div><div class="label">Admin</div></div>
+            <div class="stat-card"><div class="number">${starterCount}</div><div class="label">Starter</div></div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="tab active" data-tab="users" onclick="switchTab('users')">👥 Kullanıcılar</button>
+            <button class="tab" data-tab="requests" onclick="switchTab('requests')">📋 İstekler</button>
+            <button class="tab" data-tab="reports" onclick="switchTab('reports')">📊 Raporlar</button>
+        </div>
+
+        <div id="tab-users" class="tab-content">
+            <div class="toolbar">
+                <span style="font-weight:600;font-size:0.85rem;">👥 Tüm Kullanıcılar</span>
+                <div>
+                    <button class="btn" onclick="loadAdmin()">🔄 Yenile</button>
+                    <button class="btn btn-primary" onclick="openAddUserModal()">+ Ekle</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>İsim</th><th>Email</th><th>Kariyer</th>
+                            <th>Pozisyon</th><th style="color:#8B5CF6;">KV</th>
+                            <th style="color:#3B82F6;">Sol CV</th><th style="color:#3B82F6;">Sağ CV</th>
+                            <th style="color:#10B981;">Sol PV</th><th style="color:#10B981;">Sağ PV</th>
+                            <th>Admin</th><th>Plan</th><th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${Array.isArray(users) && users.length > 0 ? users.map(u => `
+                            <tr>
+                                <td><strong>#${u.id}</strong></td>
+                                <td>${u.name}</td>
+                                <td>${u.email}</td>
+                                <td><span class="badge ${u.career_level?.toLowerCase() || 'starter'}">${u.career_level || 'Starter'}</span></td>
+                                <td>${u.position ? `<span class="badge ${u.position}">${u.position}</span>` : '-'}</td>
+                                <td style="color:#8B5CF6; font-weight:600;">${u.kv || 0}</td>
+                                <td style="color:#3B82F6;">${u.left_cv || 0}</td>
+                                <td style="color:#3B82F6;">${u.right_cv || 0}</td>
+                                <td style="color:#10B981;">${u.left_pv || 0}</td>
+                                <td style="color:#10B981;">${u.right_pv || 0}</td>
+                                <td>${u.is_admin ? '👑' : '-'}</td>
+                                <td><span class="badge ${u.plan_type?.toLowerCase() || 'free'}">${u.plan_type || 'free'}</span></td>
+                                <td class="actions">
+                                    <button class="btn-sm" onclick="editUser(${u.id})">✏️</button>
+                                    <button class="btn-sm danger" onclick="deleteUser(${u.id})">🗑️</button>
+                                </td>
+                            </tr>
+                        `).join('') : '<tr><td colspan="13" style="text-align:center;color:var(--text-light);">Henüz kullanıcı yok</td></tr>'}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-requests" class="tab-content" style="display:none;">
+            <div class="toolbar">
+                <span style="font-weight:600;font-size:0.85rem;">📋 Bekleyen Satın Alma İstekleri</span>
+                <button class="btn" onclick="loadRequests()">🔄 Yenile</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>ID</th><th>Kullanıcı</th><th>Plan</th><th>Miktar</th><th>Durum</th><th>İşlemler</th></tr></thead>
+                    <tbody id="requestsTable"><tr><td colspan="6" style="text-align:center;color:var(--text-light);">Bekleyen istek yok</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tab-reports" class="tab-content" style="display:none;">
+            <div class="toolbar">
+                <span style="font-weight:600;font-size:0.85rem;">📊 Ödeme Raporları</span>
+                <div>
+                    <button class="btn" onclick="exportCSV('users')">📥 Kullanıcılar</button>
+                    <button class="btn" onclick="exportCSV('weekly')">📥 Haftalık Kazanç</button>
+                    <button class="btn" onclick="exportCSV('career')">📥 Kariyer Ödülleri</button>
+                </div>
+            </div>
+            <div id="reportContent"><div class="loading">⏳ Raporlar yükleniyor...</div></div>
+        </div>
+    `;
+
+    content.innerHTML = html;
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+    const content = document.getElementById(`tab-${tab}`);
+    if (content) content.style.display = 'block';
+
+    const tabBtn = document.querySelector(`.tab[data-tab="${tab}"]`);
+    if (tabBtn) tabBtn.classList.add('active');
+
+    if (tab === 'requests') loadRequests();
+    if (tab === 'reports') loadReports();
+}
+
+async function loadRequests() {
+    const tbody = document.getElementById('requestsTable');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-light);">⏳ Yükleniyor...</td></tr>';
+
+    try {
+        const res = await fetch('http://10.163.196.216:5000/api/purchase-requests/pending', {
+            headers: window.DataManager.getHeaders()
+        });
+        const data = await res.json();
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-light);">📭 Bekleyen istek yok</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(r => `
+            <tr>
+                <td>#${r.id}</td>
+                <td>${r.user_name || 'Bilinmiyor'}</td>
+                <td>${r.plan_name}</td>
+                <td>$${r.amount}</td>
+                <td><span class="badge" style="background:#FFF3E0;color:#E65100;">Bekliyor</span></td>
+                <td class="actions">
+                    <button class="btn-sm success" onclick="approveRequest(${r.id})">✅ Onayla</button>
+                    <button class="btn-sm danger" onclick="rejectRequest(${r.id})">❌ Reddet</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ef4444;">❌ Yüklenemedi: ${e.message}</td></tr>`;
+    }
+}
+
+async function loadReports() {
+    const content = document.getElementById('reportContent');
+    if (!content) return;
+    content.innerHTML = '<div class="loading">⏳ Raporlar yükleniyor...</div>';
+
+    try {
+        const token = localStorage.getItem('chatchip_token');
+        const headers = { 'Authorization': `Bearer ${token}` };
+
+        const usersRes = await fetch('http://10.163.196.216:5000/api/admin/users', { headers });
+        const users = await usersRes.json();
+
+        const weeklyRes = await fetch('http://10.163.196.216:5000/api/payment-reports/weekly-earnings', { headers });
+        const weekly = await weeklyRes.json();
+
+        const careerRes = await fetch('http://10.163.196.216:5000/api/payment-reports/career-earnings', { headers });
+        const career = await careerRes.json();
+
+        renderReports(users, weekly, career);
+    } catch (error) {
+        console.error('Rapor yükleme hatası:', error);
+        content.innerHTML = `<div style="color:#ef4444;">❌ Raporlar yüklenemedi: ${error.message}</div>`;
+    }
+}
+
+function renderReports(users, weekly, career) {
+    const content = document.getElementById('reportContent');
+    if (!content) return;
+
+    const totalUsers = users?.length || 0;
+    const totalWeekly = weekly?.summary?.totalEarned || 0;
+    const totalCareer = career?.summary?.totalRewards || 0;
+    const totalEarnings = totalWeekly + totalCareer;
+
+    let html = `
+        <div class="admin-stats">
+            <div class="stat-card"><div class="number">${totalUsers}</div><div class="label">👥 Toplam Kullanıcı</div></div>
+            <div class="stat-card"><div class="number">$${totalWeekly.toFixed(2)}</div><div class="label">📅 Haftalık Kazanç</div></div>
+            <div class="stat-card"><div class="number">$${totalCareer.toFixed(2)}</div><div class="label">🎯 Kariyer Ödülü</div></div>
+            <div class="stat-card"><div class="number" style="color:#10B981;">$${totalEarnings.toFixed(2)}</div><div class="label">💰 Toplam Kazanç</div></div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+            <button class="btn" onclick="exportCSV('users')" style="padding:6px 16px; border-radius:20px; border:1px solid var(--border); background:rgba(255,255,255,0.5); font-size:0.75rem; cursor:pointer;">📥 Kullanıcılar</button>
+            <button class="btn" onclick="exportCSV('weekly')" style="padding:6px 16px; border-radius:20px; border:1px solid var(--border); background:rgba(255,255,255,0.5); font-size:0.75rem; cursor:pointer;">📥 Haftalık Kazanç</button>
+            <button class="btn" onclick="exportCSV('career')" style="padding:6px 16px; border-radius:20px; border:1px solid var(--border); background:rgba(255,255,255,0.5); font-size:0.75rem; cursor:pointer;">📥 Kariyer Ödülleri</button>
+        </div>
+
+        <div class="table-wrapper" style="max-height:300px; overflow-y:auto;">
+            <table>
+                <thead><tr><th>ID</th><th>İsim</th><th>Email</th><th>KV</th><th>Kariyer</th><th>Banka</th><th>IBAN</th></tr></thead>
+                <tbody>
+                    ${users?.map(u => `
+                        <tr>
+                            <td>#${u.id}</td>
+                            <td>${u.name}</td>
+                            <td>${u.email}</td>
+                            <td style="color:#8B5CF6; font-weight:600;">${u.kv || 0}</td>
+                            <td><span class="badge ${u.career_level?.toLowerCase() || 'starter'}">${u.career_level || 'Starter'}</span></td>
+                            <td>${u.bank_name || '-'}</td>
+                            <td style="font-size:0.7rem;">${u.iban || '-'}</td>
+                        </tr>
+                    `).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-light);">Kullanıcı yok</td></tr>'}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    content.innerHTML = html;
+}
+
+async function exportCSV(type) {
+    try {
+        let url = '', fileName = '', dataKey = '';
+        switch(type) {
+            case 'users': url = 'http://10.163.196.216:5000/api/admin/users'; fileName = 'kullanicilar.csv'; dataKey = ''; break;
+            case 'weekly': url = 'http://10.163.196.216:5000/api/payment-reports/weekly-earnings'; fileName = 'haftalik_kazanclar.csv'; dataKey = 'data'; break;
+            case 'career': url = 'http://10.163.196.216:5000/api/payment-reports/career-earnings'; fileName = 'kariyer_odulleri.csv'; dataKey = 'data'; break;
+            default: return;
+        }
+
+        const token = localStorage.getItem('chatchip_token');
+        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+        const data = await res.json();
+
+        let rows = dataKey ? (data[dataKey] || []) : (data || []);
+        if (!rows || rows.length === 0) { showToast('❌ Veri bulunamadı!', 'error'); return; }
+
+        const headers = Object.keys(rows[0]);
+        let csv = headers.join(',') + '\n';
+        rows.forEach(row => {
+            csv += headers.map(h => {
+                let val = row[h] || '';
+                if (typeof val === 'string' && (val.includes(',') || val.includes('"'))) val = `"${val.replace(/"/g, '""')}"`;
+                return val;
+            }).join(',') + '\n';
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        showToast(`✅ ${fileName} indirildi!`, 'success');
+    } catch (error) {
+        console.error('CSV hatası:', error);
+        showToast('❌ CSV oluşturulamadı!', 'error');
+    }
+}
+
+function editUser(id) {
+    const user = usersData.find(u => u.id === id);
+    if (!user) {
+        showToast('❌ Kullanıcı bulunamadı!', 'error');
+        return;
+    }
+    openEditModal(user);
+}
+async function deleteUser(id) {
+    if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
+    try {
+        const res = await fetch(`http://10.163.196.216:5000/api/admin/users/${id}`, { method: 'DELETE', headers: window.DataManager.getHeaders() });
+        const data = await res.json();
+        if (data.success) { showToast('✅ Kullanıcı silindi!', 'success'); loadAdmin(); }
+        else { showToast('❌ ' + data.error, 'error'); }
+    } catch (e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+async function approveRequest(id) {
+    if (!confirm('Bu isteği onaylamak istediğinize emin misiniz?')) return;
+    try {
+        const res = await fetch(`http://10.163.196.216:5000/api/purchase-requests/${id}/approve`, { method: 'POST', headers: window.DataManager.getHeaders() });
+        const data = await res.json();
+        if (data.success) { showToast('✅ İstek onaylandı!', 'success'); loadRequests(); loadAdmin(); }
+        else { showToast('❌ ' + data.error, 'error'); }
+    } catch (e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+async function rejectRequest(id) {
+    if (!confirm('Bu isteği reddetmek istediğinize emin misiniz?')) return;
+    try {
+        const res = await fetch(`http://10.163.196.216:5000/api/purchase-requests/${id}/reject`, { method: 'POST', headers: window.DataManager.getHeaders() });
+        const data = await res.json();
+        if (data.success) { showToast('❌ İstek reddedildi', 'info'); loadRequests(); }
+        else { showToast('❌ ' + data.error, 'error'); }
+    } catch (e) { showToast('❌ ' + e.message, 'error'); }
+}
+
+function openAddUserModal() { alert('➕ Yeni kullanıcı ekle\nBu özellik yakında eklenecek.'); }
+
+function showToast(msg, type = 'info') {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
+    toast.className = `toast show ${type}`;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+window.loadAdmin = loadAdmin;
+window.switchTab = switchTab;
+window.loadRequests = loadRequests;
+window.loadReports = loadReports;
+window.editUser = editUser;
+window.deleteUser = deleteUser;
+window.approveRequest = approveRequest;
+window.rejectRequest = rejectRequest;
+window.openAddUserModal = openAddUserModal;
+window.exportCSV = exportCSV;
+window.showToast = showToast;
+
+console.log('✅ Admin Panel yüklendi!');
+
+// ============================================================
+// ✏️ KULLANICI DÜZENLEME MODAL'ı (KV/PV/CV + SATIN ALMA GEÇMİŞİ)
+// ============================================================
+
+async function loadUserPurchaseHistory(userId) {
+    try {
+        const token = localStorage.getItem('chatchip_token');
+        const response = await fetch(`http://10.163.196.216:5000/api/admin/users/${userId}/purchases`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        return data.success ? data.purchases : [];
+    } catch (error) {
+        console.error('Satın alma geçmişi yüklenemedi:', error);
+        return [];
+    }
+}
+
+function renderPurchaseHistory(purchases, userId) {
+    if (!purchases || purchases.length === 0) {
+        return '<div style="text-align:center;padding:12px;color:var(--text-light);font-size:0.8rem;">📭 Satın alma geçmişi yok</div>';
+    }
+
+    return `
+        <div style="max-height:200px;overflow-y:auto;font-size:0.75rem;">
+            <table style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr style="background:var(--bg);">
+                        <th style="padding:4px 8px;text-align:left;font-weight:600;">Plan</th>
+                        <th style="padding:4px 8px;text-align:left;font-weight:600;">Tutar</th>
+                        <th style="padding:4px 8px;text-align:left;font-weight:600;">Durum</th>
+                        <th style="padding:4px 8px;text-align:left;font-weight:600;">Tarih</th>
+                        <th style="padding:4px 8px;text-align:left;font-weight:600;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${purchases.map(p => `
+                        <tr style="border-bottom:1px solid var(--border);">
+                            <td style="padding:4px 8px;">${p.plan_name}</td>
+                            <td style="padding:4px 8px;">$${p.amount}</td>
+                            <td style="padding:4px 8px;">
+                                <span class="badge" style="font-size:0.6rem;padding:1px 8px;border-radius:10px;${p.status === 'approved' ? 'background:#D1FAE5;color:#065F46;' : p.status === 'rejected' ? 'background:#FEE2E2;color:#DC2626;' : 'background:#FEF3C7;color:#D97706;'}">
+                                    ${p.status === 'approved' ? '✅ Onaylandı' : p.status === 'rejected' ? '❌ Reddedildi' : '⏳ Bekliyor'}
+                                </span>
+                            </td>
+                            <td style="padding:4px 8px;font-size:0.65rem;color:var(--text-light);">${new Date(p.created_at).toLocaleDateString('tr-TR')}</td>
+                            <td style="padding:4px 8px;">
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+async function refundPurchase(purchaseId, userId) {
+    if (!confirm('Bu satın almayı iade etmek istediğinize emin misiniz?\n\nKullanıcının KV, CV, PV değerleri düşürülecek ve planı güncellenecek!')) return;
+
+    try {
+        const token = localStorage.getItem('chatchip_token');
+        const response = await fetch(`http://10.163.196.216:5000/api/refund/purchase/${purchaseId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            showToast(`✅ ${data.refunded?.plan || 'Satın alma'} iade edildi!`, 'success');
+            closeEditModal();
+            loadAdmin();
+            const user = usersData.find(u => u.id === userId);
+            if (user) setTimeout(() => openEditModal(user), 300);
+        } else {
+            showToast('❌ ' + (data.error || 'İade başarısız'), 'error');
+        }
+    } catch (error) {
+        console.error('İade hatası:', error);
+        showToast('❌ ' + error.message, 'error');
+    }
+}
+
+async function refreshPurchaseHistory(userId) {
+    const container = document.getElementById('purchaseHistoryContainer');
+    if (!container) return;
+    container.innerHTML = '<div style="text-align:center;padding:8px;color:var(--text-light);font-size:0.7rem;">⏳ Yükleniyor...</div>';
+    try {
+        const purchases = await loadUserPurchaseHistory(userId);
+        container.innerHTML = renderPurchaseHistory(purchases, userId);
+    } catch (error) {
+        container.innerHTML = '<div style="text-align:center;padding:8px;color:#ef4444;font-size:0.7rem;">❌ Yüklenemedi</div>';
+    }
+}
+
+async function openEditModal(user) {
+    // Satın alma geçmişini yükle
+    const purchases = await loadUserPurchaseHistory(user.id);
+    const historyHTML = renderPurchaseHistory(purchases, user.id);
+    
+    const modalHTML = `
+        <div id="editModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);">
+            <div style="background:var(--bg-secondary);border-radius:16px;padding:30px;max-width:600px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,0.3);max-height:90vh;overflow-y:auto;">
+                <h2 style="margin-bottom:16px;color:var(--text);">✏️ Kullanıcı Düzenle</h2>
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId" value="${user.id}">
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block;font-weight:600;font-size:0.75rem;margin-bottom:3px;color:var(--text);">Ad Soyad</label>
+                            <input type="text" id="editName" value="${user.name || ''}" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block;font-weight:600;font-size:0.75rem;margin-bottom:3px;color:var(--text);">E-posta</label>
+                            <input type="email" id="editEmail" value="${user.email || ''}" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);">
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block;font-weight:600;font-size:0.75rem;margin-bottom:3px;color:var(--text);">TC Kimlik No</label>
+                            <input type="text" id="editTcNo" value="${user.tc_no || ''}" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block;font-weight:600;font-size:0.75rem;margin-bottom:3px;color:var(--text);">Telefon</label>
+                            <input type="text" id="editPhone" value="${user.phone || ''}" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);">
+                        </div>
+                    </div>
+                    
+                    <!-- 📊 MLM Değerleri -->
+                    <div style="margin:12px 0 10px 0;padding:10px;background:rgba(139,92,246,0.05);border-radius:8px;border:1px solid rgba(139,92,246,0.15);">
+                        <div style="font-weight:600;font-size:0.75rem;color:#8B5CF6;margin-bottom:6px;">📊 MLM Değerleri</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                            <div><label style="display:block;font-weight:600;font-size:0.6rem;margin-bottom:2px;color:#8B5CF6;">KV</label>
+                            <input type="number" id="editKv" value="${user.kv || 0}" step="0.01" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);"></div>
+                            <div><label style="display:block;font-weight:600;font-size:0.6rem;margin-bottom:2px;color:#3B82F6;">Sol CV</label>
+                            <input type="number" id="editLeftCv" value="${user.left_cv || 0}" step="0.01" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);"></div>
+                            <div><label style="display:block;font-weight:600;font-size:0.6rem;margin-bottom:2px;color:#3B82F6;">Sağ CV</label>
+                            <input type="number" id="editRightCv" value="${user.right_cv || 0}" step="0.01" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);"></div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;">
+                            <div><label style="display:block;font-weight:600;font-size:0.6rem;margin-bottom:2px;color:#10B981;">Sol PV</label>
+                            <input type="number" id="editLeftPv" value="${user.left_pv || 0}" step="0.01" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);"></div>
+                            <div><label style="display:block;font-weight:600;font-size:0.6rem;margin-bottom:2px;color:#10B981;">Sağ PV</label>
+                            <input type="number" id="editRightPv" value="${user.right_pv || 0}" step="0.01" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);"></div>
+                            <div><label style="display:block;font-weight:600;font-size:0.6rem;margin-bottom:2px;color:#F59E0B;">Kişisel PV</label>
+                            <input type="number" id="editPersonalPv" value="${user.personal_pv || 0}" step="0.01" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block;font-weight:600;font-size:0.75rem;margin-bottom:3px;color:var(--text);">Kariyer</label>
+                            <select id="editCareer" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);">
+                                <option value="Starter" ${user.career_level === 'Starter' ? 'selected' : ''}>Starter</option>
+                                <option value="Pioneer" ${user.career_level === 'Pioneer' ? 'selected' : ''}>Pioneer</option>
+                                <option value="Star" ${user.career_level === 'Star' ? 'selected' : ''}>Star</option>
+                                <option value="Leader" ${user.career_level === 'Leader' ? 'selected' : ''}>Leader</option>
+                                <option value="Emerald" ${user.career_level === 'Emerald' ? 'selected' : ''}>Emerald</option>
+                                <option value="Diamond" ${user.career_level === 'Diamond' ? 'selected' : ''}>Diamond</option>
+                                <option value="Blue Diamond" ${user.career_level === 'Blue Diamond' ? 'selected' : ''}>Blue Diamond</option>
+                                <option value="Green Diamond" ${user.career_level === 'Green Diamond' ? 'selected' : ''}>Green Diamond</option>
+                                <option value="Red Diamond" ${user.career_level === 'Red Diamond' ? 'selected' : ''}>Red Diamond</option>
+                            </select>
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <label style="display:block;font-weight:600;font-size:0.75rem;margin-bottom:3px;color:var(--text);">Plan</label>
+                            <select id="editPlan" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);">
+                                <option value="free" ${user.plan_type === 'free' ? 'selected' : ''}>Ücretsiz</option>
+                                <option value="Lite" ${user.plan_type === 'Lite' ? 'selected' : ''}>Lite</option>
+                                <option value="Plus" ${user.plan_type === 'Plus' ? 'selected' : ''}>Plus</option>
+                                <option value="Pro" ${user.plan_type === 'Pro' ? 'selected' : ''}>Pro</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom:12px;">
+                        <label style="display:block;font-weight:600;font-size:0.75rem;margin-bottom:3px;color:var(--text);">Admin Yetkisi</label>
+                        <select id="editAdmin" style="width:100%;padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem;background:var(--bg);color:var(--text);">
+                            <option value="false" ${!user.is_admin ? 'selected' : ''}>Hayır</option>
+                            <option value="true" ${user.is_admin ? 'selected' : ''}>Evet</option>
+                        </select>
+                    </div>
+                    
+                    <!-- 📜 Satın Alma Geçmişi -->
+                    <div style="margin-bottom:12px;border-top:1px solid var(--border);padding-top:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                            <span style="font-weight:600;font-size:0.8rem;color:var(--text);">📜 Satın Alma Geçmişi</span>
+                            <button type="button" onclick="refreshPurchaseHistory(${user.id})" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:0.7rem;">🔄 Yenile</button>
+                        </div>
+                        <div id="purchaseHistoryContainer">${historyHTML}</div>
+                    </div>
+                    
+                    <div style="display:flex;gap:10px;margin-top:16px;">
+                        <button type="submit" style="flex:1;padding:10px;border:none;border-radius:8px;background:var(--primary);color:white;font-weight:600;cursor:pointer;">💾 Kaydet</button>
+                        <button type="button" onclick="closeEditModal()" style="flex:1;padding:10px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--text);cursor:pointer;">İptal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    document.getElementById('editUserForm').addEventListener('submit', saveUserEdit);
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editModal');
+    if (modal) modal.remove();
+}
+
+async function saveUserEdit(e) {
+    e.preventDefault();
+    
+    const userId = document.getElementById('editUserId').value;
+    const name = document.getElementById('editName').value.trim();
+    const email = document.getElementById('editEmail').value.trim();
+    const tc_no = document.getElementById('editTcNo').value.trim();
+    const phone = document.getElementById('editPhone').value.trim();
+    const career_level = document.getElementById('editCareer').value;
+    const plan_type = document.getElementById('editPlan').value;
+    const is_admin = document.getElementById('editAdmin').value === 'true';
+    const kv = parseFloat(document.getElementById('editKv').value) || 0;
+    const left_cv = parseFloat(document.getElementById('editLeftCv').value) || 0;
+    const right_cv = parseFloat(document.getElementById('editRightCv').value) || 0;
+    const left_pv = parseFloat(document.getElementById('editLeftPv').value) || 0;
+    const right_pv = parseFloat(document.getElementById('editRightPv').value) || 0;
+    const personal_pv = parseFloat(document.getElementById('editPersonalPv').value) || 0;
+    
+    if (!name || !email) {
+        showToast('❌ Ad ve E-posta zorunludur!', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`http://10.163.196.216:5000/api/admin/users/${userId}`, {
+            method: 'PUT',
+            headers: window.DataManager.getHeaders(),
+            body: JSON.stringify({ 
+                name, 
+                email, 
+                tc_no,
+                phone,
+                career_level, 
+                plan_type, 
+                is_admin,
+                kv,
+                left_cv,
+                right_cv,
+                left_pv,
+                right_pv,
+                personal_pv
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('✅ Kullanıcı güncellendi!', 'success');
+            closeEditModal();
+            loadAdmin();
+        } else {
+            showToast('❌ ' + (data.error || 'Güncelleme başarısız'), 'error');
+        }
+    } catch (error) {
+        console.error('Güncelleme hatası:', error);
+        showToast('❌ ' + error.message, 'error');
+    }
+}
+
+// ============================================================
+// 🔥 MOBİL DESTEĞİ - DataManager Kullan
+// ============================================================
+
+// API_BASE'i DataManager'dan al (eğer varsa)
+if (window.DataManager && window.DataManager.apiBase) {
+    const API_BASE = window.DataManager.apiBase;
+    console.log('📡 Admin panel API (DataManager):', API_BASE);
+} else {
+    console.warn('⚠️ DataManager apiBase bulunamadı, varsayılan kullanılıyor');
+}
+
+// ============================================================
+// ============================================================
+
+    if (!confirm('Bu satın alma isteğini iade etmek istediğinize emin misiniz?\n\nKullanıcının KV, CV, PV değerleri düşürülecek ve planı güncellenecek!')) {
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('chatchip_token');
+        const response = await fetch(`http://10.163.196.216:5000/api/refund/purchase/${requestId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showToast('✅ İade başarılı! Kullanıcı önceki planına döndü.', 'success');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showToast('❌ ' + (data.error || 'İade başarısız!'), 'error');
+        }
+    } catch (error) {
+        console.error('❌ İade hatası:', error);
+        showToast('❌ ' + error.message, 'error');
+    }
+}
+
