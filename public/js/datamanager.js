@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://chatchip-production.up.railway.app/api';
 
 class DataManager {
     constructor() {
