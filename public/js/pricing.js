@@ -30,7 +30,7 @@ async function loadPlans() {
     content.innerHTML = '<div class="loading">⏳ Planlar yükleniyor...</div>';
 
     try {
-        const res = await fetch('http://10.163.196.216:5000/api/pricing');
+        const res = await fetch('https://chatchip-production.up.railway.app/api/pricing');
         const data = await res.json();
         
         plansData = data.plans || data || [];
@@ -193,7 +193,7 @@ async function purchasePlan(planName, period, price, cv, kv) {
             return;
         }
 
-        const response = await fetch('http://10.163.196.216:5000/api/payments/create', {
+        const response = await fetch('https://chatchip-production.up.railway.app/api/payments/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

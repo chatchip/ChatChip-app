@@ -21,7 +21,7 @@ async function loadAdmin() {
 
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch('http://10.163.196.216:5000/api/admin/users', {
+        const res = await fetch('https://chatchip-production.up.railway.app/api/admin/users', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const users = await res.json();
@@ -172,7 +172,7 @@ async function loadRequests() {
     const container = document.getElementById('panelRequests');
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch('http://10.163.196.216:5000/api/purchase-requests/pending', {
+        const res = await fetch('https://chatchip-production.up.railway.app/api/purchase-requests/pending', {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await res.json();
@@ -239,13 +239,13 @@ async function loadReports() {
         const token = localStorage.getItem('chatchip_token');
         const headers = { 'Authorization': 'Bearer ' + token };
 
-        const weeklyRes = await fetch('http://10.163.196.216:5000/api/payment-reports/weekly-earnings', { headers });
+        const weeklyRes = await fetch('https://chatchip-production.up.railway.app/api/payment-reports/weekly-earnings', { headers });
         const weekly = await weeklyRes.json();
 
-        const careerRes = await fetch('http://10.163.196.216:5000/api/payment-reports/career-earnings', { headers });
+        const careerRes = await fetch('https://chatchip-production.up.railway.app/api/payment-reports/career-earnings', { headers });
         const career = await careerRes.json();
 
-        const userEarningsRes = await fetch('http://10.163.196.216:5000/api/payment-reports/user-earnings/1', { headers });
+        const userEarningsRes = await fetch('https://chatchip-production.up.railway.app/api/payment-reports/user-earnings/1', { headers });
         const userEarnings = await userEarningsRes.json();
 
         const totalWeekly = weekly?.summary?.totalEarned || 0;
@@ -322,19 +322,19 @@ async function exportCSV(type) {
 
         switch(type) {
             case 'users':
-                url = 'http://10.163.196.216:5000/api/admin/users';
+                url = 'https://chatchip-production.up.railway.app/api/admin/users';
                 fileName = 'kullanicilar.csv';
                 break;
             case 'weekly':
-                url = 'http://10.163.196.216:5000/api/payment-reports/weekly-earnings';
+                url = 'https://chatchip-production.up.railway.app/api/payment-reports/weekly-earnings';
                 fileName = 'haftalik_kazanclar.csv';
                 break;
             case 'career':
-                url = 'http://10.163.196.216:5000/api/payment-reports/career-earnings';
+                url = 'https://chatchip-production.up.railway.app/api/payment-reports/career-earnings';
                 fileName = 'kariyer_odulleri.csv';
                 break;
             case 'user':
-                url = 'http://10.163.196.216:5000/api/payment-reports/user-earnings/1';
+                url = 'https://chatchip-production.up.railway.app/api/payment-reports/user-earnings/1';
                 fileName = 'kullanici_kazanc.csv';
                 break;
             default: return;
@@ -491,7 +491,7 @@ function closeEdit() {
 async function loadUserPurchases(userId) {
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch(`http://10.163.196.216:5000/api/admin/users/${userId}/purchases`, {
+        const res = await fetch(`https://chatchip-production.up.railway.app/api/admin/users/${userId}/purchases`, {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await res.json();
@@ -573,7 +573,7 @@ async function saveEdit() {
 
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch(`http://10.163.196.216:5000/api/admin/users/${id}`, {
+        const res = await fetch(`https://chatchip-production.up.railway.app/api/admin/users/${id}`, {
             method: 'PUT',
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, phone, tc_no, career_level, plan_type, is_admin, kv, left_cv, right_cv, left_pv, right_pv, personal_pv })
@@ -599,7 +599,7 @@ async function deleteUser(id) {
     if (!confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) return;
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch(`http://10.163.196.216:5000/api/admin/users/${id}`, {
+        const res = await fetch(`https://chatchip-production.up.railway.app/api/admin/users/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + token }
         });
@@ -682,7 +682,7 @@ async function saveAddUser() {
 
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch('http://10.163.196.216:5000/api/auth/register', {
+        const res = await fetch('https://chatchip-production.up.railway.app/api/auth/register', {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, phone, password, sponsor_id, position })
@@ -708,7 +708,7 @@ async function approveRequest(id) {
     if (!confirm('Bu isteği onaylamak istediğinize emin misiniz?')) return;
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch(`http://10.163.196.216:5000/api/purchase-requests/${id}/approve`, {
+        const res = await fetch(`https://chatchip-production.up.railway.app/api/purchase-requests/${id}/approve`, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token }
         });
@@ -729,7 +729,7 @@ async function rejectRequest(id) {
     if (!confirm('Bu isteği reddetmek istediğinize emin misiniz?')) return;
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch(`http://10.163.196.216:5000/api/purchase-requests/${id}/reject`, {
+        const res = await fetch(`https://chatchip-production.up.railway.app/api/purchase-requests/${id}/reject`, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token }
         });
@@ -753,7 +753,7 @@ async function refundPurchase(purchaseId, userId) {
     if (!confirm('Bu satın almayı iade etmek istediğinize emin misiniz?')) return;
     try {
         const token = localStorage.getItem('chatchip_token');
-        const res = await fetch(`http://10.163.196.216:5000/api/refund/purchase/${purchaseId}`, {
+        const res = await fetch(`https://chatchip-production.up.railway.app/api/refund/purchase/${purchaseId}`, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
         });

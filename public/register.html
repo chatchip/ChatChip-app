@@ -170,7 +170,7 @@
 
             try {
                 const token = localStorage.getItem('chatchip_token') || '';
-                const response = await fetch(`http://10.163.196.216:5000/api/auth/find-sponsor/${position}`, {
+                const response = await fetch(`https://chatchip-production.up.railway.app/api/auth/find-sponsor/${position}`, {
                     headers: {
                         'Authorization': token ? `Bearer ${token}` : '',
                         'Content-Type': 'application/json'
@@ -326,7 +326,7 @@
             }
 
             try {
-                const response = await fetch('http://10.163.196.216:5000/api/auth/register', {
+                const response = await fetch('https://chatchip-production.up.railway.app/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
