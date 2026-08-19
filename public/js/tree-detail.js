@@ -294,7 +294,7 @@ function addMember(sponsorId, position) {
     const returnUrl = window.location.href;
     sessionStorage.setItem('returnUrl', returnUrl);
     
-    window.location.href = `http://localhost:3000/register?ref=${sponsorId}&position=${position}`;
+    window.location.href = `/register?ref=${sponsorId}&position=${position}`;
 }
 
 function searchNode(event) {
