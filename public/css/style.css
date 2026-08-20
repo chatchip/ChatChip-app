@@ -1067,9 +1067,10 @@ body {
     line-height: 1.5;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     border: none;
-    max-width: 95%;
+    max-width: 100%;
     width: fit-content;
-    white-space: nowrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .message.user .bubble .time {
