@@ -983,7 +983,7 @@ async function handleFileUpload(event) {
 
     try {
         const token = localStorage.getItem('chatchip_token');
-        const response = await fetch('/api/upload/image', {
+        const response = await fetch('https://chatchip-production.up.railway.app/api/upload/image', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
