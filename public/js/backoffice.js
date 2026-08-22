@@ -22,31 +22,87 @@ async function checkAuth() {
                 <a href="/index.html" class="action-btn" style="padding:10px 24px; border-radius:8px; background:var(--primary); color:white; text-decoration:none; display:inline-block;">Ana Sayfaya Dön</a>
             </div>
         `;
-        return;
+        return false;
     }
 
     const profileBtn = document.getElementById('profileBtn');
     if (profileBtn && currentUser) {
         profileBtn.textContent = currentUser.name?.charAt(0).toUpperCase() || '👤';
     }
+    
+    return true;
+}
+
+// 🔥 Kullanıcı ID'sini güvenli şekilde al - DataManager'daki currentUser yapısına göre
+function getUserId(user) {
+    if (!user) return null;
+    
+    // DataManager'dan gelen user'da id alanı var
+    // Ama API'den gelen response'da farklı olabilir
+    return user.id || user.user_id || user.userId || user.ID || null;
 }
 
 async function loadBackoffice() {
+    // Önce currentUser'ı kontrol et
     if (!currentUser) {
-        await checkAuth();
-        if (!currentUser) return;
+        const isAuthed = await checkAuth();
+        if (!isAuthed) return;
     }
 
     boContent.innerHTML = '<div class="loading">⏳ Veriler yükleniyor...</div>';
 
     try {
         const dm = window.DataManager;
-        const [mlmStatus, tree] = await Promise.all([
-            dm.getMLMStatus(),
-            dm.getTree()
-        ]);
-
-        const user = mlmStatus?.user || currentUser;
+        
+        // 🔥 Önce MLM status'u al
+        const mlmStatus = await dm.getMLMStatus();
+        console.log('📊 MLM Status:', mlmStatus);
+        
+        // 🔥 Tree'yi al
+        const tree = await dm.getTree();
+        console.log('🌳 Tree:', tree);
+        
+        // 🔥 Kullanıcıyı belirle - ÖNCE currentUser, sonra API'den gelen
+        let user = { ...currentUser }; // currentUser'ı kopyala
+        
+        // Eğer API'den gelen user varsa ve içinde veri varsa, onunla güncelle
+        if (mlmStatus?.user) {
+            const apiUser = mlmStatus.user;
+            console.log('📥 API\'den gelen user:', apiUser);
+            
+            // API'den gelen verilerle currentUser'ı güncelle (ama id'yi koru)
+            user = {
+                ...user,
+                ...apiUser,
+                // id'yi currentUser'dan al, eğer yoksa apiUser'dan al
+                id: user.id || apiUser.id || apiUser.user_id || apiUser.userId || null
+            };
+        }
+        
+        // Eğer hala id yoksa, localStorage'dan tekrar dene
+        if (!user.id) {
+            const savedUser = localStorage.getItem('chatchip_user');
+            if (savedUser) {
+                try {
+                    const parsed = JSON.parse(savedUser);
+                    user.id = parsed.id || parsed.user_id || null;
+                    console.log('💾 localStorage\'dan ID alındı:', user.id);
+                } catch (e) {}
+            }
+        }
+        
+        // 🔥 CRITICAL: currentUser'ı güncelle
+        if (user && user.id) {
+            currentUser = user;
+            // localStorage'ı da güncelle
+            localStorage.setItem('chatchip_user', JSON.stringify(user));
+            console.log('✅ Güncel kullanıcı:', currentUser);
+            console.log('🆔 Kullanıcı ID:', currentUser.id);
+        } else {
+            console.error('❌ Kullanıcı ID bulunamadı!');
+            console.log('Mevcut user nesnesi:', user);
+        }
+        
         renderBackoffice(mlmStatus, tree, user);
     } catch (error) {
         console.error('Backoffice yükleme hatası:', error);
@@ -61,9 +117,35 @@ async function loadBackoffice() {
 }
 
 function renderBackoffice(mlmStatus, tree, user) {
+    // 🔥 user kontrolü - eğer yoksa currentUser'ı kullan
+    const activeUser = user || currentUser;
+    
+    // 🔥 Kullanıcı ID'sini güvenli şekilde al
+    const userId = getUserId(activeUser);
+    
+    console.log('🎯 Render - Aktif kullanıcı:', activeUser);
+    console.log('🆔 Render - Kullanıcı ID:', userId);
+    
+    if (!userId) {
+        boContent.innerHTML = `
+            <div class="loading" style="color:#ef4444;">
+                ❌ Kullanıcı ID bulunamadı!
+                <br>
+                <div style="font-size:0.8rem; margin-top:8px; background:#f8f9fa; padding:12px; border-radius:8px; text-align:left; max-width:400px; margin:8px auto; overflow:auto;">
+                    <strong>Mevcut kullanıcı verisi:</strong><br>
+                    <pre style="font-size:0.7rem; max-height:200px;">${JSON.stringify(activeUser, null, 2)}</pre>
+                </div>
+                <br>
+                <button onclick="location.reload()" style="padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:white; cursor:pointer;">🔄 Sayfayı Yenile</button>
+                <button onclick="loadBackoffice()" style="padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:var(--primary); color:white; cursor:pointer; margin-left:8px;">🔄 Verileri Yenile</button>
+            </div>
+        `;
+        return;
+    }
+
     const data = mlmStatus?.user || {};
     
-    const careerLevel = data.career_level || 'Starter';
+    const careerLevel = data.career_level || activeUser.career_level || 'Starter';
     const kv = data.kv || 0;
     const leftCV = data.left_cv || 0;
     const rightCV = data.right_cv || 0;
@@ -73,9 +155,10 @@ function renderBackoffice(mlmStatus, tree, user) {
     const multiplier = parseFloat(data.multiplier) || 0.09;
     
     const nodes = tree?.nodes || [];
-    const userId = user?.id || 1;
     
+    // 🔥 Sol ve Sağ kol üyelerini filtrele
     const leftMembers = nodes.filter(n => {
+        if (n.id === userId) return false;
         let current = n;
         while (current && current.sponsor_id) {
             if (current.sponsor_id === userId && current.position === 'left') return true;
@@ -87,6 +170,7 @@ function renderBackoffice(mlmStatus, tree, user) {
     });
     
     const rightMembers = nodes.filter(n => {
+        if (n.id === userId) return false;
         let current = n;
         while (current && current.sponsor_id) {
             if (current.sponsor_id === userId && current.position === 'right') return true;
@@ -97,8 +181,8 @@ function renderBackoffice(mlmStatus, tree, user) {
         return false;
     });
     
-    const leftCount = leftMembers.filter(n => n.id !== userId).length;
-    const rightCount = rightMembers.filter(n => n.id !== userId).length;
+    const leftCount = leftMembers.length;
+    const rightCount = rightMembers.length;
     const totalMembers = leftCount + rightCount;
 
     const isActive = kv >= 45;
@@ -161,7 +245,7 @@ function renderBackoffice(mlmStatus, tree, user) {
     };
     const careerColor = careerColors[careerLevel] || '#E8F5E9';
 
-    const isAdmin = user?.is_admin === true;
+    const isAdmin = activeUser?.is_admin === true || activeUser?.isAdmin === true;
 
     let requirementsHtml = '';
     if (requirements.length > 0) {
@@ -177,6 +261,14 @@ function renderBackoffice(mlmStatus, tree, user) {
     } else if (careerLevel === 'Red Diamond') {
         requirementsHtml = '<div style="font-size:0.75rem; color:var(--text-light); text-align:center;">🏆 En yüksek kariyer seviyesindesin!</div>';
     }
+
+    // 🔥 REFERRAL LINKLERİ - DOĞRU USER ID İLE
+    const baseUrl = window.location.origin;
+    const leftRefLink = `${baseUrl}/register?position=left&ref=${userId}`;
+    const rightRefLink = `${baseUrl}/register?position=right&ref=${userId}`;
+    
+    console.log('🔗 Sol Link:', leftRefLink);
+    console.log('🔗 Sağ Link:', rightRefLink);
 
     let html = `
         <div class="career-card">
@@ -243,12 +335,12 @@ function renderBackoffice(mlmStatus, tree, user) {
         <div class="section-title">🔗 Davet Bağlantıları</div>
         <div class="ref-card">
             <span class="label left">SOL</span>
-                <input type="text" id="leftRefInput" readonly value="${window.location.origin}/register?position=left&ref=${user?.id || 1}">
+            <input type="text" id="leftRefInput" readonly value="${leftRefLink}">
             <button class="copy-btn" onclick="copyRef('leftRefInput')">📋 Kopyala</button>
         </div>
         <div class="ref-card">
             <span class="label right">SAĞ</span>
-             <input type="text" id="rightRefInput" readonly value="${window.location.origin}/register?position=right&ref=${user?.id || 1}">
+            <input type="text" id="rightRefInput" readonly value="${rightRefLink}">
             <button class="copy-btn" onclick="copyRef('rightRefInput')">📋 Kopyala</button>
         </div>
 
@@ -268,7 +360,7 @@ function renderBackoffice(mlmStatus, tree, user) {
 
         <div class="section-title">📋 Son Kayıt Olanlar</div>
         <div class="team-list" id="recentTeam">
-            ${nodes.slice(1, 6).map(m => `
+            ${nodes.slice(0, 5).map(m => `
                 <div class="team-item">
                     <span class="name">${m.name || 'İsimsiz'}</span>
                     <span class="position ${m.position || ''}">${m.position || 'Üye'}</span>
@@ -302,8 +394,18 @@ function copyRef(inputId) {
     const input = document.getElementById(inputId);
     if (!input) return;
     input.select();
-    document.execCommand('copy');
-    showToast('✅ Link kopyalandı!', 'success');
+    input.setSelectionRange(0, 99999);
+    try {
+        document.execCommand('copy');
+        showToast('✅ Link kopyalandı!', 'success');
+    } catch (e) {
+        // Modern browsers için
+        navigator.clipboard.writeText(input.value).then(() => {
+            showToast('✅ Link kopyalandı!', 'success');
+        }).catch(() => {
+            showToast('❌ Kopyalanamadı, lütfen manuel kopyalayın', 'error');
+        });
+    }
 }
 
 function showToast(msg, type = 'info') {
@@ -312,12 +414,30 @@ function showToast(msg, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast show ${type}`;
     toast.textContent = msg;
+    Object.assign(toast.style, {
+        position: 'fixed',
+        bottom: '20px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        padding: '12px 24px',
+        borderRadius: '8px',
+        background: type === 'success' ? '#10B981' : '#EF4444',
+        color: 'white',
+        fontWeight: '600',
+        zIndex: '9999',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        transition: 'all 0.3s ease'
+    });
     document.body.appendChild(toast);
-    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 window.loadBackoffice = loadBackoffice;
 window.copyRef = copyRef;
 window.showToast = showToast;
 
-console.log('✅ Backoffice yüklendi! (formatNumber düzeltildi)');
+console.log('✅ Backoffice yüklendi! (referral link düzeltildi)');
