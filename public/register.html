@@ -150,6 +150,10 @@
         (function() {
             const urlParams = new URLSearchParams(window.location.search);
             const position = urlParams.get('position');
+            const sponsorId = urlParams.get('ref');
+            if (sponsorId) {
+    document.getElementById('sponsorInput').value = sponsorId;
+}
 
             console.log('🔍 Position:', position);
 
