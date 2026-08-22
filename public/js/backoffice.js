@@ -243,12 +243,12 @@ function renderBackoffice(mlmStatus, tree, user) {
         <div class="section-title">🔗 Davet Bağlantıları</div>
         <div class="ref-card">
             <span class="label left">SOL</span>
-            <input type="text" id="leftRefInput" readonly value="${window.location.origin}/register?position=left&ref=${user.id}">
+            <input type="text" id="leftRefInput" readonly value="${window.location.origin}/register?position=left&ref=${user?.id || 1}"
             <button class="copy-btn" onclick="copyRef('leftRefInput')">📋 Kopyala</button>
         </div>
         <div class="ref-card">
             <span class="label right">SAĞ</span>
-            <input type="text" id="rightRefInput" readonly value="${window.location.origin}/register?position=right&ref=${user.id}">
+            <input type="text" id="rightRefInput" readonly value="${window.location.origin}/register?position=right&ref=${user?.id || 1}"
             <button class="copy-btn" onclick="copyRef('rightRefInput')">📋 Kopyala</button>
         </div>
 
