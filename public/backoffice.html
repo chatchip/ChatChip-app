@@ -27,19 +27,46 @@
         </main>
     </div>
 
+    <!-- 🔥 ÖNCE DataManager'ı yükle -->
     <script src="/js/datamanager.js"></script>
+    
     <script>
-        // 🔥 Giriş kontrolü - en başta çalışsın
+        // 🔥 Giriş kontrolü - DataManager yüklendikten SONRA çalışsın
         (function checkAuth() {
-            const token = localStorage.getItem('chatchip_token');
-            const user = JSON.parse(localStorage.getItem('chatchip_user') || 'null');
+            console.log('🔐 Backoffice - Auth kontrolü başladı');
+            
+            // DataManager'ın yüklendiğinden emin ol
+            if (typeof window.DataManager === 'undefined') {
+                console.error('❌ DataManager yüklenemedi!');
+                setTimeout(checkAuth, 500);
+                return;
+            }
+            
+            const dm = window.DataManager;
+            const token = dm.getToken();
+            const user = dm.currentUser;
+            
+            console.log('🔐 Token:', token ? '✅ Var' : '❌ Yok');
+            console.log('🔐 User:', user);
             
             if (!token || !user) {
+                console.log('❌ Giriş yapılmamış, ana sayfaya yönlendiriliyor...');
                 window.location.href = '/index.html';
                 return;
             }
+            
+            console.log('✅ Giriş yapılmış, kullanıcı:', user.name);
+            console.log('🆔 Kullanıcı ID:', user.id);
+            
+            // Profile butonunu güncelle
+            const profileBtn = document.getElementById('profileBtn');
+            if (profileBtn && user) {
+                profileBtn.textContent = user.name?.charAt(0).toUpperCase() || '👤';
+            }
         })();
     </script>
+    
+    <!-- 🔥 SONRA backoffice.js'yi yükle -->
     <script src="/js/backoffice.js"></script>
 </body>
 </html>
