@@ -16,9 +16,77 @@ class DataManager {
             if (saved) {
                 this.currentUser = JSON.parse(saved);
                 console.log('👤 Kullanıcı yüklendi:', this.currentUser.name);
+                console.log('🆔 Kullanıcı ID:', this.currentUser.id);
+            } else {
+                console.warn('⚠️ localStorage\'da kullanıcı verisi yok');
             }
         } catch (e) {
             console.error('User load error:', e);
+        }
+    }
+
+    // ============ 🔥 KULLANICI ID'Yİ GÜVENLİ ŞEKİLDE AL ============
+    getUserId() {
+        console.log('🔍 getUserId çağrıldı');
+        console.log('📌 this.currentUser:', this.currentUser);
+        
+        if (!this.currentUser) {
+            console.error('❌ currentUser null!');
+            return null;
+        }
+        
+        // Farklı olası ID alanlarını kontrol et
+        const id = this.currentUser.id || 
+                   this.currentUser.user_id || 
+                   this.currentUser.userId || 
+                   this.currentUser.ID || 
+                   null;
+        
+        console.log('🆔 Bulunan ID:', id);
+        return id;
+    }
+
+    // ============ 🔥 KULLANICIYI GÜNCELLE ============
+    updateUser(userData) {
+        if (!userData) {
+            console.warn('⚠️ updateUser: userData boş');
+            return;
+        }
+        
+        console.log('📝 Kullanıcı güncelleniyor:', userData);
+        
+        // Mevcut user'ı koru ama yeni verilerle güncelle
+        const currentId = this.currentUser?.id || this.currentUser?.user_id || null;
+        
+        this.currentUser = {
+            ...this.currentUser,
+            ...userData,
+            // ID'yi koru (eğer yeni gelen veride yoksa)
+            id: currentId || userData.id || userData.user_id || null
+        };
+        
+        localStorage.setItem('chatchip_user', JSON.stringify(this.currentUser));
+        console.log('✅ Kullanıcı güncellendi:', this.currentUser);
+        console.log('🆔 Güncel ID:', this.currentUser.id);
+    }
+
+    // ============ 🔥 KULLANICIYI ZORLA YENİLE ============
+    refreshUser() {
+        console.log('🔄 Kullanıcı yenileniyor...');
+        try {
+            const saved = localStorage.getItem('chatchip_user');
+            if (saved) {
+                this.currentUser = JSON.parse(saved);
+                console.log('✅ Kullanıcı yenilendi:', this.currentUser);
+                console.log('🆔 ID:', this.currentUser.id);
+                return this.currentUser;
+            } else {
+                console.warn('⚠️ localStorage\'da kullanıcı verisi yok');
+                return null;
+            }
+        } catch (e) {
+            console.error('refreshUser hatası:', e);
+            return null;
         }
     }
 
@@ -59,6 +127,8 @@ class DataManager {
                 this.setToken(data.token);
                 this.currentUser = data.user;
                 localStorage.setItem('chatchip_user', JSON.stringify(data.user));
+                console.log('✅ Login başarılı, kullanıcı:', this.currentUser);
+                console.log('🆔 Kullanıcı ID:', this.currentUser.id);
             }
             return data;
         } catch (e) {
@@ -88,6 +158,8 @@ class DataManager {
                 this.setToken(data.token);
                 this.currentUser = data.user;
                 localStorage.setItem('chatchip_user', JSON.stringify(data.user));
+                console.log('✅ Register başarılı, kullanıcı:', this.currentUser);
+                console.log('🆔 Kullanıcı ID:', this.currentUser.id);
             }
             return data;
         } catch (e) {
@@ -320,5 +392,12 @@ class DataManager {
     }
 }
 
+// DataManager'ı global olarak tanımla
 window.DataManager = new DataManager();
 console.log('✅ DataManager yüklendi! API Base:', API_BASE);
+
+// 🔥 DataManager'ın doğru yüklendiğini kontrol et
+console.log('🧪 DataManager test:');
+console.log('📌 Token:', window.DataManager.getToken() ? '✅ Var' : '❌ Yok');
+console.log('📌 User:', window.DataManager.currentUser);
+console.log('📌 User ID:', window.DataManager.currentUser?.id || '❌ Yok');
