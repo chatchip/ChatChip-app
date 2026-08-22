@@ -13,6 +13,8 @@ async function checkAuth() {
     const token = dm.getToken();
     currentUser = dm.currentUser;
 
+    console.log('🔐 checkAuth - currentUser:', currentUser);
+
     if (!token || !currentUser) {
         boContent.innerHTML = `
             <div class="loading" style="text-align:center; padding:60px 20px;">
@@ -33,18 +35,26 @@ async function checkAuth() {
     return true;
 }
 
-// 🔥 Kullanıcı ID'sini güvenli şekilde al - DataManager'daki currentUser yapısına göre
+// 🔥 Kullanıcı ID'sini güvenli şekilde al
 function getUserId(user) {
     if (!user) return null;
     
-    // DataManager'dan gelen user'da id alanı var
-    // Ama API'den gelen response'da farklı olabilir
-    return user.id || user.user_id || user.userId || user.ID || null;
+    console.log('🔍 getUserId - gelen user:', user);
+    
+    // Farklı olası ID alanlarını kontrol et
+    const id = user.id || user.user_id || user.userId || user.ID || null;
+    
+    console.log('🔍 getUserId - bulunan ID:', id);
+    
+    return id;
 }
 
 async function loadBackoffice() {
+    console.log('🔄 loadBackoffice başladı');
+    
     // Önce currentUser'ı kontrol et
     if (!currentUser) {
+        console.log('⚠️ currentUser yok, checkAuth çağrılıyor');
         const isAuthed = await checkAuth();
         if (!isAuthed) return;
     }
@@ -65,29 +75,41 @@ async function loadBackoffice() {
         // 🔥 Kullanıcıyı belirle - ÖNCE currentUser, sonra API'den gelen
         let user = { ...currentUser }; // currentUser'ı kopyala
         
+        console.log('📌 Başlangıç user:', user);
+        console.log('📌 Başlangıç user.id:', user.id);
+        
         // Eğer API'den gelen user varsa ve içinde veri varsa, onunla güncelle
         if (mlmStatus?.user) {
             const apiUser = mlmStatus.user;
             console.log('📥 API\'den gelen user:', apiUser);
+            console.log('📥 API user.id:', apiUser.id);
+            console.log('📥 API user.user_id:', apiUser.user_id);
             
             // API'den gelen verilerle currentUser'ı güncelle (ama id'yi koru)
             user = {
                 ...user,
                 ...apiUser,
-                // id'yi currentUser'dan al, eğer yoksa apiUser'dan al
+                // id'yi öncelikle currentUser'dan al, yoksa apiUser'dan al
                 id: user.id || apiUser.id || apiUser.user_id || apiUser.userId || null
             };
+            
+            console.log('📌 API ile güncellenmiş user:', user);
+            console.log('📌 Güncellenmiş user.id:', user.id);
         }
         
         // Eğer hala id yoksa, localStorage'dan tekrar dene
         if (!user.id) {
+            console.log('⚠️ user.id yok, localStorage kontrol ediliyor');
             const savedUser = localStorage.getItem('chatchip_user');
             if (savedUser) {
                 try {
                     const parsed = JSON.parse(savedUser);
-                    user.id = parsed.id || parsed.user_id || null;
+                    console.log('💾 localStorage\'dan gelen user:', parsed);
+                    user.id = parsed.id || parsed.user_id || parsed.userId || null;
                     console.log('💾 localStorage\'dan ID alındı:', user.id);
-                } catch (e) {}
+                } catch (e) {
+                    console.error('localStorage parse hatası:', e);
+                }
             }
         }
         
@@ -96,11 +118,31 @@ async function loadBackoffice() {
             currentUser = user;
             // localStorage'ı da güncelle
             localStorage.setItem('chatchip_user', JSON.stringify(user));
-            console.log('✅ Güncel kullanıcı:', currentUser);
+            console.log('✅ Güncel kullanıcı kaydedildi:', currentUser);
             console.log('🆔 Kullanıcı ID:', currentUser.id);
         } else {
             console.error('❌ Kullanıcı ID bulunamadı!');
             console.log('Mevcut user nesnesi:', user);
+            
+            // 🔥 HATA DURUMUNDA - localStorage'dan direk ID almayı dene
+            const savedUser = localStorage.getItem('chatchip_user');
+            if (savedUser) {
+                try {
+                    const parsed = JSON.parse(savedUser);
+                    if (parsed.id) {
+                        console.log('💾 localStorage\'dan ID bulundu:', parsed.id);
+                        currentUser = parsed;
+                        user = parsed;
+                        localStorage.setItem('chatchip_user', JSON.stringify(parsed));
+                    }
+                } catch (e) {}
+            }
+        }
+        
+        // 🔥 SON ÇARE: Eğer hala ID yoksa, user nesnesini düzelt
+        if (!user.id && currentUser) {
+            user.id = currentUser.id;
+            console.log('🔄 currentUser.id kullanıldı:', user.id);
         }
         
         renderBackoffice(mlmStatus, tree, user);
@@ -117,8 +159,13 @@ async function loadBackoffice() {
 }
 
 function renderBackoffice(mlmStatus, tree, user) {
+    console.log('🎨 renderBackoffice başladı');
+    console.log('🎨 Gelen user:', user);
+    
     // 🔥 user kontrolü - eğer yoksa currentUser'ı kullan
     const activeUser = user || currentUser;
+    
+    console.log('🎨 Aktif user:', activeUser);
     
     // 🔥 Kullanıcı ID'sini güvenli şekilde al
     const userId = getUserId(activeUser);
@@ -126,18 +173,37 @@ function renderBackoffice(mlmStatus, tree, user) {
     console.log('🎯 Render - Aktif kullanıcı:', activeUser);
     console.log('🆔 Render - Kullanıcı ID:', userId);
     
-    if (!userId) {
+    // 🔥 EĞER ID YOKSA, LOCALSTORAGE'DAN TEKRAR DENE
+    let finalUserId = userId;
+    if (!finalUserId) {
+        console.log('⚠️ ID yok, localStorage kontrol ediliyor...');
+        const savedUser = localStorage.getItem('chatchip_user');
+        if (savedUser) {
+            try {
+                const parsed = JSON.parse(savedUser);
+                finalUserId = parsed.id || parsed.user_id || parsed.userId || null;
+                console.log('💾 localStorage\'dan ID bulundu:', finalUserId);
+            } catch (e) {}
+        }
+    }
+    
+    // 🔥 HALA YOKSA, BIR UYARI GÖSTER
+    if (!finalUserId) {
+        console.error('❌ HİÇBİR YERDEN ID BULUNAMADI!');
         boContent.innerHTML = `
-            <div class="loading" style="color:#ef4444;">
+            <div class="loading" style="color:#ef4444; padding:20px;">
                 ❌ Kullanıcı ID bulunamadı!
                 <br>
-                <div style="font-size:0.8rem; margin-top:8px; background:#f8f9fa; padding:12px; border-radius:8px; text-align:left; max-width:400px; margin:8px auto; overflow:auto;">
+                <div style="font-size:0.8rem; margin-top:12px; background:#f8f9fa; padding:12px; border-radius:8px; text-align:left; max-width:500px; margin:12px auto; overflow:auto;">
                     <strong>Mevcut kullanıcı verisi:</strong><br>
-                    <pre style="font-size:0.7rem; max-height:200px;">${JSON.stringify(activeUser, null, 2)}</pre>
+                    <pre style="font-size:0.7rem; max-height:200px; white-space:pre-wrap;">${JSON.stringify(activeUser, null, 2)}</pre>
+                    <br>
+                    <strong>LocalStorage'daki veri:</strong><br>
+                    <pre style="font-size:0.7rem; max-height:200px; white-space:pre-wrap;">${localStorage.getItem('chatchip_user') || 'Yok'}</pre>
                 </div>
                 <br>
-                <button onclick="location.reload()" style="padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:white; cursor:pointer;">🔄 Sayfayı Yenile</button>
-                <button onclick="loadBackoffice()" style="padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:var(--primary); color:white; cursor:pointer; margin-left:8px;">🔄 Verileri Yenile</button>
+                <button onclick="location.reload()" style="padding:8px 20px; border-radius:8px; border:1px solid var(--border); background:white; cursor:pointer; margin:4px;">🔄 Sayfayı Yenile</button>
+                <button onclick="localStorage.removeItem('chatchip_user'); localStorage.removeItem('chatchip_token'); location.href='/index.html';" style="padding:8px 20px; border-radius:8px; border:1px solid #ef4444; background:#fee2e2; color:#dc2626; cursor:pointer; margin:4px;">🚪 Çıkış Yap</button>
             </div>
         `;
         return;
@@ -158,10 +224,10 @@ function renderBackoffice(mlmStatus, tree, user) {
     
     // 🔥 Sol ve Sağ kol üyelerini filtrele
     const leftMembers = nodes.filter(n => {
-        if (n.id === userId) return false;
+        if (n.id === finalUserId) return false;
         let current = n;
         while (current && current.sponsor_id) {
-            if (current.sponsor_id === userId && current.position === 'left') return true;
+            if (current.sponsor_id === finalUserId && current.position === 'left') return true;
             const parent = nodes.find(p => p.id === current.sponsor_id);
             if (!parent) break;
             current = parent;
@@ -170,10 +236,10 @@ function renderBackoffice(mlmStatus, tree, user) {
     });
     
     const rightMembers = nodes.filter(n => {
-        if (n.id === userId) return false;
+        if (n.id === finalUserId) return false;
         let current = n;
         while (current && current.sponsor_id) {
-            if (current.sponsor_id === userId && current.position === 'right') return true;
+            if (current.sponsor_id === finalUserId && current.position === 'right') return true;
             const parent = nodes.find(p => p.id === current.sponsor_id);
             if (!parent) break;
             current = parent;
@@ -264,13 +330,19 @@ function renderBackoffice(mlmStatus, tree, user) {
 
     // 🔥 REFERRAL LINKLERİ - DOĞRU USER ID İLE
     const baseUrl = window.location.origin;
-    const leftRefLink = `${baseUrl}/register?position=left&ref=${userId}`;
-    const rightRefLink = `${baseUrl}/register?position=right&ref=${userId}`;
+    const leftRefLink = `${baseUrl}/register?position=left&ref=${finalUserId}`;
+    const rightRefLink = `${baseUrl}/register?position=right&ref=${finalUserId}`;
     
     console.log('🔗 Sol Link:', leftRefLink);
     console.log('🔗 Sağ Link:', rightRefLink);
+    console.log('🔗 Kullanılan ID:', finalUserId);
 
     let html = `
+        <div style="background:#e8f5e9; padding:8px 12px; border-radius:6px; margin-bottom:12px; border:1px solid #81c784; font-size:0.8rem; color:#2e7d32;">
+            ✅ Kullanıcı ID: <strong>${finalUserId}</strong> | 
+            👤 ${activeUser.name || 'İsimsiz'}
+        </div>
+
         <div class="career-card">
             <div class="career-header">
                 <div>
@@ -375,15 +447,9 @@ function renderBackoffice(mlmStatus, tree, user) {
 
 // 🔥 DÜZELTİLDİ: Her zaman sayıya çevir, sonra formatla
 function formatNumber(num) {
-    // null/undefined kontrolü
     if (num === null || num === undefined) return '0';
-    
-    // String'den sayıya çevir
     const number = parseFloat(num);
-    
-    // Geçersiz sayı kontrolü
     if (isNaN(number) || number === 0) return '0';
-    
     const abs = Math.abs(number);
     if (abs >= 1000000) return (number / 1000000).toFixed(2) + 'M';
     if (abs >= 1000) return (number / 1000).toFixed(2) + 'K';
@@ -399,7 +465,6 @@ function copyRef(inputId) {
         document.execCommand('copy');
         showToast('✅ Link kopyalandı!', 'success');
     } catch (e) {
-        // Modern browsers için
         navigator.clipboard.writeText(input.value).then(() => {
             showToast('✅ Link kopyalandı!', 'success');
         }).catch(() => {
