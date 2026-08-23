@@ -100,10 +100,12 @@ function renderUserTable() {
     const mobile = isMobile();
 
     let html = `
-       <div style="display:flex;gap:6px;flex:1;min-width:${mobile ? '120px' : '200px'};">
+    <div style="display:flex;gap:6px;flex:1;min-width:${mobile ? '120px' : '200px'};">
     <input type="text" id="searchInput" placeholder="🔍 Ara..." 
-        style="flex:1;padding:${mobile ? '6px 8px' : '8px 12px'};border:1px solid #d1d5db;border-radius:6px;font-size:${mobile ? '11px' : '13px'};outline:none;min-width:${mobile ? '60px' : '120px'};"
-        oninput="searchUsers(this.value)" onclick="event.stopPropagation();">
+        style="flex:1;padding:${mobile ? '6px 8px' : '8px 12px'};border:1px solid #d1d5db;border-radius:6px;font-size:${mobile ? '11px' : '13px'};outline:none;min-width:${mobile ? '60px' : '120px'};position:relative;z-index:9999;"
+        oninput="searchUsers(this.value)" 
+        onclick="event.stopPropagation();"
+        autocomplete="off">
     <button onclick="clearSearch()" style="padding:${mobile ? '4px 8px' : '6px 12px'};border-radius:6px;border:1px solid #d1d5db;background:white;cursor:pointer;font-size:${mobile ? '10px' : '12px'};">✕</button>
 </div>
 
