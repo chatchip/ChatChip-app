@@ -32,12 +32,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================================
-// 📝 MARKDOWN RENDER
+// 📝 MARKDOWN RENDER - UTF-8 DESTEKLİ
 // ============================================================
 function renderMarkdown(text) {
     if (!text) return '';
     try {
         if (typeof marked !== 'undefined' && marked.parse) {
+            // 🔥 marked.js ayarları
+            if (typeof marked.setOptions === 'function') {
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true,
+                    headerIds: false,
+                    mangle: false
+                });
+            }
             return marked.parse(text);
         } else {
             return text;
