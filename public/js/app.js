@@ -573,14 +573,7 @@ function stopMessage() {
 }
 
 // ============================================================
-// 🔥 SEND MESSAGE
-// ============================================================
-async function sendMessage() {
-    const text = input.value.trim();
-    if (!text && !currentImageUrl) return;
-    if (isProcessing) return;
-    // ============================================================
-// 🎨 GÖRSEL ÜRETİM FONKSİYONU
+// 🎨 GÖRSEL ÜRETİM FONKSİYONU (sendMessage DIŞINDA)
 // ============================================================
 async function generateAndShowImage(prompt, originalText) {
     console.log(`🎨 Görsel üretiliyor: "${prompt}"`);
@@ -629,6 +622,46 @@ async function generateAndShowImage(prompt, originalText) {
     }
 }
 
+// ============================================================
+// 🔥 SEND MESSAGE
+// ============================================================
+async function sendMessage() {
+    const text = input.value.trim();
+    if (!text && !currentImageUrl) return;
+    if (isProcessing) return;
+
+    // ============================================================
+    // 🔥 GÖRSEL ÜRETİM KONTROLÜ - EN BAŞTA!
+    // ============================================================
+    const imageKeywords = ['resim', 'foto', 'çiz', 'yap', 'oluştur', 'göster', 'image', 'draw', 'make', 'create', 'generate', 'fotoğraf', 'illustration', 'art', 'design', 'poster', 'logo', 'karikatür', 'çizim', 'tasvir', 'boya', 'kalem', 'fırça'];
+    const lower = text.toLowerCase();
+    const hasImageKeyword = imageKeywords.some(word => lower.includes(word));
+    const isQuestion = lower.includes('?') || lower.includes('nasıl') || lower.includes('nedir') || lower.includes('kim') || lower.includes('nerede') || lower.includes('ne zaman') || lower.includes('kaç') || lower.includes('niye');
+
+    if (hasImageKeyword && !isQuestion) {
+        // Prompt'u temizle
+        let cleanPrompt = text
+            .replace(/resim|foto|çiz|yap|oluştur|göster|image|draw|make|create|generate|fotoğraf|illustration|art|design|poster|logo|karikatür|çizim|tasvir|boya|kalem|fırça/gi, '')
+            .replace(/lütfen|rica|etsen|yapar mısın|yapabilir misin|yaparmısın|yapabilirmisin/gi, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        if (!cleanPrompt || cleanPrompt.length < 2) cleanPrompt = text;
+
+        // Kullanıcı mesajını göster
+        addMessage(text, 'user');
+        input.value = '';
+        input.style.height = 'auto';
+        clearImagePreview();
+
+        // 🔥 GÖRSEL ÜRET - BURADA RETURN VAR!
+        await generateAndShowImage(cleanPrompt, text);
+        chatArea.scrollTop = chatArea.scrollHeight;
+        return; // ⚠️ BURASI ÇOK ÖNEMLİ! Normal chat'e gitmesini engelliyor
+    }
+
+    // ============================================================
+    // 🔥 NORMAL CHAT (Görsel değilse buraya gelir)
+    // ============================================================
     if (!currentUser) {
         showToast('⚠️ Lütfen önce giriş yapın!', 'error');
         return;
