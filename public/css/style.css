@@ -2656,3 +2656,23 @@ body {
         border-top: 1px solid var(--border-color, #D4F0EA) !important;
     }
 }
+/* 🔥 Sohbetteki görselleri boyutlandır */
+.message.bot .bubble img,
+.message .bubble img,
+.chat-area img {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* 🔥 Mobil için daha küçük */
+@media (max-width: 480px) {
+    .message.bot .bubble img,
+    .message .bubble img,
+    .chat-area img {
+        max-width: 280px;
+    }
+}
