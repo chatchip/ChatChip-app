@@ -579,6 +579,55 @@ async function sendMessage() {
     const text = input.value.trim();
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
+    // ============================================================
+// 🎨 GÖRSEL ÜRETİM FONKSİYONU
+// ============================================================
+async function generateAndShowImage(prompt, originalText) {
+    console.log(`🎨 Görsel üretiliyor: "${prompt}"`);
+    
+    const loadingMsgId = addMessage(`🎨 "${originalText || prompt}" görseli üretiliyor...`, 'bot', true);
+    
+    try {
+        const dm = window.DataManager;
+        const token = dm.getToken();
+        
+        if (!token) {
+            updateMessageMarkdown(loadingMsgId, '❌ Lütfen önce giriş yapın!');
+            return;
+        }
+
+        if (currentPlan && currentPlan.isExpired) {
+            updateMessageMarkdown(loadingMsgId, '⛔ Planınız sona erdi! Görsel üretimi için plan satın alın.');
+            return;
+        }
+
+        const response = await fetch('https://chatchip-production.up.railway.app/api/image/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ prompt: prompt })
+        });
+
+        const data = await response.json();
+        console.log('📥 Görsel yanıtı:', data);
+
+        if (data.success && data.imageUrl) {
+            const imageMarkdown = `![${prompt}](${data.imageUrl})`;
+            const resultText = `🖼️ **${prompt}**\n\n${imageMarkdown}\n\n✨ Görsel başarıyla oluşturuldu!`;
+            updateMessageMarkdown(loadingMsgId, resultText);
+            showToast('✅ Görsel oluşturuldu!', 'success');
+        } else {
+            updateMessageMarkdown(loadingMsgId, '❌ Görsel üretilemedi: ' + (data.error || 'Bilinmeyen hata'));
+            showToast('❌ Görsel üretilemedi', 'error');
+        }
+    } catch (error) {
+        console.error('Görsel üretim hatası:', error);
+        updateMessageMarkdown(loadingMsgId, '❌ Hata: ' + error.message);
+        showToast('❌ Görsel üretim hatası', 'error');
+    }
+}
 
     if (!currentUser) {
         showToast('⚠️ Lütfen önce giriş yapın!', 'error');
