@@ -100,16 +100,12 @@ function renderUserTable() {
     const mobile = isMobile();
 
     let html = `
-        <!-- ARA VE EKLE -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;">
-            <div style="display:flex;gap:6px;flex:1;min-width:${mobile ? '120px' : '200px'};">
-                <input type="text" id="searchInput" placeholder="🔍 Ara..." 
-                    style="flex:1;padding:${mobile ? '6px 8px' : '8px 12px'};border:1px solid #d1d5db;border-radius:6px;font-size:${mobile ? '11px' : '13px'};outline:none;min-width:${mobile ? '60px' : '120px'};"
-                    oninput="searchUsers(this.value)" onclick="event.stopPropagation();">
-                <button onclick="clearSearch()" style="padding:${mobile ? '4px 8px' : '6px 12px'};border-radius:6px;border:1px solid #d1d5db;background:white;cursor:pointer;font-size:${mobile ? '10px' : '12px'};">✕</button>
-            </div>
-            <button onclick="openAddUser()" style="padding:${mobile ? '4px 10px' : '6px 14px'};border-radius:6px;border:1px solid #3b82f6;background:#3b82f6;color:white;cursor:pointer;font-size:${mobile ? '11px' : '13px'};white-space:nowrap;">➕</button>
-        </div>
+       <div style="display:flex;gap:6px;flex:1;min-width:${mobile ? '120px' : '200px'};">
+    <input type="text" id="searchInput" placeholder="🔍 Ara..." 
+        style="flex:1;padding:${mobile ? '6px 8px' : '8px 12px'};border:1px solid #d1d5db;border-radius:6px;font-size:${mobile ? '11px' : '13px'};outline:none;min-width:${mobile ? '60px' : '120px'};"
+        oninput="searchUsers(this.value)" onclick="event.stopPropagation();">
+    <button onclick="clearSearch()" style="padding:${mobile ? '4px 8px' : '6px 12px'};border-radius:6px;border:1px solid #d1d5db;background:white;cursor:pointer;font-size:${mobile ? '10px' : '12px'};">✕</button>
+</div>
 
         <!-- TABLO -->
         <div style="background:#fff;border-radius:8px;border:1px solid #e5e7eb;overflow-x:auto;-webkit-overflow-scrolling:touch;">
