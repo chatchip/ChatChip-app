@@ -870,8 +870,17 @@ if (isImageCommand && !isQuestion) {
         }
     }
 
-    if (!fullText) {
+        if (!fullText) {
         updateMessageMarkdown(botMsgId, '⚠️ Yanıt alınamadı.');
+    }
+} catch (error) {
+    if (error.name === 'AbortError') {
+        updateMessageMarkdown(botMsgId, '⏹️ Yanıt durduruldu.');
+        showToast('⏹️ Yanıt durduruldu', 'info');
+    } else {
+        console.error('❌ Chat error:', error);
+        updateMessageMarkdown(botMsgId, '❌ Hata: ' + error.message);
+        showToast('❌ Bir hata oluştu: ' + error.message, 'error');
     }
 }
 
