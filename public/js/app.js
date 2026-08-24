@@ -454,15 +454,20 @@ async function handleLogin(e) {
     const dm = window.DataManager;
     const result = await dm.login(email, password);
     
-    if (result.success) {
-        currentUser = result.user;
-        checkAuth();
-        checkPlan();
-        loadModels();
-        loadSessions();
-        closeAllSidebars();
-        showToast(`✅ Hoş geldin ${currentUser.name}!`, 'success');
-    } else {
+   if (result.success) {
+    currentUser = result.user;
+    window.currentUser = result.user;  // 🔥 GLOBAL YAP!
+    if (result.user.password) {
+        sessionStorage.setItem('user_password', result.user.password);
+        console.log('✅ Şifre sessionStorage\'a kaydedildi');
+    }
+    checkAuth();
+    checkPlan();
+    loadModels();
+    loadSessions();
+    closeAllSidebars();
+    showToast(`✅ Hoş geldin ${currentUser.name}!`, 'success');
+} else {
         showToast('❌ ' + (result.error || 'Giriş başarısız'), 'error');
     }
 }
