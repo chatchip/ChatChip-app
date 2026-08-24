@@ -313,7 +313,7 @@ async function loadSession(id) {
             messagesDiv.innerHTML = "";
             
             if (result.messages && result.messages.length > 0) {
-                const password = currentUser?.password;
+                const password = currentUser?.password || sessionStorage.getItem('user_password');
                 
                 for (const msg of result.messages) {
                     let content = msg.content;
@@ -1325,7 +1325,7 @@ function initSpeechRecognition() {
         return null;
     }
     
-    const recognition = new SpeechRecognition();
+    recognition = new SpeechRecognition();
     recognition.lang = 'tr-TR';
     recognition.continuous = false;
     recognition.interimResults = true;
