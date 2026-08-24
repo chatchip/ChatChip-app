@@ -454,24 +454,31 @@ async function handleLogin(e) {
     const dm = window.DataManager;
     const result = await dm.login(email, password);
     
-   if (result.success) {
-    currentUser = result.user;
-    window.currentUser = result.user;  // 🔥 GLOBAL YAP!
-    if (result.user.password) {
-        sessionStorage.setItem('user_password', result.user.password);
-        console.log('✅ Şifre sessionStorage\'a kaydedildi');
-    }
-    checkAuth();
-    checkPlan();
-    loadModels();
-    loadSessions();
-    closeAllSidebars();
-    showToast(`✅ Hoş geldin ${currentUser.name}!`, 'success');
-} else {
+    console.log('🔍 Login sonucu:', result);
+    console.log('🔑 Password:', result.user?.password);
+    
+    if (result.success) {
+        currentUser = result.user;
+        window.currentUser = result.user;
+        
+        // 🔥 Şifreyi sessionStorage'a kaydet
+        if (result.user && result.user.password) {
+            sessionStorage.setItem('user_password', result.user.password);
+            console.log('✅ Şifre sessionStorage\'a kaydedildi:', result.user.password);
+        } else {
+            console.warn('⚠️ Password gelmedi!');
+        }
+        
+        checkAuth();
+        checkPlan();
+        loadModels();
+        loadSessions();
+        closeAllSidebars();
+        showToast(`✅ Hoş geldin ${currentUser.name}!`, 'success');
+    } else {
         showToast('❌ ' + (result.error || 'Giriş başarısız'), 'error');
     }
 }
-
 async function handleLogout() {
     if (confirm('Oturumu kapatmak istediğinize emin misiniz?')) {
         window.DataManager.logout();
