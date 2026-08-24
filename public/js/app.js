@@ -38,7 +38,6 @@ function renderMarkdown(text) {
     if (!text) return '';
     try {
         if (typeof marked !== 'undefined' && marked.parse) {
-            // 🔥 marked.js ayarları
             if (typeof marked.setOptions === 'function') {
                 marked.setOptions({
                     breaks: true,
@@ -313,32 +312,30 @@ async function loadSession(id) {
             isFirstMessage = false;
             messagesDiv.innerHTML = "";
             
-            if (result.messages if (result.messages && result.messages.length > 0) {if (result.messages && result.messages.length > 0) { result.messages.length > 0) {
-    const password = currentUser?.password;
-    
-    for (const msg of result.messages) {
-        let content = msg.content;
-        let role = msg.role;
-        let created_at = msg.created_at;
-        
-        if (msg.encrypted_content if (result.messages && result.messages.length > 0) {if (result.messages && result.messages.length > 0) { msg.iv if (result.messages && result.messages.length > 0) {if (result.messages && result.messages.length > 0) { password) {
-            const decrypted = await ChatChipCrypto.decrypt(
-                { data: msg.encrypted_content, iv: msg.iv },
-                password
-            );
-            content = decrypted || "🔒 Şifreli mesaj (çözülemedi)";
-        }
-        
-        addMessage(content, role, false, created_at);
-    }
-    return;
-}
-        result.messages.forEach(msg => {
-            addMessage(msg.content, msg.role, false, msg.created_at);
-        });
-                result.messages.forEach(msg => {
-                    addMessage(msg.content, msg.role, false, msg.created_at);
-                });
+            if (result.messages && result.messages.length > 0) {
+                const password = currentUser?.password;
+                
+                for (const msg of result.messages) {
+                    let content = msg.content;
+                    let role = msg.role;
+                    let created_at = msg.created_at;
+                    
+                    // 🔐 SADECE ŞİFRE ÇÖZME KISMI EKLENDİ!
+                    if (msg.encrypted_content && msg.iv && password) {
+                        try {
+                            const decrypted = await ChatChipCrypto.decrypt(
+                                { data: msg.encrypted_content, iv: msg.iv },
+                                password
+                            );
+                            content = decrypted || '🔒 Şifreli mesaj (çözülemedi)';
+                        } catch (e) {
+                            console.error('Şifre çözme hatası:', e);
+                            content = '🔒 Şifreli mesaj (çözülemedi)';
+                        }
+                    }
+                    
+                    addMessage(content, role, false, created_at);
+                }
             }
             
             document.querySelector(".page-title").textContent = "💬 " + (result.session?.title || "Sohbet");
@@ -352,7 +349,9 @@ async function loadSession(id) {
         console.error("❌ Session yükleme hatası:", error);
         showToast("❌ Sohbet yüklenirken hata oluştu: " + error.message, "error");
     }
-}async function startNewChat() {
+}
+
+async function startNewChat() {
     try {
         const dm = window.DataManager;
         const result = await dm.createSession('Yeni Sohbet');
