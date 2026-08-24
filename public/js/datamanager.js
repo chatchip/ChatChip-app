@@ -408,6 +408,20 @@ class DataManager {
         });
         return res.json();
     }
+        // ============ 🔐 SADECE ŞİFRELİ KAYIT ============
+    async saveEncryptedMessage(encryptedData, iv, sessionId, isAiResponse = false) {
+        const options = {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify({
+                encrypted_data: encryptedData,
+                iv,
+                sessionId,
+                is_ai_response: isAiResponse
+            })
+        };
+        return await fetch(`${this.apiBase}/chat/save-encrypted`, options);
+    }
 }
 
 // DataManager'ı global olarak tanımla
