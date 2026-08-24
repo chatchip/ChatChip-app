@@ -788,89 +788,80 @@ if (isImageCommand && !isQuestion) {
     const systemPrompt = localStorage.getItem('chatchip_system_prompt') || '';
 
     try {
-        const dm = window.DataManager;
-        // 🔐 Mesajı şifrele
-    const password = currentUser?.password;
-    let response;
+    const dm = window.DataManager;
+    const password = currentUser?.password || sessionStorage.getItem('user_password');
 
+    // 🔐 1. Kullanıcı mesajını şifrele ve kaydet
     if (password) {
         try {
             const encrypted = await ChatChipCrypto.encrypt(fullMessage, password);
-            response = await dm.sendEncryptedMessage(
-                encrypted.data,
-                encrypted.iv,
-                selectedCoach,
-                systemPrompt,
-                currentSessionId,
-                abortController.signal
-            );
+            await dm.saveEncryptedMessage(encrypted.data, encrypted.iv, currentSessionId);
+            console.log('✅ Kullanıcı mesajı şifreli olarak kaydedildi');
         } catch (encryptError) {
-            console.error("❌ Şifreleme hatası:", encryptError);
-            showToast("❌ Mesaj şifrelenirken hata oluştu", "error");
-            sendBtn.style.display = "flex";
-            stopBtn.style.display = "none";
+            console.error('❌ Şifreleme hatası:', encryptError);
+        }
+    }
+
+    // 🔥 2. AI'ya şifresiz mesaj gönder
+    const response = await dm.sendMessage(fullMessage, selectedCoach, systemPrompt, currentSessionId, abortController.signal);
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData.code === 'PLAN_REQUIRED') {
+            showToast('⚠️ ' + errorData.error, 'error');
+            updateMessageMarkdown(botMsgId, '⚠️ ' + errorData.error + '\n\n[Plan satın almak için tıklayın](/pricing.html)');
+            sendBtn.style.display = 'flex';
+            stopBtn.style.display = 'none';
             input.disabled = false;
             isProcessing = false;
             return;
         }
-    } else {
-        response = await dm.sendMessage(fullMessage, selectedCoach, systemPrompt, currentSessionId, abortController.signal);
+        throw new Error('Sunucu hatası: ' + response.status);
     }
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            if (errorData.code === 'PLAN_REQUIRED') {
-                showToast('⚠️ ' + errorData.error, 'error');
-                updateMessageMarkdown(botMsgId, '⚠️ ' + errorData.error + '\n\n[Plan satın almak için tıklayın](/pricing.html)');
-                sendBtn.style.display = 'flex';
-                stopBtn.style.display = 'none';
-                input.disabled = false;
-                isProcessing = false;
-                return;
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        for (const line of lines) {
+            if (line.startsWith('data: ')) {
+                const data = line.slice(6);
+                if (data === '[DONE]') continue;
+                try {
+                    const json = JSON.parse(data);
+                    if (json.chunk) {
+                        fullText += json.chunk;
+                        updateMessageMarkdown(botMsgId, fullText);
+                    }
+                    if (json.sessionId) {
+                        currentSessionId = json.sessionId;
+                        setTimeout(loadSessions, 1000);
+                    }
+                } catch (e) {}
             }
-            throw new Error('Sunucu hatası: ' + response.status);
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let fullText = '';
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n');
-            for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                    const data = line.slice(6);
-                    if (data === '[DONE]') continue;
-                    try {
-                        const json = JSON.parse(data);
-                        if (json.chunk) {
-                            fullText += json.chunk;
-                            updateMessageMarkdown(botMsgId, fullText);
-                        }
-                        if (json.sessionId) {
-                            currentSessionId = json.sessionId;
-                            setTimeout(loadSessions, 1000);
-                        }
-                    } catch (e) {}
-                }
-            }
-        }
-
-        if (!fullText) {
-            updateMessageMarkdown(botMsgId, '⚠️ Yanıt alınamadı.');
-        }
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            updateMessageMarkdown(botMsgId, '⏹️ Yanıt durduruldu.');
-            showToast('⏹️ Yanıt durduruldu', 'info');
-        } else {
-            updateMessageMarkdown(botMsgId, '❌ Hata: ' + error.message);
-            console.error('Chat error:', error);
         }
     }
+
+    // 🔐 3. AI yanıtını şifrele ve kaydet
+    if (fullText && password) {
+        try {
+            const encryptedResponse = await ChatChipCrypto.encrypt(fullText, password);
+            await dm.saveEncryptedMessage(encryptedResponse.data, encryptedResponse.iv, currentSessionId, true);
+            console.log('✅ AI yanıtı şifreli olarak kaydedildi');
+        } catch (encryptError) {
+            console.error('❌ AI yanıtı şifreleme hatası:', encryptError);
+        }
+    }
+
+    if (!fullText) {
+        updateMessageMarkdown(botMsgId, '⚠️ Yanıt alınamadı.');
+    }
+}
 
     sendBtn.style.display = 'flex';
     stopBtn.style.display = 'none';
