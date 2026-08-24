@@ -313,7 +313,29 @@ async function loadSession(id) {
             isFirstMessage = false;
             messagesDiv.innerHTML = "";
             
-            if (result.messages && result.messages.length > 0) {
+            if (result.messages if (result.messages && result.messages.length > 0) {if (result.messages && result.messages.length > 0) { result.messages.length > 0) {
+    const password = currentUser?.password;
+    
+    for (const msg of result.messages) {
+        let content = msg.content;
+        let role = msg.role;
+        let created_at = msg.created_at;
+        
+        if (msg.encrypted_content if (result.messages && result.messages.length > 0) {if (result.messages && result.messages.length > 0) { msg.iv if (result.messages && result.messages.length > 0) {if (result.messages && result.messages.length > 0) { password) {
+            const decrypted = await ChatChipCrypto.decrypt(
+                { data: msg.encrypted_content, iv: msg.iv },
+                password
+            );
+            content = decrypted || "🔒 Şifreli mesaj (çözülemedi)";
+        }
+        
+        addMessage(content, role, false, created_at);
+    }
+    return;
+}
+        result.messages.forEach(msg => {
+            addMessage(msg.content, msg.role, false, msg.created_at);
+        });
                 result.messages.forEach(msg => {
                     addMessage(msg.content, msg.role, false, msg.created_at);
                 });
@@ -768,7 +790,33 @@ if (isImageCommand && !isQuestion) {
 
     try {
         const dm = window.DataManager;
-        const response = await dm.sendMessage(fullMessage, selectedCoach, systemPrompt, currentSessionId, abortController.signal);
+        // 🔐 Mesajı şifrele
+    const password = currentUser?.password;
+    let response;
+
+    if (password) {
+        try {
+            const encrypted = await ChatChipCrypto.encrypt(fullMessage, password);
+            response = await dm.sendEncryptedMessage(
+                encrypted.data,
+                encrypted.iv,
+                selectedCoach,
+                systemPrompt,
+                currentSessionId,
+                abortController.signal
+            );
+        } catch (encryptError) {
+            console.error("❌ Şifreleme hatası:", encryptError);
+            showToast("❌ Mesaj şifrelenirken hata oluştu", "error");
+            sendBtn.style.display = "flex";
+            stopBtn.style.display = "none";
+            input.disabled = false;
+            isProcessing = false;
+            return;
+        }
+    } else {
+        response = await dm.sendMessage(fullMessage, selectedCoach, systemPrompt, currentSessionId, abortController.signal);
+    }
 
         if (!response.ok) {
             const errorData = await response.json();

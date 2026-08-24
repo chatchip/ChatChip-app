@@ -245,6 +245,24 @@ class DataManager {
     }
 
     // ============ 🔥 CHAT - SIGNAL EKLENDİ ============
+    // ============ 🔐 SIFRELI MESAJ ============
+    async sendEncryptedMessage(encryptedData, iv, coachType, systemPrompt, sessionId, signal) {
+        const version = localStorage.getItem("chatchip_selected_model") || "1.0";
+        const options = {
+            method: "POST",
+            headers: this.getHeaders(),
+            body: JSON.stringify({
+                encrypted_data: encryptedData,
+                iv,
+                version,
+                coachType,
+                systemPrompt,
+                sessionId
+            })
+        };
+        if (signal) options.signal = signal;
+        return await fetch(`${this.apiBase}/chat/stream`, options);
+    }
     async sendMessage(message, coachType = 'standard', systemPrompt = '', sessionId = null, signal = null) {
         const version = localStorage.getItem('chatchip_selected_model') || '1.0';
         
