@@ -456,19 +456,34 @@ async function handleLogin(e) {
     const result = await dm.login(email, password);
     
     console.log('🔍 Login sonucu:', result);
-    console.log('🔑 Password:', result.user?.password);
+    console.log('🔑 Password:', result.user?.password ? '✅ Var' : '❌ Yok');
     
     if (result.success) {
         currentUser = result.user;
         window.currentUser = result.user;
         
-        // 🔥 Şifreyi sessionStorage'a kaydet
+        // 🔐 1. Şifreden CryptoKey türet
         if (result.user && result.user.password) {
-            sessionStorage.setItem('user_password', result.user.password);
-            console.log('✅ Şifre sessionStorage\'a kaydedildi:', result.user.password);
-        } else {
-            console.warn('⚠️ Password gelmedi!');
+            try {
+                currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
+                console.log('✅ CryptoKey başarıyla türetildi');
+            } catch (keyError) {
+                console.error('❌ CryptoKey türetme hatası:', keyError);
+                showToast('❌ Güvenlik anahtarı oluşturulamadı', 'error');
+                return;
+            }
         }
+        
+        // 🔥 2. Ham şifreyi SİL (güvenlik!)
+        if (result.user) {
+            result.user.password = null;
+        }
+        if (currentUser) {
+            currentUser.password = null;
+        }
+        
+        // 🔥 3. sessionStorage'a kaydetme (kaldırıldı!)
+        // sessionStorage.setItem('user_password', ...)  // ❌ BUNU YAPMA!
         
         checkAuth();
         checkPlan();
