@@ -817,18 +817,26 @@ if (isImageCommand && !isQuestion) {
 
     try {
     const dm = window.DataManager;
-    const password = currentUser?.password || sessionStorage.getItem('user_password');
 
-    // 🔐 1. Kullanıcı mesajını şifrele ve kaydet
-    if (password) {
-        try {
-            const encrypted = await ChatChipCrypto.encrypt(fullMessage, password);
-            await dm.saveEncryptedMessage(encrypted.data, encrypted.iv, currentSessionId);
-            console.log('✅ Kullanıcı mesajı şifreli olarak kaydedildi');
-        } catch (encryptError) {
-            console.error('❌ Şifreleme hatası:', encryptError);
-        }
+// 🔐 1. Kullanıcı mesajını şifrele ve kaydet (CryptoKey ile)
+if (currentCryptoKey) {
+    try {
+        const encrypted = await ChatChipCrypto.encryptWithKey(fullMessage, currentCryptoKey);
+        await dm.saveEncryptedMessage(encrypted.data, encrypted.iv, currentSessionId);
+        console.log('✅ Kullanıcı mesajı şifreli olarak kaydedildi (CryptoKey)');
+    } catch (encryptError) {
+        console.error('❌ Şifreleme hatası:', encryptError);
+        showToast('⚠️ Mesaj şifrelenirken hata oluştu', 'warning');
     }
+} else {
+    console.warn('⚠️ CryptoKey bulunamadı, mesaj şifrelenmeden gönderiliyor');
+    showToast('⚠️ Güvenlik anahtarı bulunamadı, lütfen tekrar giriş yapın', 'error');
+    sendBtn.style.display = 'flex';
+    stopBtn.style.display = 'none';
+    input.disabled = false;
+    isProcessing = false;
+    return;
+}
 
     // 🔥 2. AI'ya şifresiz mesaj gönder
     const response = await dm.sendMessage(fullMessage, selectedCoach, systemPrompt, currentSessionId, abortController.signal);
