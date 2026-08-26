@@ -79,7 +79,7 @@ function renderWalletStats(stats) {
     // Geçen ay kariyer kazancı (career_history'dan)
     const monthlyCareerEarning = data.monthly_career_earned || 0;
 
-    // Hesaba aktarılmayı bekleyen tutar
+   // Hesaba aktarılmayı bekleyen tutar
     const pendingBalance = data.pending_balance || 0;
 
     container.innerHTML = `
@@ -136,7 +136,7 @@ function renderWalletStats(stats) {
             </div>
         </div>
     `;
-
+} // 🔥 BURADA EKSİK OLAN PARANTEZ!
 // ============================================================
 // IBAN BİLGİLERİ
 // ============================================================
