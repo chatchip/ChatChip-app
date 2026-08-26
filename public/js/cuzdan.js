@@ -83,25 +83,28 @@ function renderWalletStats(stats) {
     const pendingBalance = data.pending_balance || 0;
 
     container.innerHTML = `
-        <!-- Ana Bakiye Kartı -->
-        <div class="balance-card">
-            <div class="label">💰 Mevcut Bakiye</div>
-            <div class="amount">$ ${formatNumber(pendingBalance)}</div>
-            <div class="sub">${careerLevel} · ${isActive ? '✅ Aktif' : '❌ Pasif'}</div>
-            <div class="row">
+        <!-- ⚡ ANA KART: KV ve Aktiflik (Bakiye KALDIRILDI!) -->
+        <div class="balance-card" style="background: linear-gradient(135deg, #2DD4BF, #14B8A6);">
+            <div class="label" style="opacity:0.8;">📊 Kariyer Durumu</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin: 4px 0;">
+                <span style="font-size:1.8rem; font-weight:700;">${kv}</span>
+                <span style="font-size:1rem; font-weight:600; background:rgba(255,255,255,0.2); padding:4px 14px; border-radius:20px;">${isActive ? '✅ Aktif' : '❌ Pasif'}</span>
+            </div>
+            <div class="sub" style="font-size:0.8rem;">${careerLevel} · ${isActive ? 'Aktif üye' : 'Pasif'}</div>
+            <div class="row" style="margin-top:8px; border-top:1px solid rgba(255,255,255,0.1); padding-top:8px;">
                 <div class="item">
-                    <div class="value">$ ${formatNumber(potentialEarnings)}</div>
-                    <div class="label">Potansiyel Kazanç</div>
+                    <div class="value" style="font-size:0.9rem;">$ ${formatNumber(potentialEarnings)}</div>
+                    <div class="label" style="font-size:0.55rem;">Potansiyel Kazanç</div>
                 </div>
                 <div class="item">
-                    <div class="value">${kv}</div>
-                    <div class="label">KV</div>
+                    <div class="value" style="font-size:0.9rem;">${formatNumber(leftCV)} / ${formatNumber(rightCV)}</div>
+                    <div class="label" style="font-size:0.55rem;">Sol / Sağ CV</div>
                 </div>
             </div>
         </div>
 
-        <!-- Kazanç Detayları -->
-        <div class="stats-grid">
+        <!-- 📊 KAZANÇ DETAYLARI (Geçen Hafta / Geçen Ay) -->
+        <div class="stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
             <div class="stat-card">
                 <div class="number gold">$ ${formatNumber(weeklyEarning)}</div>
                 <div class="label">📅 Geçen Hafta Kazancı</div>
@@ -112,13 +115,7 @@ function renderWalletStats(stats) {
             </div>
         </div>
 
-        <!-- Bekleyen Bakiye -->
-        <div class="stat-card" style="background:rgba(245,158,11,0.08); border-color:#F59E0B; margin-bottom:12px;">
-            <div class="number" style="color:#D97706;">$ ${formatNumber(pendingBalance)}</div>
-            <div class="label">⏳ Hesaba Aktarılmayı Bekleyen Tutar</div>
-        </div>
-
-        <!-- Kariyer Bilgileri -->
+        <!-- 🎯 Kariyer Bilgileri -->
         <div class="section-title">🎯 Kariyer Bilgileri</div>
         <div class="reward-grid">
             <div class="reward-box">
@@ -139,7 +136,6 @@ function renderWalletStats(stats) {
             </div>
         </div>
     `;
-}
 
 // ============================================================
 // IBAN BİLGİLERİ
