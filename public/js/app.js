@@ -16,6 +16,7 @@ let availableModels = [];
 let abortController = null;
 let currentImageUrl = null;
 let previewContainer = null;
+let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 App başlatıldı (Model + Koç)');
