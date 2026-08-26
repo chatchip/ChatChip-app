@@ -363,6 +363,66 @@ async function loadReports() {
         const totalCareer = career?.summary?.totalRewards || 0;
         const mobile = isMobile();
 
+        // 🔥 Haftalık kazanç tablosu
+        let weeklyTableHtml = '';
+        if (weekly.data && weekly.data.length > 0) {
+            weeklyTableHtml = `
+                <div style="margin-top:12px;background:#fff;border-radius:8px;border:1px solid #e5e7eb;overflow-x:auto;padding:8px;">
+                    <table style="width:100%;border-collapse:collapse;font-size:${mobile ? '10px' : '12px'};">
+                        <thead>
+                            <tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
+                                <th style="padding:6px 10px;text-align:left;">Kullanıcı</th>
+                                <th style="padding:6px 10px;text-align:left;">Kazanç</th>
+                                <th style="padding:6px 10px;text-align:left;">Tarih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${weekly.data.map(w => `
+                                <tr style="border-bottom:1px solid #f3f4f6;">
+                                    <td style="padding:6px 10px;">${w.user_name || 'Bilinmiyor'}</td>
+                                    <td style="padding:6px 10px;color:#10B981;font-weight:600;">$${parseFloat(w.earned).toFixed(2)}</td>
+                                    <td style="padding:6px 10px;font-size:${mobile ? '9px' : '11px'};color:#6b7280;">${w.match_date ? new Date(w.match_date).toLocaleDateString('tr-TR') : '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            weeklyTableHtml = `<div style="margin-top:12px;padding:16px;background:#f9fafb;border-radius:8px;text-align:center;color:#6b7280;font-size:${mobile ? '11px' : '13px'};">📭 Henüz haftalık kazanç yok</div>`;
+        }
+
+        // 🔥 Kariyer ödülleri tablosu
+        let careerTableHtml = '';
+        if (career.data && career.data.length > 0) {
+            careerTableHtml = `
+                <div style="margin-top:12px;background:#fff;border-radius:8px;border:1px solid #e5e7eb;overflow-x:auto;padding:8px;">
+                    <table style="width:100%;border-collapse:collapse;font-size:${mobile ? '10px' : '12px'};">
+                        <thead>
+                            <tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
+                                <th style="padding:6px 10px;text-align:left;">Kullanıcı</th>
+                                <th style="padding:6px 10px;text-align:left;">Ödül</th>
+                                <th style="padding:6px 10px;text-align:left;">Kariyer</th>
+                                <th style="padding:6px 10px;text-align:left;">Tarih</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${career.data.map(c => `
+                                <tr style="border-bottom:1px solid #f3f4f6;">
+                                    <td style="padding:6px 10px;">${c.user_name || 'Bilinmiyor'}</td>
+                                    <td style="padding:6px 10px;color:#8B5CF6;font-weight:600;">$${parseFloat(c.reward).toFixed(2)}</td>
+                                    <td style="padding:6px 10px;">${c.new_career || '-'}</td>
+                                    <td style="padding:6px 10px;font-size:${mobile ? '9px' : '11px'};color:#6b7280;">${c.calc_date ? new Date(c.calc_date).toLocaleDateString('tr-TR') : '-'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        } else {
+            careerTableHtml = `<div style="margin-top:12px;padding:16px;background:#f9fafb;border-radius:8px;text-align:center;color:#6b7280;font-size:${mobile ? '11px' : '13px'};">📭 Henüz kariyer ödülü yok</div>`;
+        }
+
         container.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
                 <span style="font-weight:600;font-size:${mobile ? '12px' : '14px'};">📊 Raporlar</span>
@@ -370,6 +430,8 @@ async function loadReports() {
                     <button onclick="exportCSV('users')" style="padding:${mobile ? '4px 8px' : '6px 12px'};border-radius:4px;border:1px solid #d1d5db;background:white;cursor:pointer;font-size:${mobile ? '9px' : '12px'};">📥</button>
                 </div>
             </div>
+
+            <!-- Özet Kartları -->
             <div style="display:grid;grid-template-columns:${mobile ? '1fr 1fr' : 'repeat(4,1fr)'};gap:8px;margin-bottom:12px;">
                 <div style="background:#f9fafb;padding:${mobile ? '10px' : '16px'};border-radius:8px;text-align:center;">
                     <div style="font-size:${mobile ? '16px' : '24px'};font-weight:700;color:#10B981;">$${totalWeekly.toFixed(2)}</div>
@@ -387,6 +449,18 @@ async function loadReports() {
                     <div style="font-size:${mobile ? '16px' : '24px'};font-weight:700;color:#3B82F6;">${usersData.length}</div>
                     <div style="font-size:${mobile ? '8px' : '12px'};color:#6b7280;">Kullanıcı</div>
                 </div>
+            </div>
+
+            <!-- Haftalık Kazançlar -->
+            <div style="margin-top:12px;">
+                <div style="font-weight:600;font-size:${mobile ? '11px' : '13px'};color:#1f2937;margin-bottom:6px;">📅 Haftalık Kazançlar</div>
+                ${weeklyTableHtml}
+            </div>
+
+            <!-- Kariyer Ödülleri -->
+            <div style="margin-top:16px;">
+                <div style="font-weight:600;font-size:${mobile ? '11px' : '13px'};color:#1f2937;margin-bottom:6px;">🏆 Kariyer Ödülleri</div>
+                ${careerTableHtml}
             </div>
         `;
     } catch (e) {
