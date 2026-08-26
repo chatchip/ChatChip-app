@@ -314,25 +314,29 @@ async function loadSession(id) {
             messagesDiv.innerHTML = "";
             
             if (result.messages && result.messages.length > 0) {
-                const password = currentUser?.password || sessionStorage.getItem('user_password');
-                
                 for (const msg of result.messages) {
                     let content = msg.content;
                     let role = msg.role;
                     let created_at = msg.created_at;
                     
-                    // 🔐 SADECE ŞİFRE ÇÖZME KISMI EKLENDİ!
-                    if (msg.encrypted_content && msg.iv && password) {
+                    // 🔐 CryptoKey ile çöz
+                    if (msg.encrypted_content && msg.iv && currentCryptoKey) {
                         try {
-                            const decrypted = await ChatChipCrypto.decrypt(
+                            const decrypted = await ChatChipCrypto.decryptWithKey(
                                 { data: msg.encrypted_content, iv: msg.iv },
-                                password
+                                currentCryptoKey
                             );
                             content = decrypted || '🔒 Şifreli mesaj (çözülemedi)';
+                            console.log('✅ Şifreli mesaj çözüldü (CryptoKey)');
                         } catch (e) {
                             console.error('Şifre çözme hatası:', e);
                             content = '🔒 Şifreli mesaj (çözülemedi)';
                         }
+                    } else if (msg.content) {
+                        // Eski şifresiz mesaj
+                        content = msg.content;
+                    } else {
+                        content = '⚠️ Mesaj okunamadı';
                     }
                     
                     addMessage(content, role, false, created_at);
