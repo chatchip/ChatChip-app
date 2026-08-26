@@ -887,16 +887,16 @@ if (currentCryptoKey) {
         }
     }
 
-    // 🔐 3. AI yanıtını şifrele ve kaydet
-    if (fullText && password) {
-        try {
-            const encryptedResponse = await ChatChipCrypto.encrypt(fullText, password);
-            await dm.saveEncryptedMessage(encryptedResponse.data, encryptedResponse.iv, currentSessionId, true);
-            console.log('✅ AI yanıtı şifreli olarak kaydedildi');
-        } catch (encryptError) {
-            console.error('❌ AI yanıtı şifreleme hatası:', encryptError);
-        }
+   // 🔐 3. AI yanıtını şifrele ve kaydet (CryptoKey ile)
+if (fullText && currentCryptoKey) {
+    try {
+        const encryptedResponse = await ChatChipCrypto.encryptWithKey(fullText, currentCryptoKey);
+        await dm.saveEncryptedMessage(encryptedResponse.data, encryptedResponse.iv, currentSessionId, true);
+        console.log('✅ AI yanıtı şifreli olarak kaydedildi (CryptoKey)');
+    } catch (encryptError) {
+        console.error('❌ AI yanıtı şifreleme hatası:', encryptError);
     }
+}
 
         if (!fullText) {
         updateMessageMarkdown(botMsgId, '⚠️ Yanıt alınamadı.');
