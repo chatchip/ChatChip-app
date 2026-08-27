@@ -1938,9 +1938,12 @@ async function autoLogin(password) {
 
 async function autoLoginWithBiometric() {
     try {
-        // 1. Token var mı kontrol et (zaten giriş yapılmış mı?)
+        // 1. Token ve user kontrol et (zaten giriş yapılmış mı?)
         const token = localStorage.getItem('chatchip_token');
-        if (token) {
+        const user = localStorage.getItem('chatchip_user');
+        
+        // Eğer token ve user varsa ZATEN giriş yapılmıştır
+        if (token && user) {
             console.log('✅ Zaten giriş yapılmış, otomatik Face ID gerekmez');
             return;
         }
@@ -1952,15 +1955,14 @@ async function autoLoginWithBiometric() {
             return;
         }
 
-        // 3. Kullanıcı bilgisi var mı?
-        const userData = localStorage.getItem('chatchip_user');
-        if (!userData) {
-            console.log('⚠️ Kullanıcı verisi yok');
+        // 3. Kullanıcı bilgisi var mı? (user yoksa)
+        if (!user) {
+            console.log('⚠️ Kullanıcı verisi yok, normal giriş yapılması gerek');
             return;
         }
 
-        const user = JSON.parse(userData);
-        if (!user || !user.email) {
+        const userData = JSON.parse(user);
+        if (!userData || !userData.email) {
             console.log('⚠️ Email bulunamadı');
             return;
         }
@@ -2008,7 +2010,7 @@ async function autoLoginWithBiometric() {
         let password = sessionStorage.getItem('user_password');
 
         if (!password) {
-            // SweetAlert2 ile şifre sor (ama sessizce)
+            // SweetAlert2 ile şifre sor
             if (typeof Swal !== 'undefined') {
                 const result = await Swal.fire({
                     title: '🔐 Face ID ile giriş',
@@ -2031,7 +2033,6 @@ async function autoLoginWithBiometric() {
                 }
                 password = result.value;
             } else {
-                // SweetAlert2 yoksa native prompt
                 password = prompt('🔐 Face ID doğrulandı! Şifrenizi girin:');
                 if (!password) {
                     console.log('❌ Kullanıcı şifre girmeyi iptal etti');
