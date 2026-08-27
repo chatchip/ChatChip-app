@@ -1699,11 +1699,40 @@ async function registerBiometric() {
             return;
         }
 
-        // 2. Şifreyi al
-        const password = document.getElementById('loginPassword')?.value;
+        // 2. Şifreyi al (önce input'tan dene, yoksa prompt ile sor)
+        let password = document.getElementById('loginPassword')?.value;
+
         if (!password) {
-            showToast('⚠️ Lütfen şifrenizi girin!', 'error');
-            return;
+            // SweetAlert2 ile dene
+            if (typeof Swal !== 'undefined') {
+                const result = await Swal.fire({
+                    title: '🔐 Şifrenizi girin',
+                    text: 'Face ID / Parmak izi kaydetmek için şifrenizi girmelisiniz.',
+                    input: 'password',
+                    inputPlaceholder: 'Şifreniz',
+                    showCancelButton: true,
+                    confirmButtonText: 'Kaydet',
+                    cancelButtonText: 'İptal',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'Şifre girmelisiniz!';
+                        }
+                    }
+                });
+                
+                if (!result.isConfirmed || !result.value) {
+                    showToast('❌ Kayıt iptal edildi', 'error');
+                    return;
+                }
+                password = result.value;
+            } else {
+                // SweetAlert2 yoksa native prompt kullan
+                password = prompt('🔐 Face ID / Parmak izi kaydetmek için şifrenizi girin:');
+                if (!password) {
+                    showToast('❌ Kayıt iptal edildi', 'error');
+                    return;
+                }
+            }
         }
 
         showToast('⏳ Face ID / Parmak izi kaydediliyor...', 'info');
