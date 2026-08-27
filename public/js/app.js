@@ -1740,7 +1740,7 @@ async function registerBiometric() {
 
         showToast('⏳ Face ID / Parmak izi kaydediliyor...', 'info');
 
-        // 3. WebAuthn ile credential oluştur
+        // 3. WebAuthn ile credential oluştur (DÜZELTİLDİ!)
         const credential = await navigator.credentials.create({
             publicKey: {
                 challenge: crypto.getRandomValues(new Uint8Array(32)),
@@ -1759,7 +1759,8 @@ async function registerBiometric() {
                 ],
                 authenticatorSelection: {
                     userVerification: "required",
-                    residentKey: "required"
+                    residentKey: "preferred",  // 🔥 DEĞİŞTİ: "required" → "preferred"
+                    authenticatorAttachment: "platform"  // 🔥 EKLE: cihaz içi
                 },
                 attestation: "none"
             }
