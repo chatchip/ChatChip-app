@@ -1797,12 +1797,16 @@ async function loginWithBiometric() {
 
         showToast('⏳ Face ID / Parmak izi ile doğrulanıyor...', 'info');
 
+        // 🔥 Credential ID'yi Base64 URL-safe'den normal Base64'e çevir
+        const base64CredentialId = credentialId.replace(/-/g, '+').replace(/_/g, '/');
+        const credentialIdBytes = Uint8Array.from(atob(base64CredentialId), c => c.charCodeAt(0));
+
         // 1. WebAuthn ile doğrula
         const assertion = await navigator.credentials.get({
             publicKey: {
                 challenge: crypto.getRandomValues(new Uint8Array(32)),
                 allowCredentials: [{
-                    id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
+                    id: credentialIdBytes,
                     type: 'public-key'
                 }],
                 timeout: 60000,
@@ -1957,11 +1961,15 @@ async function autoLoginWithBiometric() {
             return;
         }
 
+        // 🔥 Credential ID'yi Base64 URL-safe'den normal Base64'e çevir
+        const base64CredentialId = credentialId.replace(/-/g, '+').replace(/_/g, '/');
+        const credentialIdBytes = Uint8Array.from(atob(base64CredentialId), c => c.charCodeAt(0));
+
         const assertion = await navigator.credentials.get({
             publicKey: {
                 challenge: crypto.getRandomValues(new Uint8Array(32)),
                 allowCredentials: [{
-                    id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
+                    id: credentialIdBytes,
                     type: 'public-key'
                 }],
                 timeout: 60000,
