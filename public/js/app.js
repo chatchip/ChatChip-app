@@ -1938,45 +1938,41 @@ async function autoLogin(password) {
 
 async function autoLoginWithBiometric() {
     try {
-        // 1. Token ve user kontrol et (zaten giriş yapılmış mı?)
-        const token = localStorage.getItem('chatchip_token');
-        const user = localStorage.getItem('chatchip_user');
-        
-        // Eğer token ve user varsa ZATEN giriş yapılmıştır
-        if (token && user) {
+        // 🔥 ÖNCE: Zaten giriş yapılmış mı kontrol et (currentUser var mı?)
+        if (currentUser) {
             console.log('✅ Zaten giriş yapılmış, otomatik Face ID gerekmez');
             return;
         }
 
-        // 2. Biyometrik kayıtlı mı kontrol et
+        // 1. Biyometrik kayıtlı mı kontrol et
         const isRegistered = BiometricAuth.isBiometricRegistered();
         if (!isRegistered) {
             console.log('⚠️ Biyometrik kayıt yok, atlanıyor');
             return;
         }
 
-        // 3. Kullanıcı bilgisi var mı? (user yoksa)
-        if (!user) {
-            console.log('⚠️ Kullanıcı verisi yok, normal giriş yapılması gerek');
+        // 2. Kullanıcı bilgisi var mı?
+        const userData = localStorage.getItem('chatchip_user');
+        if (!userData) {
+            console.log('⚠️ Kullanıcı verisi yok');
             return;
         }
 
-        const userData = JSON.parse(user);
-        if (!userData || !userData.email) {
+        const user = JSON.parse(userData);
+        if (!user || !user.email) {
             console.log('⚠️ Email bulunamadı');
             return;
         }
 
         console.log('🔐 Otomatik Face ID ile giriş deneniyor...');
 
-        // 4. Face ID / Touch ID ile doğrula
+        // 3. Face ID / Touch ID ile doğrula
         const credentialId = localStorage.getItem('chatchip_credential_id');
         if (!credentialId) {
             console.log('⚠️ Credential ID bulunamadı');
             return;
         }
 
-        // 🔥 Credential ID'yi Base64 URL-safe'den normal Base64'e çevir
         const base64CredentialId = credentialId.replace(/-/g, '+').replace(/_/g, '/');
         const credentialIdBytes = Uint8Array.from(atob(base64CredentialId), c => c.charCodeAt(0));
 
@@ -1999,18 +1995,17 @@ async function autoLoginWithBiometric() {
 
         console.log('✅ Face ID doğrulandı!');
 
-        // 5. Şifreli veriyi al
+        // 4. Şifreli veriyi al
         const encryptedData = localStorage.getItem('chatchip_encrypted_password');
         if (!encryptedData) {
             console.log('❌ Şifreli veri bulunamadı');
             return;
         }
 
-        // 6. Şifreyi session'dan al veya kullanıcıdan iste
+        // 5. Şifreyi session'dan al veya kullanıcıdan iste
         let password = sessionStorage.getItem('user_password');
 
         if (!password) {
-            // SweetAlert2 ile şifre sor
             if (typeof Swal !== 'undefined') {
                 const result = await Swal.fire({
                     title: '🔐 Face ID ile giriş',
@@ -2041,7 +2036,7 @@ async function autoLoginWithBiometric() {
             }
         }
 
-        // 7. CryptoKey'i türet ve şifreyi çöz
+        // 6. CryptoKey'i türet ve şifreyi çöz
         const key = await ChatChipCrypto.deriveKey(password);
         currentCryptoKey = key;
         sessionStorage.setItem('user_password', password);
@@ -2053,11 +2048,10 @@ async function autoLoginWithBiometric() {
             return;
         }
 
-        // 8. Otomatik giriş yap
+        // 7. Otomatik giriş yap
         await autoLogin(decrypted);
 
     } catch (error) {
         console.error('❌ Otomatik Face ID giriş hatası:', error);
-        // Hata durumunda sessiz kal, kullanıcı manuel giriş yapsın
     }
 }
