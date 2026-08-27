@@ -2078,7 +2078,7 @@ async function autoLoginWithBiometric() {
     }
 }
 // ============================================================
-// 🔐 FACE ID İLE CRYPTOKEY TÜRET
+// 🔐 FACE ID İLE OTOMATİK GİRİŞ
 // ============================================================
 
 async function triggerBiometricLogin() {
@@ -2126,7 +2126,7 @@ async function triggerBiometricLogin() {
             if (typeof Swal !== 'undefined') {
                 const result = await Swal.fire({
                     title: '🔐 Şifrenizi girin',
-                    text: 'Face ID ile giriş için şifrenizi girmelisiniz.',
+                    text: 'Face ID doğrulandı! Lütfen şifrenizi girin.',
                     input: 'password',
                     inputPlaceholder: 'Şifreniz',
                     showCancelButton: true,
@@ -2144,27 +2144,32 @@ async function triggerBiometricLogin() {
                     return false;
                 }
                 password = result.value;
+                sessionStorage.setItem('user_password', password);
             } else {
                 password = prompt('🔐 Face ID doğrulandı! Şifrenizi girin:');
                 if (!password) {
                     console.log('❌ Kullanıcı şifre girmeyi iptal etti');
                     return false;
                 }
+                sessionStorage.setItem('user_password', password);
             }
         }
 
         const key = await ChatChipCrypto.deriveKey(password);
         currentCryptoKey = key;
-        sessionStorage.setItem('user_password', password);
 
         const decrypted = await ChatChipCrypto.decryptWithKey(JSON.parse(encryptedData), key);
         if (!decrypted) {
             console.log('❌ Şifre çözülemedi');
+            showToast('❌ Şifre çözülemedi, lütfen tekrar giriş yapın', 'error');
             return false;
         }
 
-        console.log('✅ CryptoKey başarıyla türetildi!');
-        showToast('✅ Face ID ile doğrulandı!', 'success');
+        console.log('✅ CryptoKey türetildi, otomatik giriş yapılıyor...');
+
+        // 🔥 OTOMATİK GİRİŞ YAP!
+        await autoLogin(decrypted);
+        
         return true;
 
     } catch (error) {
