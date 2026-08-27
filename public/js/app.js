@@ -767,6 +767,30 @@ async function sendMessage() {
     
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
+    // ============================================================
+// 🔥 GÖRSEL ÜRETİM KONTROLÜ
+// ============================================================
+const imageKeywords = ['resim', 'fotoğraf', 'görsel', 'çiz', 'yap', 'oluştur', 'üret', 'draw', 'image', 'photo', 'picture', 'generate', 'manzara', 'kedi', 'köpek', 'portre', 'karikatür', 'çizim'];
+const isImageRequest = imageKeywords.some(k => text.toLowerCase().includes(k));
+
+// Soru değilse ve görsel anahtar kelime varsa
+const isQuestion = text.includes('?') || text.includes('nasıl') || text.includes('nedir') || text.includes('ne') || text.includes('kim') || text.includes('nerede') || text.includes('niye');
+
+if (isImageRequest && !isQuestion) {
+    let cleanPrompt = text.replace(/resim|fotoğraf|göster|yap|oluştur|üret|çiz|çek|make|create|generate|draw|portre|karikatür|lütfen|rica|bana|bir|tane/gi, '').trim();
+    if (!cleanPrompt || cleanPrompt.length < 2) {
+        cleanPrompt = text;
+    }
+
+    addMessage(text, 'user');
+    input.value = '';
+    input.style.height = 'auto';
+    clearImagePreview();
+
+    await generateAndShowImage(cleanPrompt, text);
+    chatArea.scrollTop = chatArea.scrollHeight;
+    return;
+}
 
     // ============================================================
     // 🔥 NORMAL CHAT (Görsel değilse buraya gelir)
