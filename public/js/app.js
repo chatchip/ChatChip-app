@@ -767,41 +767,38 @@ async function sendMessage() {
     
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
-     // ============================================================
-// 🔥 GÖRSEL ÜRETİM KONTROLÜ - NET KOMUT
+   // ============================================================
+// 🔥 GÖRSEL ÜRETİM KONTROLÜ - BASİT VE GENİŞ
 // ============================================================
-const imagePatterns = [
-    /resim\s*(yap|oluştur|üret|çiz)/i,
-    /fotoğraf\s*(yap|oluştur|üret|çek)/i,
-    /çiz\s*(yap|oluştur|üret)/i,
-    /göster\s*(resim|fotoğraf|görsel)/i,
-    /make\s*(image|photo|picture)/i,
-    /create\s*(image|photo|picture)/i,
-    /generate\s*(image|photo|picture)/i,
-    /draw\s*(a|an|)/i,
-    /kedi\s*resmi/i,
-    /köpek\s*resmi/i,
-    /manzara\s*resmi/i,
-    /portre\s*(yap|çiz|oluştur)/i,
-    /karikatür\s*(yap|çiz|oluştur)/i
+const imageTriggers = [
+    'resim', 'fotoğraf', 'görsel', 'çizim', 'çiz', 
+    'image', 'photo', 'picture', 'draw', 
+    'manzara', 'portre', 'karikatür', 'kedi', 'köpek'
 ];
 
-const lower = text.toLowerCase();
-const isQuestion = lower.includes('?') || 
-                   lower.includes('nasıl') || 
-                   lower.includes('nedir') || 
-                   lower.includes('ne yapmalıyım') || 
-                   lower.includes('ne yapmam lazım') ||
-                   lower.includes('önerir misin') ||
-                   lower.includes('tavsiye') ||
-                   lower.includes('yardım');
+const imageActions = ['yap', 'oluştur', 'üret', 'çiz', 'göster', 'iste', 'ver', 'make', 'create', 'generate', 'draw'];
 
-const isImageCommand = imagePatterns.some(pattern => pattern.test(text));
+const hasImageTrigger = imageTriggers.some(k => text.toLowerCase().includes(k));
+const hasImageAction = imageActions.some(k => text.toLowerCase().includes(k));
+
+const isImageCommand = (hasImageTrigger && hasImageAction) || 
+                       imageTriggers.some(k => text.toLowerCase().includes(k + ' yap')) ||
+                       imageTriggers.some(k => text.toLowerCase().includes(k + ' resmi')) ||
+                       imageTriggers.some(k => text.toLowerCase().includes(k + ' görseli'));
+
+// Soru kontrolü
+const isQuestion = text.includes('?') || 
+                   text.includes('nasıl') || 
+                   text.includes('nedir') || 
+                   text.includes('ne') || 
+                   text.includes('kim') || 
+                   text.includes('nerede') || 
+                   text.includes('niye');
 
 if (isImageCommand && !isQuestion) {
+    // Temiz prompt oluştur
     let cleanPrompt = text
-        .replace(/resim|fotoğraf|göster|yap|oluştur|üret|çiz|çek|make|create|generate|draw|portre|karikatür/gi, '')
-        .replace(/lütfen|rica|etsen|yapar mısın|yapabilir misin|yaparmısın|yapabilirmisin/gi, '')
+        .replace(/resim|fotoğraf|göster|yap|oluştur|üret|çiz|çek|make|create|generate|draw|portre|karikatür|lütfen|rica|bana|bir|tane/gi, '')
         .trim();
     
     if (!cleanPrompt || cleanPrompt.length < 2) {
