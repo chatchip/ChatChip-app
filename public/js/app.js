@@ -766,56 +766,6 @@ async function sendMessage() {
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
 
-   // ============================================================
-// 🔥 GÖRSEL ÜRETİM KONTROLÜ - NET KOMUT
-// ============================================================
-const imagePatterns = [
-    /resim\s*(yap|oluştur|üret|çiz)/i,
-    /fotoğraf\s*(yap|oluştur|üret|çek)/i,
-    /çiz\s*(yap|oluştur|üret)/i,
-    /göster\s*(resim|fotoğraf|görsel)/i,
-    /make\s*(image|photo|picture)/i,
-    /create\s*(image|photo|picture)/i,
-    /generate\s*(image|photo|picture)/i,
-    /draw\s*(a|an|)/i,
-    /kedi\s*resmi/i,
-    /köpek\s*resmi/i,
-    /manzara\s*resmi/i,
-    /portre\s*(yap|çiz|oluştur)/i,
-    /karikatür\s*(yap|çiz|oluştur)/i
-];
-
-const lower = text.toLowerCase();
-const isQuestion = lower.includes('?') || 
-                   lower.includes('nasıl') || 
-                   lower.includes('nedir') || 
-                   lower.includes('ne yapmalıyım') || 
-                   lower.includes('ne yapmam lazım') ||
-                   lower.includes('önerir misin') ||
-                   lower.includes('tavsiye') ||
-                   lower.includes('yardım');
-
-const isImageCommand = imagePatterns.some(pattern => pattern.test(text));
-
-if (isImageCommand && !isQuestion) {
-    let cleanPrompt = text
-        .replace(/resim|fotoğraf|göster|yap|oluştur|üret|çiz|çek|make|create|generate|draw|portre|karikatür/gi, '')
-        .replace(/lütfen|rica|etsen|yapar mısın|yapabilir misin|yaparmısın|yapabilirmisin/gi, '')
-        .trim();
-    
-    if (!cleanPrompt || cleanPrompt.length < 2) {
-        cleanPrompt = text;
-    }
-
-    addMessage(text, 'user');
-    input.value = '';
-    input.style.height = 'auto';
-    clearImagePreview();
-
-    await generateAndShowImage(cleanPrompt, text);
-    chatArea.scrollTop = chatArea.scrollHeight;
-    return;
-}
     // ============================================================
     // 🔥 NORMAL CHAT (Görsel değilse buraya gelir)
     // ============================================================
