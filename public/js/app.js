@@ -915,9 +915,26 @@ if (currentCryptoKey) {
     isProcessing = false;
     return;
 }
+        // 🔥 Mevcut session'daki mesajları topla (son 15 mesaj)
+const MAX_HISTORY = 15;
+const historyMessages = [];
+const messageElements = document.querySelectorAll('#messages .message');
+const startIndex = Math.max(0, messageElements.length - MAX_HISTORY);
+
+for (let i = startIndex; i < messageElements.length; i++) {
+    const el = messageElements[i];
+    const role = el.classList.contains('user') ? 'user' : 'assistant';
+    const content = el.querySelector('.bubble .markdown-body')?.textContent || 
+                    el.querySelector('.bubble')?.textContent || '';
+    if (content && content.trim()) {
+        historyMessages.push({ role, content: content.trim() });
+    }
+}
+
+console.log('📜 Geçmiş mesajlar:', historyMessages.length);
 
     // 🔥 2. AI'ya şifresiz mesaj gönder
-    const response = await dm.sendMessage(fullMessage, selectedCoach, systemPrompt, currentSessionId, abortController.signal);
+    const response = await dm.sendMessage(fullMessage, selectedCoach, systemPrompt, currentSessionId, abortController.signal, historyMessages);
 
     if (!response.ok) {
         const errorData = await response.json();
