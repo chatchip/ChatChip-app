@@ -763,6 +763,8 @@ async function generateAndShowImage(prompt, originalText) {
 // ============================================================
 async function sendMessage() {
     const text = input.value.trim();
+    console.log('🔴 sendMessage çalıştı! text:', text);  // ← BURAYA EKLE!
+    
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
 
