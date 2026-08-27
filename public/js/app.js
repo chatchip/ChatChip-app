@@ -674,7 +674,7 @@ function stopMessage() {
 }
 
 // ============================================================
-// 🎨 GÖRSEL ÜRETİM FONKSİYONU (Güncellenmiş Güvenli Versiyon)
+// 🎨 GÖRSEL ÜRETİM FONKSİYONU (sendMessage DIŞINDA)
 // ============================================================
 async function generateAndShowImage(prompt, originalText) {
     console.log(`🎨 Görsel üretiliyor: "${prompt}"`);
@@ -708,29 +708,40 @@ async function generateAndShowImage(prompt, originalText) {
         console.log('📥 Görsel yanıtı:', data);
 
         if (data.success && data.imageUrl) {
-            // 🔥 Gelen imageUrl nesne mi string mi kontrol et
             let imageSrc = '';
             
             if (typeof data.imageUrl === 'string') {
                 imageSrc = data.imageUrl;
             } else if (typeof data.imageUrl === 'object' && data.imageUrl !== null) {
-                // Obje içindeki olası adres alanlarını yakala
-                imageSrc = data.imageUrl.url || data.imageUrl.output || data.imageUrl.data || Object.values(data.imageUrl)[0] || '';
-                console.log('🔧 imageUrl objesinden çekildi:', imageSrc);
+                // 🔥 TÜM OLASI DURUMLARI KONTROL ET
+                if (data.imageUrl.image_url && typeof data.imageUrl.image_url === 'object') {
+                    // image_url objesi içinde url var
+                    imageSrc = data.imageUrl.image_url.url || '';
+                    console.log('🔧 image_url objesinden url çekildi');
+                } else if (data.imageUrl.image_url && typeof data.imageUrl.image_url === 'string') {
+                    imageSrc = data.imageUrl.image_url;
+                    console.log('🔧 image_url string olarak çekildi');
+                } else {
+                    imageSrc = data.imageUrl.url || data.imageUrl.output || data.imageUrl.data || Object.values(data.imageUrl)[0] || '';
+                    console.log('🔧 diğer alanlardan çekildi');
+                }
+                console.log('📸 imageSrc ilk 100 karakter:', imageSrc?.substring(0, 100));
             }
 
             if (!imageSrc) {
-                throw new Error('Görsel adresi (URL) alınamadı, yanıt formatı geçersiz.');
+                console.error('❌ Görsel adresi alınamadı! data.imageUrl:', data.imageUrl);
+                updateMessageMarkdown(loadingMsgId, '❌ Görsel adresi alınamadı!');
+                showToast('❌ Görsel adresi alınamadı', 'error');
+                return;
             }
 
-            // Base64 veya URL kontrolü
+            // Görsel gösterimi
             let imageHtml = '';
             if (imageSrc.startsWith('data:image')) {
                 imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
             } else if (imageSrc.startsWith('http')) {
                 imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
             } else {
-                // Bilinmeyen format
                 imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
             }
             
