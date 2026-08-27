@@ -674,7 +674,7 @@ function stopMessage() {
 }
 
 // ============================================================
-// 🎨 GÖRSEL ÜRETİM FONKSİYONU (sendMessage DIŞINDA)
+// 🎨 GÖRSEL ÜRETİM FONKSİYONU (Güncellenmiş Güvenli Versiyon)
 // ============================================================
 async function generateAndShowImage(prompt, originalText) {
     console.log(`🎨 Görsel üretiliyor: "${prompt}"`);
@@ -708,13 +708,30 @@ async function generateAndShowImage(prompt, originalText) {
         console.log('📥 Görsel yanıtı:', data);
 
         if (data.success && data.imageUrl) {
-            let imageHtml = '';
+            // 🔥 Gelen imageUrl nesne mi string mi kontrol et
+            let imageSrc = '';
             
-            // 🔥 Base64 veya URL kontrolü
-            if (data.imageUrl.startsWith('data:image')) {
-                imageHtml = `<img src="${data.imageUrl}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+            if (typeof data.imageUrl === 'string') {
+                imageSrc = data.imageUrl;
+            } else if (typeof data.imageUrl === 'object' && data.imageUrl !== null) {
+                // Obje içindeki olası adres alanlarını yakala
+                imageSrc = data.imageUrl.url || data.imageUrl.output || data.imageUrl.data || Object.values(data.imageUrl)[0] || '';
+                console.log('🔧 imageUrl objesinden çekildi:', imageSrc);
+            }
+
+            if (!imageSrc) {
+                throw new Error('Görsel adresi (URL) alınamadı, yanıt formatı geçersiz.');
+            }
+
+            // Base64 veya URL kontrolü
+            let imageHtml = '';
+            if (imageSrc.startsWith('data:image')) {
+                imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+            } else if (imageSrc.startsWith('http')) {
+                imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
             } else {
-                imageHtml = `<img src="${data.imageUrl}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+                // Bilinmeyen format
+                imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
             }
             
             const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n✨ Görsel başarıyla oluşturuldu!`;
@@ -730,7 +747,6 @@ async function generateAndShowImage(prompt, originalText) {
         showToast('❌ Görsel üretim hatası', 'error');
     }
 }
-
 // ============================================================
 // 🔥 SEND MESSAGE
 // ============================================================
