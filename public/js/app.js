@@ -44,6 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (biometricRegisterBtn) {
         biometricRegisterBtn.addEventListener('click', registerBiometric);
     }
+    
+    // 🔥 Sayfa yenilendiğinde OTOMATİK Face ID ile giriş dene! (YENİ)
+    setTimeout(autoLoginWithBiometric, 1500);
 });
 
 // ============================================================
@@ -1910,5 +1913,129 @@ async function autoLogin(password) {
     } catch (error) {
         console.error('❌ Otomatik giriş hatası:', error);
         showToast('❌ Otomatik giriş başarısız: ' + error.message, 'error');
+    }
+}
+// ============================================================
+// 🔐 OTOMATİK FACE ID / TOUCH ID GİRİŞ (Sayfa yenilenince)
+// ============================================================
+
+async function autoLoginWithBiometric() {
+    try {
+        // 1. Token var mı kontrol et (zaten giriş yapılmış mı?)
+        const token = localStorage.getItem('chatchip_token');
+        if (token) {
+            console.log('✅ Zaten giriş yapılmış, otomatik Face ID gerekmez');
+            return;
+        }
+
+        // 2. Biyometrik kayıtlı mı kontrol et
+        const isRegistered = BiometricAuth.isBiometricRegistered();
+        if (!isRegistered) {
+            console.log('⚠️ Biyometrik kayıt yok, atlanıyor');
+            return;
+        }
+
+        // 3. Kullanıcı bilgisi var mı?
+        const userData = localStorage.getItem('chatchip_user');
+        if (!userData) {
+            console.log('⚠️ Kullanıcı verisi yok');
+            return;
+        }
+
+        const user = JSON.parse(userData);
+        if (!user || !user.email) {
+            console.log('⚠️ Email bulunamadı');
+            return;
+        }
+
+        console.log('🔐 Otomatik Face ID ile giriş deneniyor...');
+
+        // 4. Face ID / Touch ID ile doğrula
+        const credentialId = localStorage.getItem('chatchip_credential_id');
+        if (!credentialId) {
+            console.log('⚠️ Credential ID bulunamadı');
+            return;
+        }
+
+        const assertion = await navigator.credentials.get({
+            publicKey: {
+                challenge: crypto.getRandomValues(new Uint8Array(32)),
+                allowCredentials: [{
+                    id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
+                    type: 'public-key'
+                }],
+                timeout: 60000,
+                userVerification: 'required'
+            }
+        });
+
+        if (!assertion) {
+            console.log('❌ Face ID doğrulaması başarısız');
+            return;
+        }
+
+        console.log('✅ Face ID doğrulandı!');
+
+        // 5. Şifreli veriyi al
+        const encryptedData = localStorage.getItem('chatchip_encrypted_password');
+        if (!encryptedData) {
+            console.log('❌ Şifreli veri bulunamadı');
+            return;
+        }
+
+        // 6. Şifreyi session'dan al veya kullanıcıdan iste
+        let password = sessionStorage.getItem('user_password');
+
+        if (!password) {
+            // SweetAlert2 ile şifre sor (ama sessizce)
+            if (typeof Swal !== 'undefined') {
+                const result = await Swal.fire({
+                    title: '🔐 Face ID ile giriş',
+                    text: 'Face ID doğrulandı! Lütfen şifrenizi girin.',
+                    input: 'password',
+                    inputPlaceholder: 'Şifreniz',
+                    showCancelButton: true,
+                    confirmButtonText: 'Giriş Yap',
+                    cancelButtonText: 'İptal',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'Şifre girmelisiniz!';
+                        }
+                    }
+                });
+
+                if (!result.isConfirmed || !result.value) {
+                    console.log('❌ Kullanıcı şifre girmeyi iptal etti');
+                    return;
+                }
+                password = result.value;
+            } else {
+                // SweetAlert2 yoksa native prompt
+                password = prompt('🔐 Face ID doğrulandı! Şifrenizi girin:');
+                if (!password) {
+                    console.log('❌ Kullanıcı şifre girmeyi iptal etti');
+                    return;
+                }
+            }
+        }
+
+        // 7. CryptoKey'i türet ve şifreyi çöz
+        const key = await ChatChipCrypto.deriveKey(password);
+        currentCryptoKey = key;
+        sessionStorage.setItem('user_password', password);
+
+        const decrypted = await ChatChipCrypto.decryptWithKey(JSON.parse(encryptedData), key);
+        if (!decrypted) {
+            console.log('❌ Şifre çözülemedi');
+            showToast('❌ Şifre çözülemedi, lütfen tekrar giriş yapın', 'error');
+            return;
+        }
+
+        // 8. Otomatik giriş yap
+        await autoLogin(decrypted);
+
+    } catch (error) {
+        console.error('❌ Otomatik Face ID giriş hatası:', error);
+        // Hata durumunda sessiz kal, kullanıcı manuel giriş yapsın
     }
 }
