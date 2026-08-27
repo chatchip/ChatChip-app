@@ -708,8 +708,16 @@ async function generateAndShowImage(prompt, originalText) {
         console.log('📥 Görsel yanıtı:', data);
 
         if (data.success && data.imageUrl) {
-            const imageMarkdown = `![${prompt}](${data.imageUrl})`;
-            const resultText = `🖼️ **${prompt}**\n\n${imageMarkdown}\n\n✨ Görsel başarıyla oluşturuldu!`;
+            let imageHtml = '';
+            
+            // 🔥 Base64 veya URL kontrolü
+            if (data.imageUrl.startsWith('data:image')) {
+                imageHtml = `<img src="${data.imageUrl}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+            } else {
+                imageHtml = `<img src="${data.imageUrl}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+            }
+            
+            const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n✨ Görsel başarıyla oluşturuldu!`;
             updateMessageMarkdown(loadingMsgId, resultText);
             showToast('✅ Görsel oluşturuldu!', 'success');
         } else {
