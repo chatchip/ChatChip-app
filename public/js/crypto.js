@@ -81,3 +81,42 @@ class ChatChipCrypto {
 // Global'e ekle
 window.ChatChipCrypto = ChatChipCrypto;
 console.log('✅ Crypto modülü yüklendi (AES-256-GCM + CryptoKey)');
+// ============================================================
+// 🔐 BİYOMETRİK (Face ID / Parmak İzi) DESTEĞİ
+// ============================================================
+
+class BiometricAuth {
+    // ✅ WebAuthn desteği var mı?
+    static isSupported() {
+        return window.PublicKeyCredential !== undefined &&
+               typeof window.PublicKeyCredential === 'function';
+    }
+
+    // ✅ Platform Authenticator (Face ID / Touch ID) destekleniyor mu?
+    static async isPlatformAuthenticatorAvailable() {
+        if (!this.isSupported()) return false;
+        try {
+            return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        } catch {
+            return false;
+        }
+    }
+
+    // 🔍 Biyometrik kayıtlı mı kontrol et
+    static isBiometricRegistered() {
+        return localStorage.getItem('chatchip_biometric_enabled') === 'true' &&
+               localStorage.getItem('chatchip_credential_id') !== null;
+    }
+
+    // 🗑️ Biyometrik kaydı sil
+    static clearBiometricRegistration() {
+        localStorage.removeItem('chatchip_biometric_enabled');
+        localStorage.removeItem('chatchip_credential_id');
+        localStorage.removeItem('chatchip_encrypted_password');
+        console.log('🗑️ Biyometrik kayıt silindi');
+    }
+}
+
+// Global'e ekle
+window.BiometricAuth = BiometricAuth;
+console.log('✅ Biyometrik modülü yüklendi');
