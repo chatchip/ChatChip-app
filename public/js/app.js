@@ -1655,13 +1655,12 @@ async function checkBiometricSupport() {
     console.log('🔍 Biyometrik destek kontrol ediliyor...');
     
     const isSupported = BiometricAuth.isSupported();
-    const isAvailable = await BiometricAuth.isPlatformAuthenticatorAvailable();
+    // 🔥 isAvailable KALDIRILDI! Artık kontrol etmiyoruz.
     const isRegistered = BiometricAuth.isBiometricRegistered();
     const isLoggedIn = !!currentUser;
     
     console.log('📊 Biyometrik durum:', {
         isSupported,
-        isAvailable,
         isRegistered,
         isLoggedIn
     });
@@ -1669,20 +1668,23 @@ async function checkBiometricSupport() {
     const biometricLoginBtn = document.getElementById('biometricLoginBtn');
     const biometricRegisterBtn = document.getElementById('biometricRegisterBtn');
     
-    // Butonları göster/gizle
-    if (isSupported && isAvailable) {
-        if (biometricLoginBtn) {
+    // 🔥 TEST MODU: isAvailable kontrolü KALDIRILDI!
+    if (isSupported) {
+        // Sadece tarayıcı WebAuthn destekliyorsa butonları göster
+        if (biometricLoginBtn && isLoggedIn) {
             biometricLoginBtn.style.display = isRegistered ? 'block' : 'none';
-            console.log('✅ Biyometrik giriş butonu gösterildi');
+            console.log('✅ Biyometrik giriş butonu:', isRegistered ? 'GÖSTERİLDİ' : 'GİZLİ (kayıtlı değil)');
         }
         if (biometricRegisterBtn && isLoggedIn) {
             biometricRegisterBtn.style.display = isRegistered ? 'none' : 'block';
-            console.log('✅ Biyometrik kayıt butonu gösterildi');
+            console.log('✅ Biyometrik kayıt butonu:', isRegistered ? 'GİZLİ (kayıtlı)' : 'GÖSTERİLDİ');
         }
+        console.log('✅ Biyometrik butonlar hazır!');
     } else {
+        // Tarayıcı desteklemiyor
         if (biometricLoginBtn) biometricLoginBtn.style.display = 'none';
         if (biometricRegisterBtn) biometricRegisterBtn.style.display = 'none';
-        console.log('⚠️ Biyometrik desteklenmiyor');
+        console.log('⚠️ Tarayıcı WebAuthn desteklemiyor');
     }
 }
 // ============================================================
