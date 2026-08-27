@@ -33,6 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // 🔥 Biyometrik desteği kontrol et (YENİ)
     setTimeout(checkBiometricSupport, 500);
+        // 🔥 Biyometrik buton event listener'ları
+    const biometricLoginBtn = document.getElementById('biometricLoginBtn');
+    const biometricRegisterBtn = document.getElementById('biometricRegisterBtn');
+
+    if (biometricLoginBtn) {
+        biometricLoginBtn.addEventListener('click', loginWithBiometric);
+    }
+
+    if (biometricRegisterBtn) {
+        biometricRegisterBtn.addEventListener('click', registerBiometric);
+    }
 });
 
 // ============================================================
@@ -1672,5 +1683,201 @@ async function checkBiometricSupport() {
         if (biometricLoginBtn) biometricLoginBtn.style.display = 'none';
         if (biometricRegisterBtn) biometricRegisterBtn.style.display = 'none';
         console.log('⚠️ Biyometrik desteklenmiyor');
+    }
+}
+// ============================================================
+// 📱 BİYOMETRİK KAYIT ETME
+// ============================================================
+
+async function registerBiometric() {
+    try {
+        // 1. Kullanıcı giriş yapmış mı kontrol et
+        if (!currentUser) {
+            showToast('⚠️ Önce giriş yapmalısınız!', 'error');
+            return;
+        }
+
+        // 2. Şifreyi al
+        const password = document.getElementById('loginPassword')?.value;
+        if (!password) {
+            showToast('⚠️ Lütfen şifrenizi girin!', 'error');
+            return;
+        }
+
+        showToast('⏳ Face ID / Parmak izi kaydediliyor...', 'info');
+
+        // 3. WebAuthn ile credential oluştur
+        const credential = await navigator.credentials.create({
+            publicKey: {
+                challenge: crypto.getRandomValues(new Uint8Array(32)),
+                rp: { 
+                    name: "ChatChip",
+                    id: window.location.hostname
+                },
+                user: {
+                    id: new TextEncoder().encode(currentUser.id.toString()),
+                    name: currentUser.email,
+                    displayName: currentUser.name
+                },
+                pubKeyCredParams: [
+                    { type: "public-key", alg: -7 },
+                    { type: "public-key", alg: -257 }
+                ],
+                authenticatorSelection: {
+                    userVerification: "required",
+                    residentKey: "required"
+                },
+                attestation: "none"
+            }
+        });
+
+        // 4. Başarılı! Credential ID'yi kaydet
+        localStorage.setItem('chatchip_credential_id', credential.id);
+        localStorage.setItem('chatchip_biometric_enabled', 'true');
+
+        // 5. Şifreyi şifrele ve kaydet
+        const encrypted = await ChatChipCrypto.encryptWithKey(password, currentCryptoKey);
+        localStorage.setItem('chatchip_encrypted_password', JSON.stringify(encrypted));
+
+        showToast('✅ Face ID / Parmak izi başarıyla kaydedildi!', 'success');
+        
+        // Butonları güncelle
+        await checkBiometricSupport();
+
+    } catch (error) {
+        console.error('❌ Biyometrik kayıt hatası:', error);
+        showToast('❌ Kayıt başarısız: ' + error.message, 'error');
+    }
+}
+// ============================================================
+// 🔐 BİYOMETRİK İLE GİRİŞ
+// ============================================================
+
+async function loginWithBiometric() {
+    try {
+        const credentialId = localStorage.getItem('chatchip_credential_id');
+        if (!credentialId) {
+            showToast('⚠️ Kayıtlı Face ID / Parmak izi bulunamadı!', 'error');
+            return;
+        }
+
+        showToast('⏳ Face ID / Parmak izi ile doğrulanıyor...', 'info');
+
+        // 1. WebAuthn ile doğrula
+        const assertion = await navigator.credentials.get({
+            publicKey: {
+                challenge: crypto.getRandomValues(new Uint8Array(32)),
+                allowCredentials: [{
+                    id: Uint8Array.from(atob(credentialId), c => c.charCodeAt(0)),
+                    type: 'public-key'
+                }],
+                timeout: 60000,
+                userVerification: 'required'
+            }
+        });
+
+        if (assertion) {
+            // 2. Biyometrik başarılı!
+            showToast('✅ Face ID / Parmak izi doğrulandı!', 'success');
+
+            // 3. Şifreli veriyi al
+            const encryptedData = localStorage.getItem('chatchip_encrypted_password');
+            if (!encryptedData) {
+                showToast('❌ Şifreli veri bulunamadı!', 'error');
+                return;
+            }
+
+            // 4. Session'dan şifreyi al
+            const savedPassword = sessionStorage.getItem('user_password');
+            
+            if (!savedPassword) {
+                // Şifre yoksa kullanıcıdan iste
+                const { value: password } = await Swal.fire({
+                    title: '🔐 Şifrenizi girin',
+                    text: 'Face ID ile giriş için şifrenizi girmelisiniz.',
+                    input: 'password',
+                    inputPlaceholder: 'Şifreniz',
+                    showCancelButton: true,
+                    confirmButtonText: 'Giriş Yap',
+                    cancelButtonText: 'İptal'
+                });
+
+                if (!password) {
+                    showToast('❌ Giriş iptal edildi', 'error');
+                    return;
+                }
+
+                // CryptoKey'i türet
+                const key = await ChatChipCrypto.deriveKey(password);
+                currentCryptoKey = key;
+                sessionStorage.setItem('user_password', password);
+
+                // Şifreyi çöz ve giriş yap
+                const decrypted = await ChatChipCrypto.decryptWithKey(JSON.parse(encryptedData), key);
+                if (decrypted) {
+                    await autoLogin(decrypted);
+                } else {
+                    showToast('❌ Şifre çözülemedi!', 'error');
+                }
+            } else {
+                // Session'dan şifreyi al
+                const key = await ChatChipCrypto.deriveKey(savedPassword);
+                currentCryptoKey = key;
+                const decrypted = await ChatChipCrypto.decryptWithKey(JSON.parse(encryptedData), key);
+                if (decrypted) {
+                    await autoLogin(decrypted);
+                } else {
+                    showToast('❌ Şifre çözülemedi!', 'error');
+                }
+            }
+        }
+    } catch (error) {
+        console.error('❌ Biyometrik giriş hatası:', error);
+        if (error.name === 'NotAllowedError') {
+            showToast('❌ Face ID / Parmak izi reddedildi!', 'error');
+        } else {
+            showToast('❌ Giriş başarısız: ' + error.message, 'error');
+        }
+    }
+}
+// ============================================================
+// 🔐 OTOMATİK GİRİŞ (Biyometrik sonrası)
+// ============================================================
+
+async function autoLogin(password) {
+    try {
+        const dm = window.DataManager;
+        
+        // Email'i currentUser'dan al
+        const email = currentUser?.email || localStorage.getItem('chatchip_user')?.email;
+        if (!email) {
+            showToast('❌ Email bilgisi bulunamadı!', 'error');
+            return;
+        }
+
+        const result = await dm.login(email, password);
+        
+        if (result.success) {
+            currentUser = result.user;
+            window.currentUser = result.user;
+            
+            // CryptoKey'i türet
+            if (result.user && result.user.password) {
+                currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
+                sessionStorage.setItem('user_password', result.user.password);
+            }
+            
+            checkAuth();
+            checkPlan();
+            loadModels();
+            loadSessions();
+            closeAllSidebars();
+            showToast(`✅ Hoş geldin ${currentUser.name}!`, 'success');
+        } else {
+            showToast('❌ Otomatik giriş başarısız!', 'error');
+        }
+    } catch (error) {
+        console.error('❌ Otomatik giriş hatası:', error);
+        showToast('❌ Otomatik giriş başarısız: ' + error.message, 'error');
     }
 }
