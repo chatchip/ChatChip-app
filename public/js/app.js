@@ -2077,3 +2077,98 @@ async function autoLoginWithBiometric() {
         console.error('❌ Otomatik Face ID giriş hatası:', error);
     }
 }
+// ============================================================
+// 🔐 FACE ID İLE CRYPTOKEY TÜRET
+// ============================================================
+
+async function triggerBiometricLogin() {
+    try {
+        const credentialId = localStorage.getItem('chatchip_credential_id');
+        if (!credentialId) {
+            console.log('⚠️ Credential ID bulunamadı');
+            return false;
+        }
+
+        console.log('🔐 Face ID ile doğrulanıyor...');
+        showToast('🔐 Face ID ile doğrulanıyor...', 'info');
+
+        const base64CredentialId = credentialId.replace(/-/g, '+').replace(/_/g, '/');
+        const credentialIdBytes = Uint8Array.from(atob(base64CredentialId), c => c.charCodeAt(0));
+
+        const assertion = await navigator.credentials.get({
+            publicKey: {
+                challenge: crypto.getRandomValues(new Uint8Array(32)),
+                allowCredentials: [{
+                    id: credentialIdBytes,
+                    type: 'public-key'
+                }],
+                timeout: 60000,
+                userVerification: 'required'
+            }
+        });
+
+        if (!assertion) {
+            console.log('❌ Face ID doğrulaması başarısız');
+            return false;
+        }
+
+        console.log('✅ Face ID doğrulandı!');
+
+        const encryptedData = localStorage.getItem('chatchip_encrypted_password');
+        if (!encryptedData) {
+            console.log('❌ Şifreli veri bulunamadı');
+            return false;
+        }
+
+        let password = sessionStorage.getItem('user_password');
+
+        if (!password) {
+            if (typeof Swal !== 'undefined') {
+                const result = await Swal.fire({
+                    title: '🔐 Şifrenizi girin',
+                    text: 'Face ID ile giriş için şifrenizi girmelisiniz.',
+                    input: 'password',
+                    inputPlaceholder: 'Şifreniz',
+                    showCancelButton: true,
+                    confirmButtonText: 'Giriş Yap',
+                    cancelButtonText: 'İptal',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'Şifre girmelisiniz!';
+                        }
+                    }
+                });
+
+                if (!result.isConfirmed || !result.value) {
+                    console.log('❌ Kullanıcı şifre girmeyi iptal etti');
+                    return false;
+                }
+                password = result.value;
+            } else {
+                password = prompt('🔐 Face ID doğrulandı! Şifrenizi girin:');
+                if (!password) {
+                    console.log('❌ Kullanıcı şifre girmeyi iptal etti');
+                    return false;
+                }
+            }
+        }
+
+        const key = await ChatChipCrypto.deriveKey(password);
+        currentCryptoKey = key;
+        sessionStorage.setItem('user_password', password);
+
+        const decrypted = await ChatChipCrypto.decryptWithKey(JSON.parse(encryptedData), key);
+        if (!decrypted) {
+            console.log('❌ Şifre çözülemedi');
+            return false;
+        }
+
+        console.log('✅ CryptoKey başarıyla türetildi!');
+        showToast('✅ Face ID ile doğrulandı!', 'success');
+        return true;
+
+    } catch (error) {
+        console.error('❌ Face ID hatası:', error);
+        return false;
+    }
+}
