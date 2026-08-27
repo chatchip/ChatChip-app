@@ -263,30 +263,41 @@ class DataManager {
         if (signal) options.signal = signal;
         return await fetch(`${this.apiBase}/chat/stream`, options);
     }
-    async sendMessage(message, coachType = 'standard', systemPrompt = '', sessionId = null, signal = null) {
-        const version = localStorage.getItem('chatchip_selected_model') || '1.0';
-        
-        const options = {
-            method: 'POST',
-            headers: this.getHeaders(),
-            body: JSON.stringify({ 
-                message, 
-                version: version,
-                coachType: coachType,
-                systemPrompt: systemPrompt,
-                sessionId: sessionId
-            })
-        };
-        
-        if (signal) {
-            options.signal = signal;
-            console.log('🔴 Abort signal eklendi');
-        }
-        
-        const res = await fetch(`${this.apiBase}/chat/stream`, options);
-        return res;
+    async sendMessage(message, coachType = 'standard', systemPrompt = '', sessionId = null, signal = null, history = []) {
+    const version = localStorage.getItem('chatchip_selected_model') || '1.0';
+    
+    // 🔥 Tüm mesajları birleştir: geçmiş + yeni mesaj
+    let allMessages = [...history];
+    
+    // Eğer sistem prompt'u varsa ve history'de yoksa ekle
+    if (systemPrompt && !allMessages.some(m => m.role === 'system')) {
+        allMessages.unshift({ role: 'system', content: systemPrompt });
     }
-
+    
+    // Yeni mesajı ekle
+    allMessages.push({ role: 'user', content: message });
+    
+    const options = {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify({ 
+            message: message,
+            messages: allMessages,  // ← YENİ: Tüm mesaj geçmişi
+            version: version,
+            coachType: coachType,
+            systemPrompt: systemPrompt,
+            sessionId: sessionId
+        })
+    };
+    
+    if (signal) {
+        options.signal = signal;
+        console.log('🔴 Abort signal eklendi');
+    }
+    
+    const res = await fetch(`${this.apiBase}/chat/stream`, options);
+    return res;
+}
     // ============ MODELS ============
     async getAvailableModels() {
         try {
