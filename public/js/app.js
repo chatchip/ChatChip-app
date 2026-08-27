@@ -768,37 +768,44 @@ async function sendMessage() {
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
    // ============================================================
-// 🔥 GÖRSEL ÜRETİM KONTROLÜ - BASİT VE GENİŞ
+// 🔥 GÖRSEL ÜRETİM KONTROLÜ - NET KOMUT
 // ============================================================
-const imageTriggers = [
-    'resim', 'fotoğraf', 'görsel', 'çizim', 'çiz', 
-    'image', 'photo', 'picture', 'draw', 
-    'manzara', 'portre', 'karikatür', 'kedi', 'köpek'
+const imagePatterns = [
+    /resim\s*(yap|oluştur|üret|çiz|göster|iste|ver)/i,
+    /fotoğraf\s*(yap|oluştur|üret|çek|göster|iste|ver)/i,
+    /görsel\s*(yap|oluştur|üret|çiz|göster|iste|ver)/i,
+    /çiz\s*(yap|oluştur|üret|göster|iste|ver)/i,
+    /göster\s*(resim|fotoğraf|görsel|çizim)/i,
+    /make\s*(image|photo|picture)/i,
+    /create\s*(image|photo|picture)/i,
+    /generate\s*(image|photo|picture)/i,
+    /draw\s*(a|an|)/i,
+    /kedi\s*(resmi|görseli|fotoğrafı|çizimi)/i,
+    /köpek\s*(resmi|görseli|fotoğrafı|çizimi)/i,
+    /manzara\s*(resmi|görseli|fotoğrafı|çizimi)/i,
+    /portre\s*(yap|çiz|oluştur|göster|iste|ver)/i,
+    /karikatür\s*(yap|çiz|oluştur|göster|iste|ver)/i,
+    /bana\s*(bir|)\s*(resim|fotoğraf|görsel|çizim)\s*(yap|oluştur|üret|çiz|göster|iste|ver)/i,
+    /[a-zA-ZğüşıöçĞÜŞİÖÇ]+\s*(resmi|görseli|fotoğrafı|çizimi)/i,
+    /(yapar\s*mısın|yapabilir\s*misin|çizebilir\s*misin|gösterebilir\s*misin)/i
 ];
 
-const imageActions = ['yap', 'oluştur', 'üret', 'çiz', 'göster', 'iste', 'ver', 'make', 'create', 'generate', 'draw'];
+const lower = text.toLowerCase();
 
-const hasImageTrigger = imageTriggers.some(k => text.toLowerCase().includes(k));
-const hasImageAction = imageActions.some(k => text.toLowerCase().includes(k));
+// 🔥 SADECE BİLGİ SORULARINI ENGELLE (yapar mısın? tarzı sorulara izin ver!)
+const isInfoQuestion = lower.includes('nasıl') || 
+                       lower.includes('nedir') || 
+                       lower.includes('ne yapmalıyım') || 
+                       lower.includes('ne yapmam lazım') ||
+                       lower.includes('önerir misin') ||
+                       lower.includes('tavsiye') ||
+                       lower.includes('yardım');
 
-const isImageCommand = (hasImageTrigger && hasImageAction) || 
-                       imageTriggers.some(k => text.toLowerCase().includes(k + ' yap')) ||
-                       imageTriggers.some(k => text.toLowerCase().includes(k + ' resmi')) ||
-                       imageTriggers.some(k => text.toLowerCase().includes(k + ' görseli'));
+const isImageCommand = imagePatterns.some(pattern => pattern.test(text));
 
-// Soru kontrolü
-const isQuestion = text.includes('?') || 
-                   text.includes('nasıl') || 
-                   text.includes('nedir') || 
-                   text.includes('ne') || 
-                   text.includes('kim') || 
-                   text.includes('nerede') || 
-                   text.includes('niye');
-
-if (isImageCommand && !isQuestion) {
-    // Temiz prompt oluştur
+if (isImageCommand && !isInfoQuestion) {
     let cleanPrompt = text
-        .replace(/resim|fotoğraf|göster|yap|oluştur|üret|çiz|çek|make|create|generate|draw|portre|karikatür|lütfen|rica|bana|bir|tane/gi, '')
+        .replace(/resim|fotoğraf|göster|yap|oluştur|üret|çiz|çek|make|create|generate|draw|portre|karikatür|lütfen|rica|bana|bir|tane|mısın|misin|yapar|yapabilir|çizebilir|gösterebilir/gi, '')
         .trim();
     
     if (!cleanPrompt || cleanPrompt.length < 2) {
