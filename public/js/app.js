@@ -144,6 +144,29 @@ async function checkAuth() {
     if (token && currentUser) {
         console.log('👤 Kullanıcı giriş yapmış:', currentUser.name);
         
+        // 🔥 YENİ: CryptoKey kontrol et, yoksa Face ID ile türet!
+        if (!currentCryptoKey) {
+            console.log('🔑 CryptoKey yok, Face ID ile türetmeyi dene...');
+            const isRegistered = BiometricAuth.isBiometricRegistered();
+            if (isRegistered) {
+                // Face ID'yi tetikle
+                const success = await triggerBiometricLogin();
+                if (success) {
+                    console.log('✅ Face ID ile CryptoKey türetildi');
+                } else {
+                    console.log('⚠️ Face ID başarısız, normal giriş gösteriliyor');
+                    if (loginForm) loginForm.style.display = 'block';
+                    if (userMenu) userMenu.style.display = 'none';
+                    return;
+                }
+            } else {
+                console.log('⚠️ Biyometrik kayıt yok, normal giriş gösteriliyor');
+                if (loginForm) loginForm.style.display = 'block';
+                if (userMenu) userMenu.style.display = 'none';
+                return;
+            }
+        }
+        
         avatar.textContent = currentUser.name?.charAt(0).toUpperCase() || '👤';
         name.textContent = currentUser.name || 'Kullanıcı';
         email.textContent = currentUser.email || '';
@@ -184,7 +207,6 @@ async function checkAuth() {
         if (adminMenuItem) adminMenuItem.style.display = 'none';
     }
 }
-
 // ============================================================
 // PLAN KONTROLÜ
 // ============================================================
