@@ -142,15 +142,26 @@
             </div>
 
             <div class="login-form" id="loginForm">
-                <input type="email" id="loginEmail" class="form-input" placeholder="E-posta adresiniz">
-                <input type="password" id="loginPassword" class="form-input" placeholder="Şifreniz">
-                <button class="login-btn" id="loginBtn">🔑 Giriş Yap</button>
-                <div style="text-align:center; margin-top:10px;">
-                    <a href="/forgot-password.html" style="color:var(--text-light); font-size:0.75rem; text-decoration:none;">🔑 Şifremi Unuttum</a>
-                    <span style="color:var(--text-light); font-size:0.75rem; margin:0 6px;">|</span>
-                    <a href="/register?position=left" style="color:var(--primary); font-size:0.75rem; text-decoration:none;">Kayıt ol</a>
-                </div>
-            </div>
+    <input type="email" id="loginEmail" class="form-input" placeholder="E-posta adresiniz">
+    <input type="password" id="loginPassword" class="form-input" placeholder="Şifreniz">
+    
+    <!-- 🔐 BİYOMETRİK BUTONLAR -->
+    <div id="biometricButtons" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+        <button id="biometricLoginBtn" style="display:none; width:100%; padding:10px; border:none; border-radius:8px; background:linear-gradient(135deg, #7BD3C9, #5FB8A0); color:white; font-size:0.9rem; font-weight:600; cursor:pointer;">
+            🔐 Face ID / Parmak İzi ile Giriş
+        </button>
+        <button id="biometricRegisterBtn" style="display:none; width:100%; padding:10px; border:none; border-radius:8px; background:linear-gradient(135deg, #8B5CF6, #6D28D9); color:white; font-size:0.9rem; font-weight:600; cursor:pointer;">
+            📱 Face ID / Parmak İzi Kaydet
+        </button>
+    </div>
+    
+    <button class="login-btn" id="loginBtn">🔑 Giriş Yap</button>
+    <div style="text-align:center; margin-top:10px;">
+        <a href="/forgot-password.html" style="color:var(--text-light); font-size:0.75rem; text-decoration:none;">🔑 Şifremi Unuttum</a>
+        <span style="color:var(--text-light); font-size:0.75rem; margin:0 6px;">|</span>
+        <a href="/register?position=left" style="color:var(--primary); font-size:0.75rem; text-decoration:none;">Kayıt ol</a>
+    </div>
+</div>
 
             <div class="user-menu" id="userMenu" style="display:none;">
                 <button class="menu-item" onclick="window.location.href='/backoffice.html'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Backoffice</button>
