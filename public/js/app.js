@@ -1738,9 +1738,21 @@ async function registerBiometric() {
             }
         }
 
+        // 🔥 2.5 CryptoKey'i kontrol et/türet (YENİ!)
+        if (!currentCryptoKey) {
+            try {
+                currentCryptoKey = await ChatChipCrypto.deriveKey(password);
+                console.log('✅ CryptoKey türetildi (register)');
+            } catch (keyError) {
+                console.error('❌ CryptoKey türetme hatası:', keyError);
+                showToast('❌ Güvenlik anahtarı oluşturulamadı', 'error');
+                return;
+            }
+        }
+
         showToast('⏳ Face ID / Parmak izi kaydediliyor...', 'info');
 
-        // 3. WebAuthn ile credential oluştur (DÜZELTİLDİ!)
+        // 3. WebAuthn ile credential oluştur
         const credential = await navigator.credentials.create({
             publicKey: {
                 challenge: crypto.getRandomValues(new Uint8Array(32)),
@@ -1759,8 +1771,8 @@ async function registerBiometric() {
                 ],
                 authenticatorSelection: {
                     userVerification: "required",
-                    residentKey: "preferred",  // 🔥 DEĞİŞTİ: "required" → "preferred"
-                    authenticatorAttachment: "platform"  // 🔥 EKLE: cihaz içi
+                    residentKey: "preferred",
+                    authenticatorAttachment: "platform"
                 },
                 attestation: "none"
             }
