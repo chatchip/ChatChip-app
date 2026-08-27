@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(addDarkModeToggle, 200);
     setTimeout(updateThemeIcon, 300);
     startPlanWatcher();
+    
+    // 🔥 Biyometrik desteği kontrol et (YENİ)
+    setTimeout(checkBiometricSupport, 500);
 });
 
 // ============================================================
@@ -1633,3 +1636,41 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ Mobil login touchend eklendi!');
     }
 });
+// ============================================================
+// 🔐 BİYOMETRİK (Face ID / Parmak İzi) KONTROL
+// ============================================================
+
+async function checkBiometricSupport() {
+    console.log('🔍 Biyometrik destek kontrol ediliyor...');
+    
+    const isSupported = BiometricAuth.isSupported();
+    const isAvailable = await BiometricAuth.isPlatformAuthenticatorAvailable();
+    const isRegistered = BiometricAuth.isBiometricRegistered();
+    const isLoggedIn = !!currentUser;
+    
+    console.log('📊 Biyometrik durum:', {
+        isSupported,
+        isAvailable,
+        isRegistered,
+        isLoggedIn
+    });
+    
+    const biometricLoginBtn = document.getElementById('biometricLoginBtn');
+    const biometricRegisterBtn = document.getElementById('biometricRegisterBtn');
+    
+    // Butonları göster/gizle
+    if (isSupported && isAvailable) {
+        if (biometricLoginBtn) {
+            biometricLoginBtn.style.display = isRegistered ? 'block' : 'none';
+            console.log('✅ Biyometrik giriş butonu gösterildi');
+        }
+        if (biometricRegisterBtn && isLoggedIn) {
+            biometricRegisterBtn.style.display = isRegistered ? 'none' : 'block';
+            console.log('✅ Biyometrik kayıt butonu gösterildi');
+        }
+    } else {
+        if (biometricLoginBtn) biometricLoginBtn.style.display = 'none';
+        if (biometricRegisterBtn) biometricRegisterBtn.style.display = 'none';
+        console.log('⚠️ Biyometrik desteklenmiyor');
+    }
+}
