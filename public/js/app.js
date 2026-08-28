@@ -1438,8 +1438,15 @@ async function handleFileUpload(event) {
 
         const data = await response.json();
 
-        if (data.success) {
-            currentImageUrl = data.fileUrl;
+              if (data.success) {
+            console.log('📸 data.fileUrl:', data.fileUrl);
+            
+            let imageUrl = data.fileUrl;
+            if (imageUrl && imageUrl.startsWith('http://')) {
+                imageUrl = imageUrl.replace('http://', 'https://');
+            }
+            currentImageUrl = imageUrl;
+            console.log('📸 currentImageUrl set:', currentImageUrl);
             
             const input = document.getElementById('messageInput');
             if (input) {
