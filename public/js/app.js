@@ -1076,7 +1076,7 @@ if (isImageCommand && !isInfoQuestion) {
     addMessage(fullMessage, 'user');
     input.value = '';
     input.style.height = 'auto';
-    clearImagePreview();
+    removeImagePreviewUI();
 
     const botMsgId = addMessage('', 'bot', true);
     const systemPrompt = localStorage.getItem('chatchip_system_prompt') || '';
