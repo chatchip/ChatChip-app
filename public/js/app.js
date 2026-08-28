@@ -857,14 +857,28 @@ async function generateAndShowImage(prompt, originalText) {
 // 🔥 SEND MESSAGE
 // ============================================================
 async function sendMessage() {
+    // 🔥 1. ADIM: currentImageUrl'yi localStorage'dan ZORLA al
+    let imageUrl = localStorage.getItem('chatchip_current_image_url');
+    
+    // 🔥 2. ADIM: Eğer boşsa, hiçbir şey yapma ve uyarı göster
+    if (!imageUrl) {
+        showToast('⚠️ Önce bir görsel yükleyin!', 'error');
+        return;
+    }
+
+    // 🔥 3. ADIM: currentImageUrl'i güncelle
+    currentImageUrl = imageUrl;
+    console.log('✅ currentImageUrl (zorunlu):', currentImageUrl);
+
+    // 🔥 4. ADIM: Mesajı al ve işleme başla
     const text = input.value.trim();
     console.log('🔴 sendMessage çalıştı! text:', text);
-    
-    // 🔥 ZORLA localStorage'dan al!
-    currentImageUrl = localStorage.getItem('chatchip_current_image_url');
-    console.log('📸 Zorla localStorage\'dan alındı:', currentImageUrl);
-    
-    if (!text && !currentImageUrl) return;
+
+    if (!text) {
+        showToast('⚠️ Lütfen bir mesaj yazın!', 'error');
+        return;
+    }
+
     if (isProcessing) return;
        // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
 if (currentImageUrl && text) {
