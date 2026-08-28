@@ -145,29 +145,39 @@ async function checkAuth() {
         console.log('👤 Kullanıcı giriş yapmış:', currentUser.name);
         
         // 🔥 7 GÜN KONTROLÜ
-        let isSevenDaySession = false;
-        const expiryDate = localStorage.getItem('chatchip_password_expiry');
-        if (expiryDate) {
-            const now = new Date();
-            const expiry = new Date(expiryDate);
-            if (now < expiry) {
-                const savedPassword = sessionStorage.getItem('user_password');
-                if (savedPassword) {
-                    try {
-                        currentCryptoKey = await ChatChipCrypto.deriveKey(savedPassword);
-                        console.log('✅ 7 günlük oturum aktif, CryptoKey türetildi');
-                        isSevenDaySession = true;
-                    } catch (e) {
-                        console.warn('⚠️ CryptoKey türetme hatası:', e);
-                    }
-                }
-            } else {
-                localStorage.removeItem('chatchip_password_expiry');
-                localStorage.removeItem('chatchip_encrypted_password');
-                sessionStorage.removeItem('user_password');
-                console.log('⏰ 7 gün doldu, oturum temizlendi');
+let isSevenDaySession = false;
+const expiryDate = localStorage.getItem('chatchip_password_expiry');
+if (expiryDate) {
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    if (now < expiry) {
+        // ✅ 7 gün dolmamış, JWK'dan CryptoKey'i geri yükle!
+        const savedJwk = localStorage.getItem('chatchip_crypto_key_jwk');
+        if (savedJwk && !currentCryptoKey) {
+            try {
+                currentCryptoKey = await window.crypto.subtle.importKey(
+                    "jwk",
+                    JSON.parse(savedJwk),
+                    { name: "AES-GCM", length: 256 },
+                    true,
+                    ["encrypt", "decrypt"]
+                );
+                console.log('✅ CryptoKey JWK\'dan geri yüklendi (şifre sorulmadı!)');
+                isSevenDaySession = true;
+            } catch (e) {
+                console.warn('⚠️ CryptoKey import edilemedi:', e);
             }
         }
+    } else {
+        // ❌ 7 gün dolmuş, temizle
+        localStorage.removeItem('chatchip_password_expiry');
+        localStorage.removeItem('chatchip_encrypted_password');
+        localStorage.removeItem('chatchip_crypto_key_jwk');
+        sessionStorage.removeItem('user_password');
+        currentCryptoKey = null;
+        console.log('⏰ 7 gün doldu, oturum temizlendi');
+    }
+}
         
         // 🔥 CryptoKey kontrol et, yoksa Face ID ile türet!
         if (!currentCryptoKey && !isSevenDaySession) {
@@ -374,17 +384,37 @@ async function loadSession(id) {
             currentSessionId = id;
             isFirstMessage = false;
             messagesDiv.innerHTML = "";
-              if (!currentCryptoKey) {
-                const savedPassword = sessionStorage.getItem('user_password');
-                if (savedPassword) {
-                    try {
-                        currentCryptoKey = await ChatChipCrypto.deriveKey(savedPassword);
-                        console.log('✅ CryptoKey loadSession için türetildi');
-                    } catch (e) {
-                        console.warn('⚠️ CryptoKey türetilemedi:', e);
-                    }
-                }
+             if (!currentCryptoKey) {
+    // 🔥 ÖNCE JWK'dan dene!
+    const savedJwk = localStorage.getItem('chatchip_crypto_key_jwk');
+    if (savedJwk) {
+        try {
+            currentCryptoKey = await window.crypto.subtle.importKey(
+                "jwk",
+                JSON.parse(savedJwk),
+                { name: "AES-GCM", length: 256 },
+                true,
+                ["encrypt", "decrypt"]
+            );
+            console.log('✅ CryptoKey JWK\'dan yüklendi (loadSession)');
+        } catch (e) {
+            console.warn('⚠️ CryptoKey import edilemedi:', e);
+        }
+    }
+    
+    // JWK yoksa sessionStorage'dan şifreyle dene (yedek)
+    if (!currentCryptoKey) {
+        const savedPassword = sessionStorage.getItem('user_password');
+        if (savedPassword) {
+            try {
+                currentCryptoKey = await ChatChipCrypto.deriveKey(savedPassword);
+                console.log('✅ CryptoKey sessionStorage şifresinden türetildi (loadSession)');
+            } catch (e) {
+                console.warn('⚠️ CryptoKey türetilemedi:', e);
             }
+        }
+    }
+}
             
             if (result.messages && result.messages.length > 0) {
                 for (const msg of result.messages) {
@@ -545,12 +575,18 @@ async function handleLogin(e) {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
                 console.log('✅ CryptoKey başarıyla türetildi');
                 
-                try {
-    sessionStorage.setItem('chatchip_crypto_key', JSON.stringify(currentCryptoKey));
-    console.log('✅ CryptoKey sessionStorage\'a kaydedildi');
+   try {
+    const exportedKey = await window.crypto.subtle.exportKey("jwk", currentCryptoKey);
+    localStorage.setItem('chatchip_crypto_key_jwk', JSON.stringify(exportedKey));
+    console.log('✅ CryptoKey JWK olarak localStorage\'a kaydedildi');
 } catch (e) {
-    console.warn('⚠️ CryptoKey sessionStorage\'a kaydedilemedi:', e);
+    console.warn('⚠️ CryptoKey export edilemedi:', e);
 }
+
+// 🔥 Şifreyi sessionStorage'a kaydet (geçici)
+sessionStorage.setItem('user_password', result.user.password);
+console.log('✅ Şifre sessionStorage\'a kaydedildi (geçici)');
+                
                 try {
     const encryptedPassword = await ChatChipCrypto.encryptWithKey(result.user.password, currentCryptoKey);
     localStorage.setItem('chatchip_encrypted_password', JSON.stringify(encryptedPassword));
@@ -600,7 +636,15 @@ async function handleLogout() {
         isFirstMessage = true;
         sessions = [];
         messagesDiv.innerHTML = '';
-        checkAuth();
+        
+        // 🔥 YENİ: JWK ve diğer verileri temizle
+        localStorage.removeItem('chatchip_crypto_key_jwk');
+        localStorage.removeItem('chatchip_password_expiry');
+        localStorage.removeItem('chatchip_encrypted_password');
+        sessionStorage.removeItem('user_password');
+        currentCryptoKey = null;
+        
+        await checkAuth();
         renderSessions();
         showToast('👋 Oturum kapatıldı.', 'info');
     }
