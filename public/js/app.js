@@ -858,7 +858,14 @@ async function generateAndShowImage(prompt, originalText) {
 // ============================================================
 async function sendMessage() {
     const text = input.value.trim();
-    console.log('🔴 sendMessage çalıştı! text:', text);  // ← BURAYA EKLE!
+    console.log('🔴 sendMessage çalıştı! text:', text);
+    if (!currentImageUrl) {
+    const saved = localStorage.getItem('chatchip_current_image_url');
+    if (saved) {
+        currentImageUrl = saved;
+        console.log('📸 Görsel localStorage\'dan yüklendi:', currentImageUrl);
+    }
+}
     
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
@@ -1488,6 +1495,7 @@ async function handleFileUpload(event) {
             // 🔥 URL'yi encode et (boşluklar ve özel karakterler için)
             imageUrl = encodeURI(imageUrl);
             currentImageUrl = imageUrl;
+            localStorage.setItem('chatchip_current_image_url', currentImageUrl);
             console.log('📸 currentImageUrl set:', currentImageUrl);
             
             const input = document.getElementById('messageInput');
@@ -1599,6 +1607,7 @@ function clearImagePreview() {
         previewContainer = null;
     }
     currentImageUrl = null;
+    localStorage.removeItem('chatchip_current_image_url');  // ← BUNU EKLE!
     
     const input = document.getElementById('messageInput');
     if (input) {
