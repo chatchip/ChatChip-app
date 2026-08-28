@@ -143,39 +143,37 @@ async function checkAuth() {
 
     if (token && currentUser) {
         console.log('👤 Kullanıcı giriş yapmış:', currentUser.name);
-        // 🔥 7 GÜN KONTROLÜ (Sayfa yenilemede Face ID'yi atla)
-let isSevenDaySession = false;
-const expiryDate = localStorage.getItem('chatchip_password_expiry');
-if (expiryDate) {
-    const now = new Date();
-    const expiry = new Date(expiryDate);
-    if (now < expiry) {
-        // ✅ 7 gün dolmamış, sessionStorage'dan CryptoKey'i al
-        const savedKey = sessionStorage.getItem('chatchip_crypto_key');
-        if (savedKey) {
-            try {
-                currentCryptoKey = JSON.parse(savedKey);
-                console.log('✅ 7 günlük oturum aktif, Face ID gerekmez');
-                isSevenDaySession = true;
-            } catch (e) {
-                console.warn('⚠️ CryptoKey parse hatası:', e);
+        
+        // 🔥 7 GÜN KONTROLÜ
+        let isSevenDaySession = false;
+        const expiryDate = localStorage.getItem('chatchip_password_expiry');
+        if (expiryDate) {
+            const now = new Date();
+            const expiry = new Date(expiryDate);
+            if (now < expiry) {
+                const savedPassword = sessionStorage.getItem('user_password');
+                if (savedPassword) {
+                    try {
+                        currentCryptoKey = await ChatChipCrypto.deriveKey(savedPassword);
+                        console.log('✅ 7 günlük oturum aktif, CryptoKey türetildi');
+                        isSevenDaySession = true;
+                    } catch (e) {
+                        console.warn('⚠️ CryptoKey türetme hatası:', e);
+                    }
+                }
+            } else {
+                localStorage.removeItem('chatchip_password_expiry');
+                localStorage.removeItem('chatchip_encrypted_password');
+                sessionStorage.removeItem('user_password');
+                console.log('⏰ 7 gün doldu, oturum temizlendi');
             }
         }
-    } else {
-        // ❌ 7 gün dolmuş, temizle
-        localStorage.removeItem('chatchip_password_expiry');
-        localStorage.removeItem('chatchip_encrypted_password');
-        sessionStorage.removeItem('chatchip_crypto_key');
-        console.log('⏰ 7 gün doldu, oturum temizlendi');
-    }
-}
         
-        // 🔥 YENİ: CryptoKey kontrol et, yoksa Face ID ile türet!
+        // 🔥 CryptoKey kontrol et, yoksa Face ID ile türet!
         if (!currentCryptoKey && !isSevenDaySession) {
             console.log('🔑 CryptoKey yok, Face ID ile türetmeyi dene...');
             const isRegistered = BiometricAuth.isBiometricRegistered();
             if (isRegistered) {
-                // Face ID'yi tetikle
                 const success = await triggerBiometricLogin();
                 if (success) {
                     console.log('✅ Face ID ile CryptoKey türetildi');
@@ -191,6 +189,7 @@ if (expiryDate) {
             }
         }
         
+        // UI güncellemeleri
         avatar.textContent = currentUser.name?.charAt(0).toUpperCase() || '👤';
         name.textContent = currentUser.name || 'Kullanıcı';
         email.textContent = currentUser.email || '';
@@ -215,8 +214,8 @@ if (expiryDate) {
         checkPlan();
         
     } else {
+        // Kullanıcı giriş yapmamış
         console.log('👤 Kullanıcı giriş yapmamış');
-        
         avatar.textContent = '👤';
         name.textContent = 'Misafir';
         email.textContent = 'giris@yapilmadi';
