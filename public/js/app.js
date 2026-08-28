@@ -401,7 +401,7 @@ async function loadSession(id) {
     
     // JWK yoksa sessionStorage'dan şifreyle dene (yedek)
     if (!currentCryptoKey) {
-        const savedPassword = sessionStorage.getItem('user_password');
+        const savedPassword = localStorage.getItem('user_password');
         if (savedPassword) {
             try {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(savedPassword);
@@ -581,7 +581,7 @@ async function handleLogin(e) {
 }
 
 // 🔥 Şifreyi sessionStorage'a kaydet (geçici)
-sessionStorage.setItem('user_password', result.user.password);
+localStorage.setItem('user_password', result.user.password);
 console.log('✅ Şifre sessionStorage\'a kaydedildi (geçici)');
                 
                 try {
@@ -2014,7 +2014,7 @@ async function loginWithBiometric() {
             }
 
             // 4. Session'dan şifreyi al
-            const savedPassword = sessionStorage.getItem('user_password');
+            const savedPassword = localStorage.getItem('user_password');
             
             if (!savedPassword) {
                 // Şifre yoksa kullanıcıdan iste
@@ -2036,7 +2036,7 @@ async function loginWithBiometric() {
                 // CryptoKey'i türet
                 const key = await ChatChipCrypto.deriveKey(password);
                 currentCryptoKey = key;
-                sessionStorage.setItem('user_password', password);
+                localStorage.setItem('user_password', password);
 
                 // Şifreyi çöz ve giriş yap
                 const decrypted = await ChatChipCrypto.decryptWithKey(JSON.parse(encryptedData), key);
@@ -2197,7 +2197,7 @@ async function autoLoginWithBiometric() {
         }
 
         // 5. Şifreyi session'dan al veya kullanıcıdan iste
-        let password = sessionStorage.getItem('user_password');
+        let password = localStorage.getItem('user_password');
 
         if (!password) {
             if (typeof Swal !== 'undefined') {
@@ -2233,7 +2233,7 @@ async function autoLoginWithBiometric() {
         // 6. CryptoKey'i türet ve şifreyi çöz
         const key = await ChatChipCrypto.deriveKey(password);
         currentCryptoKey = key;
-        sessionStorage.setItem('user_password', password);
+        localStorage.setItem('user_password', password);
 
         const decrypted = await ChatChipCrypto.decryptWithKey(JSON.parse(encryptedData), key);
         if (!decrypted) {
@@ -2292,7 +2292,7 @@ async function triggerBiometricLogin() {
             return false;
         }
 
-        let password = sessionStorage.getItem('user_password');
+        let password = localStorage.getItem('user_password');
 
         if (!password) {
             if (typeof Swal !== 'undefined') {
@@ -2316,14 +2316,14 @@ async function triggerBiometricLogin() {
                     return false;
                 }
                 password = result.value;
-                sessionStorage.setItem('user_password', password);
+                localStorage.setItem('user_password', password);
             } else {
                 password = prompt('🔐 Face ID doğrulandı! Şifrenizi girin:');
                 if (!password) {
                     console.log('❌ Kullanıcı şifre girmeyi iptal etti');
                     return false;
                 }
-                sessionStorage.setItem('user_password', password);
+                localStorage.setItem('user_password', password);
             }
         }
 
