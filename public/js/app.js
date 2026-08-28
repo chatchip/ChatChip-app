@@ -856,28 +856,46 @@ async function generateAndShowImage(prompt, originalText) {
 async function sendMessage() {
     const text = input.value.trim();
     console.log('🔴 sendMessage çalıştı! text:', text);
-    
-const savedImageUrl = localStorage.getItem('chatchip_current_image_url');
-if (savedImageUrl) {
-    currentImageUrl = savedImageUrl;
-    console.log('📸 Görsel localStorage\'dan yüklendi:', currentImageUrl);
-} else {
-    console.log('📸 Aktif görsel yok');
-}
-    
-    // 🔥 currentImageUrl'yi güncelle
-    currentImageUrl = imageUrl;
-    
+
+    // Görsel varsa localStorage'dan yükle
+    const savedImageUrl = localStorage.getItem('chatchip_current_image_url');
+
+    if (savedImageUrl) {
+        currentImageUrl = savedImageUrl;
+        console.log('📸 Görsel localStorage\'dan yüklendi:', currentImageUrl);
+    } else {
+        currentImageUrl = null;
+        console.log('📸 Aktif görsel yok');
+    }
+
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
-      
-    // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
-if (currentImageUrl && text) {
-    const editKeywords = ['değiştir', 'düzenle', 'çevir', 'ekle', 'kaldır', 'renk', 'style', 'tarz', 'anime', 'karikatür', 'çizim', 'filtre', 'boya', 'değiş'];
-    const isEditCommand = editKeywords.some(k => text.toLowerCase().includes(k));
 
-    if (isEditCommand) {
-        console.log('🎨 Görsel düzenleme isteği:', text);
+    // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
+    if (currentImageUrl && text) {
+        const editKeywords = [
+            'değiştir',
+            'düzenle',
+            'çevir',
+            'ekle',
+            'kaldır',
+            'renk',
+            'style',
+            'tarz',
+            'anime',
+            'karikatür',
+            'çizim',
+            'filtre',
+            'boya',
+            'değiş'
+        ];
+
+        const isEditCommand = editKeywords.some(k =>
+            text.toLowerCase().includes(k)
+        );
+
+        if (isEditCommand) {
+            console.log('🎨 Görsel düzenleme isteği:', text);
 
         const token = localStorage.getItem('chatchip_token');
         if (!token) {
@@ -1053,7 +1071,6 @@ if (isImageCommand && !isInfoQuestion) {
     input.disabled = true;
     abortController = new AbortController();
 
-    // 🔥 Gizli görsel URL'sini mesaja ekle (kullanıcı görmesin)
     let fullMessage = text || '';
 
     addMessage(fullMessage, 'user');
