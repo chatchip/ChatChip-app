@@ -859,6 +859,7 @@ async function generateAndShowImage(prompt, originalText) {
 async function sendMessage() {
     const text = input.value.trim();
     console.log('🔴 sendMessage çalıştı! text:', text);
+    console.log('🔍 sendMessage başlangıcında currentImageUrl:', currentImageUrl);
     if (!currentImageUrl) {
     const saved = localStorage.getItem('chatchip_current_image_url');
     if (saved) {
