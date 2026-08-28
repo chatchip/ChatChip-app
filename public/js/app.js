@@ -572,18 +572,6 @@ async function handleLogin(e) {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
                 console.log('✅ CryptoKey başarıyla türetildi');
                 
-   try {
-    const exportedKey = await window.crypto.subtle.exportKey("jwk", currentCryptoKey);
-    localStorage.setItem('chatchip_crypto_key_jwk', JSON.stringify(exportedKey));
-    console.log('✅ CryptoKey JWK olarak localStorage\'a kaydedildi');
-} catch (e) {
-    console.warn('⚠️ CryptoKey export edilemedi:', e);
-}
-
-// 🔥 Şifreyi sessionStorage'a kaydet (geçici)
-localStorage.setItem('user_password', result.user.password);
-console.log('✅ Şifre sessionStorage\'a kaydedildi (geçici)');
-                
                 try {
     const encryptedPassword = await ChatChipCrypto.encryptWithKey(result.user.password, currentCryptoKey);
     localStorage.setItem('chatchip_encrypted_password', JSON.stringify(encryptedPassword));
