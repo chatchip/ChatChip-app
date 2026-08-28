@@ -862,6 +862,62 @@ async function sendMessage() {
     
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
+        // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
+    if (currentImageUrl && text) {
+        const editKeywords = ['değiştir', 'düzenle', 'çevir', 'yap', 'ekle', 'kaldır', 'renk', 'style', 'tarz', 'anime', 'karikatür', 'çizim', 'filtre', 'boya', 'değiş'];
+        const isEditCommand = editKeywords.some(k => text.toLowerCase().includes(k));
+
+        if (isEditCommand) {
+            console.log('🎨 Görsel düzenleme isteği:', text);
+
+            const token = localStorage.getItem('chatchip_token');
+            if (!token) {
+                showToast('❌ Lütfen önce giriş yapın!', 'error');
+                return;
+            }
+
+            addMessage(text, 'user');
+            input.value = '';
+            input.style.height = 'auto';
+            clearImagePreview();
+
+            const loadingMsgId = addMessage('🎨 Görsel düzenleniyor...', 'bot', true);
+
+            try {
+                const response = await fetch('/api/image/edit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        prompt: text,
+                        imageUrl: currentImageUrl
+                    })
+                });
+
+                const data = await response.json();
+                console.log('📥 Düzenleme yanıtı:', data);
+
+                if (data.success && data.imageUrl) {
+                    const imageHtml = `<img src="${data.imageUrl}" alt="${data.prompt}" style="max-width:100%; max-height:400px; border-radius:12px; border:1px solid var(--border); object-fit:contain;" />`;
+                    const resultText = `🖼️ **${data.prompt}**\n\n${imageHtml}\n\n✨ Görsel düzenlendi!`;
+                    updateMessageMarkdown(loadingMsgId, resultText);
+                    showToast('✅ Görsel düzenlendi!', 'success');
+                } else {
+                    updateMessageMarkdown(loadingMsgId, '❌ Görsel düzenlenemedi: ' + (data.error || 'Bilinmeyen hata'));
+                    showToast('❌ Görsel düzenlenemedi', 'error');
+                }
+            } catch (error) {
+                console.error('❌ Düzenleme hatası:', error);
+                updateMessageMarkdown(loadingMsgId, '❌ Hata: ' + error.message);
+                showToast('❌ Düzenleme hatası', 'error');
+            }
+
+            chatArea.scrollTop = chatArea.scrollHeight;
+            return;
+        }
+    }
    // ============================================================
 // 🔥 GÖRSEL ÜRETİM KONTROLÜ - NET KOMUT
 // ============================================================
