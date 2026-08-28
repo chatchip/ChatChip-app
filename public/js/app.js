@@ -1010,9 +1010,9 @@ if (isImageCommand && !isInfoQuestion) {
     }
 
     addMessage(text, 'user');
-    input.value = '';
-    input.style.height = 'auto';
-    clearImagePreview();
+input.value = '';
+input.style.height = 'auto';
+removeImagePreviewUI();
 
     await generateAndShowImage(cleanPrompt, text);
     chatArea.scrollTop = chatArea.scrollHeight;
