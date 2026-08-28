@@ -862,7 +862,7 @@ async function sendMessage() {
     
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
-        // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
+       // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
     if (currentImageUrl && text) {
         const editKeywords = ['değiştir', 'düzenle', 'çevir', 'yap', 'ekle', 'kaldır', 'renk', 'style', 'tarz', 'anime', 'karikatür', 'çizim', 'filtre', 'boya', 'değiş'];
         const isEditCommand = editKeywords.some(k => text.toLowerCase().includes(k));
@@ -884,16 +884,30 @@ async function sendMessage() {
             const loadingMsgId = addMessage('🎨 Görsel düzenleniyor...', 'bot', true);
 
             try {
+                // 🔥 DOĞRUDAN GÖRSEL GÖNDER!
+                const fileInput = document.getElementById('fileInput');
+                const file = fileInput?.files?.[0];
+
+                console.log('📸 fileInput:', fileInput);
+                console.log('📸 file:', file);
+
+                if (!file) {
+                    showToast('❌ Görsel dosyası bulunamadı! Lütfen önce bir görsel yükleyin.', 'error');
+                    updateMessageMarkdown(loadingMsgId, '❌ Görsel dosyası bulunamadı! Lütfen önce bir görsel yükleyin.');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('prompt', text);
+
                 const response = await fetch('https://chatchip-production.up.railway.app/api/image/edit', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
+                        // Content-Type yok! FormData otomatik ekler
                     },
-                    body: JSON.stringify({
-                        prompt: text,
-                        imageUrl: currentImageUrl
-                    })
+                    body: formData
                 });
 
                 const data = await response.json();
