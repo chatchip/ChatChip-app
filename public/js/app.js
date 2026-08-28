@@ -905,13 +905,17 @@ if (currentImageUrl && text) {
             formData.append('image', file);
             formData.append('prompt', text);
 
-            const response = await fetch('https://chatchip-production.up.railway.app/api/image/edit', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: formData
-            });
+           const response = await fetch('https://chatchip-production.up.railway.app/api/image/edit', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',  // ← BUNU EKLE!
+        'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+        prompt: text,
+        imageUrl: currentImageUrl
+    })
+});
 
             const data = await response.json();
             console.log('📥 Düzenleme yanıtı:', data);
