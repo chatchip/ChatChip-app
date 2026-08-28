@@ -1469,22 +1469,31 @@ async function handleFileUpload(event) {
 
         const data = await response.json();
 
-              if (data.success) {
-            console.log('📸 data.fileUrl:', data.fileUrl);
-            
-            let imageUrl = data.fileUrl;
-            if (imageUrl && imageUrl.startsWith('http://')) {
-                imageUrl = imageUrl.replace('http://', 'https://');
-            }
-            currentImageUrl = imageUrl;
-            console.log('📸 currentImageUrl set:', currentImageUrl);
-            
-            const input = document.getElementById('messageInput');
-            if (input) {
-                input.value = '';
-                input.placeholder = '📝 Görsel hakkında bir şeyler yaz...';
-                input.focus();
-            }
+           if (data.success) {
+    console.log('📸 data.fileUrl:', data.fileUrl);
+    
+    // 🔥 DOSYAYI FILEINPUT'A KAYDET!
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput && file) {
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        fileInput.files = dataTransfer.files;
+        console.log('📸 Dosya fileInput\'a kaydedildi:', file.name);
+    }
+    
+    let imageUrl = data.fileUrl;
+    if (imageUrl && imageUrl.startsWith('http://')) {
+        imageUrl = imageUrl.replace('http://', 'https://');
+    }
+    currentImageUrl = imageUrl;
+    console.log('📸 currentImageUrl set:', currentImageUrl);
+    
+    const input = document.getElementById('messageInput');
+    if (input) {
+        input.value = '';
+        input.placeholder = '📝 Görsel hakkında bir şeyler yaz...';
+        input.focus();
+    }
             
             showImagePreview(currentImageUrl);
             showToast(`✅ ${file.name} yüklendi! Mesajını yaz ve gönder.`, 'success');
