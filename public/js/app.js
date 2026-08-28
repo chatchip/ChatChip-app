@@ -14,7 +14,7 @@ let sessions = [];
 let isFirstMessage = true;
 let availableModels = [];
 let abortController = null;
-let currentImageUrl = null;
+let currentImageUrl = localStorage.getItem('chatchip_current_image_url') || null;
 let previewContainer = null;
 let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
@@ -853,34 +853,29 @@ async function generateAndShowImage(prompt, originalText) {
         showToast('❌ Görsel üretim hatası', 'error');
     }
 }
-// ============================================================
-// 🔥 SEND MESSAGE
-// ============================================================
 async function sendMessage() {
-    // 🔥 1. ADIM: currentImageUrl'yi localStorage'dan ZORLA al
-    let imageUrl = localStorage.getItem('chatchip_current_image_url');
+    const text = input.value.trim();
+    console.log('🔴 sendMessage çalıştı! text:', text);
     
-    // 🔥 2. ADIM: Eğer boşsa, hiçbir şey yapma ve uyarı göster
+    // 🔥 Görsel URL'sini al (önce memory, sonra localStorage)
+    const imageUrl = currentImageUrl || localStorage.getItem('chatchip_current_image_url');
+    
+    console.log('📸 imageUrl:', imageUrl);
+    console.log('📸 currentImageUrl:', currentImageUrl);
+    console.log('📸 localStorage:', localStorage.getItem('chatchip_current_image_url'));
+    
     if (!imageUrl) {
         showToast('⚠️ Önce bir görsel yükleyin!', 'error');
         return;
     }
-
-    // 🔥 3. ADIM: currentImageUrl'i güncelle
+    
+    // 🔥 currentImageUrl'yi güncelle
     currentImageUrl = imageUrl;
-    console.log('✅ currentImageUrl (zorunlu):', currentImageUrl);
-
-    // 🔥 4. ADIM: Mesajı al ve işleme başla
-    const text = input.value.trim();
-    console.log('🔴 sendMessage çalıştı! text:', text);
-
-    if (!text) {
-        showToast('⚠️ Lütfen bir mesaj yazın!', 'error');
-        return;
-    }
-
+    
+    if (!text && !currentImageUrl) return;
     if (isProcessing) return;
-       // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
+      
+    // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
 if (currentImageUrl && text) {
     const editKeywords = ['değiştir', 'düzenle', 'çevir', 'yap', 'ekle', 'kaldır', 'renk', 'style', 'tarz', 'anime', 'karikatür', 'çizim', 'filtre', 'boya', 'değiş'];
     const isEditCommand = editKeywords.some(k => text.toLowerCase().includes(k));
@@ -897,54 +892,48 @@ if (currentImageUrl && text) {
         addMessage(text, 'user');
         input.value = '';
         input.style.height = 'auto';
-        clearImagePreview();
+        removeImagePreviewUI();
 
         const loadingMsgId = addMessage('🎨 Görsel düzenleniyor...', 'bot', true);
 
-        try {
-            console.log('📸 currentImageUrl:', currentImageUrl);
-            
-            // 🔥 URL'den dosyayı indir!
-            const imageResponse = await fetch(currentImageUrl);
-            const imageBlob = await imageResponse.blob();
-            const mimeType = imageResponse.headers.get('content-type') || 'image/png';
-            const extension = mimeType.split('/')[1] || 'png';
-            const file = new File([imageBlob], `image.${extension}`, { type: mimeType });
-            console.log('📸 Dosya indirildi:', file.name, file.size);
+       try {
+    const editImageUrl = currentImageUrl || localStorage.getItem('chatchip_current_image_url');
+    
+    console.log('📸 editImageUrl:', editImageUrl);
 
-            const formData = new FormData();
-            formData.append('image', file);
-            formData.append('prompt', text);
+    if (!editImageUrl) {
+        throw new Error('Görsel URL bulunamadı');
+    }
 
-           const response = await fetch('https://chatchip-production.up.railway.app/api/image/edit', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',  // ← BUNU EKLE!
-        'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({
-        prompt: text,
-        imageUrl: currentImageUrl
-    })
-});
+    const response = await fetch('https://chatchip-production.up.railway.app/api/image/edit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            prompt: text,
+            imageUrl: editImageUrl
+        })
+    });
 
-            const data = await response.json();
-            console.log('📥 Düzenleme yanıtı:', data);
+    const data = await response.json();
+    console.log('📥 Düzenleme yanıtı:', data);
 
-            if (data.success && data.imageUrl) {
-                const imageHtml = `<img src="${data.imageUrl}" alt="${data.prompt}" style="max-width:100%; max-height:400px; border-radius:12px; border:1px solid var(--border); object-fit:contain;" />`;
-                const resultText = `🖼️ **${data.prompt}**\n\n${imageHtml}\n\n✨ Görsel düzenlendi!`;
-                updateMessageMarkdown(loadingMsgId, resultText);
-                showToast('✅ Görsel düzenlendi!', 'success');
-            } else {
-                updateMessageMarkdown(loadingMsgId, '❌ Görsel düzenlenemedi: ' + (data.error || 'Bilinmeyen hata'));
-                showToast('❌ Görsel düzenlenemedi', 'error');
-            }
-        } catch (error) {
-            console.error('❌ Düzenleme hatası:', error);
-            updateMessageMarkdown(loadingMsgId, '❌ Hata: ' + error.message);
-            showToast('❌ Düzenleme hatası: ' + error.message, 'error');
-        }
+    if (data.success && data.imageUrl) {
+        const imageHtml = `<img src="${data.imageUrl}" alt="${data.prompt}" style="max-width:100%; max-height:400px; border-radius:12px; border:1px solid var(--border); object-fit:contain;" />`;
+        const resultText = `🖼️ **${data.prompt}**\n\n${imageHtml}\n\n✨ Görsel düzenlendi!`;
+        updateMessageMarkdown(loadingMsgId, resultText);
+        showToast('✅ Görsel düzenlendi!', 'success');
+    } else {
+        updateMessageMarkdown(loadingMsgId, '❌ Görsel düzenlenemedi: ' + (data.error || 'Bilinmeyen hata'));
+        showToast('❌ Görsel düzenlenemedi', 'error');
+    }
+} catch (error) {
+    console.error('❌ Düzenleme hatası:', error);
+    updateMessageMarkdown(loadingMsgId, '❌ Hata: ' + error.message);
+    showToast('❌ Düzenleme hatası: ' + error.message, 'error');
+}
 
         chatArea.scrollTop = chatArea.scrollHeight;
         return;
@@ -1595,19 +1584,28 @@ function showImagePreview(imageUrl) {
 // 🗑️ GÖRSEL PREVIEW TEMİZLE
 // ============================================================
 
-function clearImagePreview() {
+// ============================================================
+// 🗑️ GÖRSEL STATE YÖNETİMİ
+// ============================================================
+
+// SADECE preview UI'ı temizle (görsel URL'sini silme!)
+function removeImagePreviewUI() {
     if (previewContainer) {
         previewContainer.remove();
         previewContainer = null;
     }
-    currentImageUrl = null;
-    localStorage.removeItem('chatchip_current_image_url');  // ← BUNU EKLE!
-    
     const input = document.getElementById('messageInput');
     if (input) {
-        input.value = '';
         input.placeholder = 'Mesajını yaz...';
     }
+}
+
+// Görsel state'ini temizle (UI + veri)
+function clearCurrentImage() {
+    currentImageUrl = null;
+    localStorage.removeItem('chatchip_current_image_url');
+    removeImagePreviewUI();
+    console.log('🗑️ Görsel temizlendi');
 }
 
 // Event listener'lar
