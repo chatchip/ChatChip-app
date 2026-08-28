@@ -154,37 +154,25 @@ async function checkAuth() {
     if (token && currentUser) {
         console.log('👤 Kullanıcı giriş yapmış:', currentUser.name);
         
-        // 🔥 7 GÜN KONTROLÜ
+       // 🔥 7 GÜN KONTROLÜ
 let isSevenDaySession = false;
+
 const expiryDate = localStorage.getItem('chatchip_password_expiry');
+
 if (expiryDate) {
     const now = new Date();
     const expiry = new Date(expiryDate);
+
     if (now < expiry) {
-        // ✅ 7 gün dolmamış, JWK'dan CryptoKey'i geri yükle!
-        const savedJwk = localStorage.getItem('chatchip_crypto_key_jwk');
-        if (savedJwk && !currentCryptoKey) {
-            try {
-                currentCryptoKey = await window.crypto.subtle.importKey(
-                    "jwk",
-                    JSON.parse(savedJwk),
-                    { name: "AES-GCM", length: 256 },
-                    true,
-                    ["encrypt", "decrypt"]
-                );
-                console.log('✅ CryptoKey JWK\'dan geri yüklendi (şifre sorulmadı!)');
-                isSevenDaySession = true;
-            } catch (e) {
-                console.warn('⚠️ CryptoKey import edilemedi:', e);
-            }
-        }
+        // ✅ 7 günlük oturum hâlâ geçerli
+        isSevenDaySession = true;
+        console.log('✅ 7 günlük oturum hâlâ geçerli');
     } else {
-        // ❌ 7 gün dolmuş, temizle
+        // ❌ 7 gün dolmuş
         localStorage.removeItem('chatchip_password_expiry');
         localStorage.removeItem('chatchip_encrypted_password');
-        localStorage.removeItem('chatchip_crypto_key_jwk');
-        sessionStorage.removeItem('user_password');
         currentCryptoKey = null;
+
         console.log('⏰ 7 gün doldu, oturum temizlendi');
     }
 }
