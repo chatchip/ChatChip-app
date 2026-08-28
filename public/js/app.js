@@ -541,6 +541,14 @@ async function handleLogin(e) {
 } catch (e) {
     console.warn('⚠️ CryptoKey sessionStorage\'a kaydedilemedi:', e);
 }
+                try {
+    const encryptedPassword = await ChatChipCrypto.encryptWithKey(result.user.password, currentCryptoKey);
+    localStorage.setItem('chatchip_encrypted_password', JSON.stringify(encryptedPassword));
+    console.log('✅ Şifre şifrelenerek localStorage\'a kaydedildi');
+} catch (e) {
+    console.warn('⚠️ Şifre şifrelenemedi:', e);
+}
+
                 // 🔥 BURAYA EKLE (7 gün expiryDate)
 const expiryDate = new Date();
 expiryDate.setDate(expiryDate.getDate() + 7);
