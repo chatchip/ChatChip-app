@@ -153,6 +153,26 @@ async function checkAuth() {
 
     if (token && currentUser) {
         console.log('👤 Kullanıcı giriş yapmış:', currentUser.name);
+        if (!currentCryptoKey) {
+    const savedJwk = localStorage.getItem('chatchip_crypto_key_jwk');
+
+    if (savedJwk) {
+        try {
+            currentCryptoKey = await window.crypto.subtle.importKey(
+                'jwk',
+                JSON.parse(savedJwk),
+                { name: 'AES-GCM', length: 256 },
+                true,
+                ['encrypt', 'decrypt']
+            );
+
+            console.log('✅ CryptoKey JWK\'dan geri yüklendi');
+        } catch (e) {
+            console.error('❌ CryptoKey import edilemedi:', e);
+        }
+    }
+}
+
         
        // 🔥 7 GÜN KONTROLÜ
 let isSevenDaySession = false;
@@ -559,7 +579,22 @@ async function handleLogin(e) {
             try {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
                 console.log('✅ CryptoKey başarıyla türetildi');
-                
+                // 🔐 CryptoKey'i JWK olarak localStorage'a kaydet
+try {
+    const exportedKey = await window.crypto.subtle.exportKey(
+        'jwk',
+        currentCryptoKey
+    );
+
+    localStorage.setItem(
+        'chatchip_crypto_key_jwk',
+        JSON.stringify(exportedKey)
+    );
+
+    console.log('✅ CryptoKey JWK olarak localStorage\'a kaydedildi');
+} catch (e) {
+    console.error('❌ CryptoKey JWK kaydedilemedi:', e);
+}      
                 try {
     const encryptedPassword = await ChatChipCrypto.encryptWithKey(result.user.password, currentCryptoKey);
     localStorage.setItem('chatchip_encrypted_password', JSON.stringify(encryptedPassword));
