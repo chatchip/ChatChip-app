@@ -143,9 +143,35 @@ async function checkAuth() {
 
     if (token && currentUser) {
         console.log('👤 Kullanıcı giriş yapmış:', currentUser.name);
+        // 🔥 7 GÜN KONTROLÜ (Sayfa yenilemede Face ID'yi atla)
+let isSevenDaySession = false;
+const expiryDate = localStorage.getItem('chatchip_password_expiry');
+if (expiryDate) {
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    if (now < expiry) {
+        // ✅ 7 gün dolmamış, sessionStorage'dan CryptoKey'i al
+        const savedKey = sessionStorage.getItem('chatchip_crypto_key');
+        if (savedKey) {
+            try {
+                currentCryptoKey = JSON.parse(savedKey);
+                console.log('✅ 7 günlük oturum aktif, Face ID gerekmez');
+                isSevenDaySession = true;
+            } catch (e) {
+                console.warn('⚠️ CryptoKey parse hatası:', e);
+            }
+        }
+    } else {
+        // ❌ 7 gün dolmuş, temizle
+        localStorage.removeItem('chatchip_password_expiry');
+        localStorage.removeItem('chatchip_encrypted_password');
+        sessionStorage.removeItem('chatchip_crypto_key');
+        console.log('⏰ 7 gün doldu, oturum temizlendi');
+    }
+}
         
         // 🔥 YENİ: CryptoKey kontrol et, yoksa Face ID ile türet!
-        if (!currentCryptoKey) {
+        if (!currentCryptoKey && !isSevenDaySession) {
             console.log('🔑 CryptoKey yok, Face ID ile türetmeyi dene...');
             const isRegistered = BiometricAuth.isBiometricRegistered();
             if (isRegistered) {
@@ -510,6 +536,12 @@ async function handleLogin(e) {
             try {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
                 console.log('✅ CryptoKey başarıyla türetildi');
+                try {
+    sessionStorage.setItem('chatchip_crypto_key', JSON.stringify(currentCryptoKey));
+    console.log('✅ CryptoKey sessionStorage\'a kaydedildi');
+} catch (e) {
+    console.warn('⚠️ CryptoKey sessionStorage\'a kaydedilemedi:', e);
+}
             } catch (keyError) {
                 console.error('❌ CryptoKey türetme hatası:', keyError);
                 showToast('❌ Güvenlik anahtarı oluşturulamadı', 'error');
@@ -2018,6 +2050,10 @@ async function autoLogin(password) {
 
 async function autoLoginWithBiometric() {
     try {
+        if (performance.navigation && performance.navigation.type === 1) {
+            console.log('🔄 Sayfa yenileme (F5), Face ID atlanıyor');
+            return;
+        }
         // 🔥 ÖNCE: Zaten giriş yapılmış mı kontrol et (currentUser var mı?)
         if (currentUser) {
             console.log('✅ Zaten giriş yapılmış, otomatik Face ID gerekmez');
