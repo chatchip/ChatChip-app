@@ -20,6 +20,13 @@ let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App başlatıldı (Model + Koç)');
+     // 🔥 Uygulama kapanma zamanını kaydet (YENİ!)
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            localStorage.setItem('chatchip_last_close_time', Date.now().toString());
+            console.log('⏰ Uygulama kapatıldı, zaman kaydedildi');
+        }
+    });
     await checkAuth();
     checkPlan();
     loadModels();
@@ -44,9 +51,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (biometricRegisterBtn) {
         biometricRegisterBtn.addEventListener('click', registerBiometric);
     }
-    
-    // 🔥 Sayfa yenilendiğinde OTOMATİK Face ID ile giriş dene! (YENİ)
-    setTimeout(autoLoginWithBiometric, 1500);
 });
 
 // ============================================================
@@ -2119,6 +2123,21 @@ async function autoLoginWithBiometric() {
         if (performance.navigation && performance.navigation.type === 1) {
             console.log('🔄 Sayfa yenileme (F5), Face ID atlanıyor');
             return;
+        }
+        // 🔥 2. 15 DAKİKA KONTROLÜ (YENİ!)
+        const lastCloseTime = localStorage.getItem('chatchip_last_close_time');
+        const fifteenMinutes = 15 * 60 * 1000; // 15 dakika
+        
+        if (lastCloseTime) {
+            const timeSinceClose = Date.now() - parseInt(lastCloseTime);
+            if (timeSinceClose < fifteenMinutes) {
+                console.log(`⏰ 15 dakika geçmemiş (${Math.round(timeSinceClose/1000)}s), Face ID atlanıyor`);
+                // 7 gün içinde olduğu için direkt giriş yap
+                await checkAuth();
+                return;
+            } else {
+                console.log(`✅ 15 dakika geçmiş (${Math.round(timeSinceClose/1000)}s), Face ID gelsin`);
+            }
         }
         // 🔥 ÖNCE: Zaten giriş yapılmış mı kontrol et (currentUser var mı?)
         if (currentUser) {
