@@ -20,11 +20,17 @@ let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App başlatıldı (Model + Koç)');
-     // 🔥 Uygulama kapanma zamanını kaydet (YENİ!)
+     // 🔥 Uygulama kapanma/tekrar açılma kontrolü
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
+            // Uygulama kapatıldı
             localStorage.setItem('chatchip_last_close_time', Date.now().toString());
             console.log('⏰ Uygulama kapatıldı, zaman kaydedildi');
+        } else {
+            // Uygulama tekrar açıldı (arka plandan geldi)
+            console.log('👁️ Uygulama tekrar görünür oldu');
+            // 15 dakika kontrolü için autoLoginWithBiometric'i çağır!
+            autoLoginWithBiometric();
         }
     });
     await checkAuth();
@@ -183,25 +189,12 @@ if (expiryDate) {
     }
 }
         
-        // 🔥 CryptoKey kontrol et, yoksa Face ID ile türet!
-        if (!currentCryptoKey && !isSevenDaySession) {
-            console.log('🔑 CryptoKey yok, Face ID ile türetmeyi dene...');
-            const isRegistered = BiometricAuth.isBiometricRegistered();
-            if (isRegistered) {
-                const success = await triggerBiometricLogin();
-                if (success) {
-                    console.log('✅ Face ID ile CryptoKey türetildi');
-                } else {
-                    console.log('⚠️ Face ID başarısız, normal giriş gösteriliyor');
-                    if (loginForm) loginForm.style.display = 'block';
-                    if (userMenu) userMenu.style.display = 'none';
-                }
-            } else {
-                console.log('⚠️ Biyometrik kayıt yok, normal giriş gösteriliyor');
-                if (loginForm) loginForm.style.display = 'block';
-                if (userMenu) userMenu.style.display = 'none';
-            }
-        }
+        // 🔥 CryptoKey kontrol et, yoksa normal giriş göster!
+if (!currentCryptoKey && !isSevenDaySession) {
+    console.log('🔑 CryptoKey yok, normal giriş gösteriliyor');
+    if (loginForm) loginForm.style.display = 'block';
+    if (userMenu) userMenu.style.display = 'none';
+}
         
         // UI güncellemeleri
         avatar.textContent = currentUser.name?.charAt(0).toUpperCase() || '👤';
