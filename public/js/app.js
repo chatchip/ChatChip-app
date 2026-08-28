@@ -1083,6 +1083,25 @@ if (isImageCommand && !isInfoQuestion) {
 
     try {
     const dm = window.DataManager;
+        if (!currentCryptoKey) {
+    const savedJwk = localStorage.getItem('chatchip_crypto_key_jwk');
+
+    if (savedJwk) {
+        try {
+            currentCryptoKey = await window.crypto.subtle.importKey(
+                "jwk",
+                JSON.parse(savedJwk),
+                { name: "AES-GCM", length: 256 },
+                true,
+                ["encrypt", "decrypt"]
+            );
+            console.log('✅ CryptoKey tekrar yüklendi');
+        } catch (e) {
+            console.error('❌ CryptoKey yüklenemedi:', e);
+        }
+    }
+}
+
 
 // 🔐 1. Kullanıcı mesajını şifrele ve kaydet (CryptoKey ile)
 if (currentCryptoKey) {
