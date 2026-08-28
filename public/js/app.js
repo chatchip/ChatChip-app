@@ -884,7 +884,7 @@ async function sendMessage() {
             const loadingMsgId = addMessage('🎨 Görsel düzenleniyor...', 'bot', true);
 
             try {
-                const response = await fetch('/api/image/edit', {
+                const response = await fetch('https://chatchip-production.up.railway.app/api/image/edit', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
