@@ -183,13 +183,11 @@ if (expiryDate) {
                     console.log('⚠️ Face ID başarısız, normal giriş gösteriliyor');
                     if (loginForm) loginForm.style.display = 'block';
                     if (userMenu) userMenu.style.display = 'none';
-                    return;
                 }
             } else {
                 console.log('⚠️ Biyometrik kayıt yok, normal giriş gösteriliyor');
                 if (loginForm) loginForm.style.display = 'block';
                 if (userMenu) userMenu.style.display = 'none';
-                return;
             }
         }
         
@@ -536,12 +534,18 @@ async function handleLogin(e) {
             try {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
                 console.log('✅ CryptoKey başarıyla türetildi');
+                
                 try {
     sessionStorage.setItem('chatchip_crypto_key', JSON.stringify(currentCryptoKey));
     console.log('✅ CryptoKey sessionStorage\'a kaydedildi');
 } catch (e) {
     console.warn('⚠️ CryptoKey sessionStorage\'a kaydedilemedi:', e);
 }
+                // 🔥 BURAYA EKLE (7 gün expiryDate)
+const expiryDate = new Date();
+expiryDate.setDate(expiryDate.getDate() + 7);
+localStorage.setItem('chatchip_password_expiry', expiryDate.toISOString());
+console.log('✅ 7 günlük oturum süresi kaydedildi');
             } catch (keyError) {
                 console.error('❌ CryptoKey türetme hatası:', keyError);
                 showToast('❌ Güvenlik anahtarı oluşturulamadı', 'error');
