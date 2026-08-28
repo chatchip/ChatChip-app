@@ -18,9 +18,9 @@ let currentImageUrl = null;
 let previewContainer = null;
 let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App başlatıldı (Model + Koç)');
-    checkAuth();
+    await checkAuth();
     checkPlan();
     loadModels();
     loadSessions();
@@ -571,7 +571,7 @@ console.log('✅ 7 günlük oturum süresi kaydedildi');
         // 🔥 3. sessionStorage'a kaydetme (kaldırıldı!)
         // sessionStorage.setItem('user_password', ...)  // ❌ BUNU YAPMA!
         
-        checkAuth();
+        await checkAuth();
         checkPlan();
         loadModels();
         loadSessions();
