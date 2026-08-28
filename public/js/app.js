@@ -857,17 +857,13 @@ async function sendMessage() {
     const text = input.value.trim();
     console.log('🔴 sendMessage çalıştı! text:', text);
     
-    // 🔥 Görsel URL'sini al (önce memory, sonra localStorage)
-    const imageUrl = currentImageUrl || localStorage.getItem('chatchip_current_image_url');
-    
-    console.log('📸 imageUrl:', imageUrl);
-    console.log('📸 currentImageUrl:', currentImageUrl);
-    console.log('📸 localStorage:', localStorage.getItem('chatchip_current_image_url'));
-    
-    if (!imageUrl) {
-        showToast('⚠️ Önce bir görsel yükleyin!', 'error');
-        return;
-    }
+const savedImageUrl = localStorage.getItem('chatchip_current_image_url');
+if (savedImageUrl) {
+    currentImageUrl = savedImageUrl;
+    console.log('📸 Görsel localStorage\'dan yüklendi:', currentImageUrl);
+} else {
+    console.log('📸 Aktif görsel yok');
+}
     
     // 🔥 currentImageUrl'yi güncelle
     currentImageUrl = imageUrl;
@@ -877,7 +873,7 @@ async function sendMessage() {
       
     // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
 if (currentImageUrl && text) {
-    const editKeywords = ['değiştir', 'düzenle', 'çevir', 'yap', 'ekle', 'kaldır', 'renk', 'style', 'tarz', 'anime', 'karikatür', 'çizim', 'filtre', 'boya', 'değiş'];
+    const editKeywords = ['değiştir', 'düzenle', 'çevir', 'ekle', 'kaldır', 'renk', 'style', 'tarz', 'anime', 'karikatür', 'çizim', 'filtre', 'boya', 'değiş'];
     const isEditCommand = editKeywords.some(k => text.toLowerCase().includes(k));
 
     if (isEditCommand) {
@@ -1058,10 +1054,7 @@ if (isImageCommand && !isInfoQuestion) {
     abortController = new AbortController();
 
     // 🔥 Gizli görsel URL'sini mesaja ekle (kullanıcı görmesin)
-    let fullMessage = text || '📷 Görsel';
-    if (currentImageUrl) {
-        fullMessage = `![Görsel](${currentImageUrl})\n${text || ''}`;
-    }
+    let fullMessage = text || '';
 
     addMessage(fullMessage, 'user');
     input.value = '';
@@ -1187,6 +1180,8 @@ if (fullText && currentCryptoKey) {
     isProcessing = false;
     abortController = null;
     currentImageUrl = null;
+localStorage.removeItem('chatchip_current_image_url');
+removeImagePreviewUI();
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
