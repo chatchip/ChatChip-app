@@ -884,18 +884,35 @@ async function sendMessage() {
             const loadingMsgId = addMessage('🎨 Görsel düzenleniyor...', 'bot', true);
 
             try {
-                // 🔥 DOĞRUDAN GÖRSEL GÖNDER!
+                               // 🔥 DOĞRUDAN GÖRSEL GÖNDER!
                 const fileInput = document.getElementById('fileInput');
-                const file = fileInput?.files?.[0];
+                let file = fileInput?.files?.[0];
 
                 console.log('📸 fileInput:', fileInput);
-                console.log('📸 file:', file);
+                console.log('📸 file (önce):', file);
+
+                // Eğer dosya yoksa, currentImageUrl'den indir
+                if (!file && currentImageUrl) {
+                    console.log('📸 Dosya bulunamadı, URL\'den indiriliyor...');
+                    try {
+                        const imageResponse = await fetch(currentImageUrl);
+                        const imageBlob = await imageResponse.blob();
+                        const mimeType = imageResponse.headers.get('content-type') || 'image/png';
+                        const extension = mimeType.split('/')[1] || 'png';
+                        file = new File([imageBlob], `image.${extension}`, { type: mimeType });
+                        console.log('📸 Dosya indirildi:', file.name, file.size);
+                    } catch (fetchError) {
+                        console.error('❌ Dosya indirme hatası:', fetchError);
+                    }
+                }
 
                 if (!file) {
                     showToast('❌ Görsel dosyası bulunamadı! Lütfen önce bir görsel yükleyin.', 'error');
                     updateMessageMarkdown(loadingMsgId, '❌ Görsel dosyası bulunamadı! Lütfen önce bir görsel yükleyin.');
                     return;
                 }
+
+                console.log('📸 file (sonra):', file);
 
                 const formData = new FormData();
                 formData.append('image', file);
