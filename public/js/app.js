@@ -374,6 +374,17 @@ async function loadSession(id) {
             currentSessionId = id;
             isFirstMessage = false;
             messagesDiv.innerHTML = "";
+              if (!currentCryptoKey) {
+                const savedPassword = sessionStorage.getItem('user_password');
+                if (savedPassword) {
+                    try {
+                        currentCryptoKey = await ChatChipCrypto.deriveKey(savedPassword);
+                        console.log('✅ CryptoKey loadSession için türetildi');
+                    } catch (e) {
+                        console.warn('⚠️ CryptoKey türetilemedi:', e);
+                    }
+                }
+            }
             
             if (result.messages && result.messages.length > 0) {
                 for (const msg of result.messages) {
