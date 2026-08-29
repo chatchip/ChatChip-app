@@ -1480,8 +1480,8 @@ async function handleFileUpload(event) {
         return;
     }
 
-    if (file.size > 5 * 1024 * 1024) {
-        alert('❌ Dosya çok büyük! Maksimum 5MB.');
+    if (file.size > 20 * 1024 * 1024) {
+        alert('❌ Dosya çok büyük! Maksimum 20MB.');
         event.target.value = '';
         return;
     }
