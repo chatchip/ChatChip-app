@@ -813,47 +813,50 @@ async function generateAndShowImage(prompt, originalText) {
         const data = await response.json();
         console.log('📥 Görsel yanıtı:', data);
 
-        if (data.success && data.imageUrl) {
-            let imageSrc = '';
-            
-            if (typeof data.imageUrl === 'string') {
-                imageSrc = data.imageUrl;
-            } else if (typeof data.imageUrl === 'object' && data.imageUrl !== null) {
-                // 🔥 TÜM OLASI DURUMLARI KONTROL ET
-                if (data.imageUrl.image_url && typeof data.imageUrl.image_url === 'object') {
-                    // image_url objesi içinde url var
-                    imageSrc = data.imageUrl.image_url.url || '';
-                    console.log('🔧 image_url objesinden url çekildi');
-                } else if (data.imageUrl.image_url && typeof data.imageUrl.image_url === 'string') {
-                    imageSrc = data.imageUrl.image_url;
-                    console.log('🔧 image_url string olarak çekildi');
-                } else {
-                    imageSrc = data.imageUrl.url || data.imageUrl.output || data.imageUrl.data || Object.values(data.imageUrl)[0] || '';
-                    console.log('🔧 diğer alanlardan çekildi');
-                }
-                console.log('📸 imageSrc ilk 100 karakter:', imageSrc?.substring(0, 100));
-            }
+       if (data.success && data.imageUrl) {
+    let imageSrc = '';
+    
+    if (typeof data.imageUrl === 'string') {
+        imageSrc = data.imageUrl;
+    } else if (typeof data.imageUrl === 'object' && data.imageUrl !== null) {
+        // 🔥 GROK IMAGINE 2.0 FORMATI
+        console.log('📦 imageUrl bir nesne:', data.imageUrl);
+        
+        // data.imageUrl = { data: "...base64...", media_type: "image/jpeg" }
+        const base64Data = data.imageUrl.data || '';
+        const mediaType = data.imageUrl.media_type || 'image/jpeg';
+        
+        if (base64Data) {
+            imageSrc = `data:${mediaType};base64,${base64Data}`;
+            console.log('✅ Base64 data URL\'ye çevrildi');
+        } else {
+            // Diğer olası formatlar
+            imageSrc = data.imageUrl.url || data.imageUrl.image_url || data.imageUrl.output || Object.values(data.imageUrl)[0] || '';
+            console.log('🔧 diğer alanlardan çekildi:', imageSrc?.substring(0, 100));
+        }
+    }
 
-            if (!imageSrc) {
-                console.error('❌ Görsel adresi alınamadı! data.imageUrl:', data.imageUrl);
-                updateMessageMarkdown(loadingMsgId, '❌ Görsel adresi alınamadı!');
-                showToast('❌ Görsel adresi alınamadı', 'error');
-                return;
-            }
+    if (!imageSrc) {
+        console.error('❌ Görsel adresi alınamadı! data.imageUrl:', data.imageUrl);
+        updateMessageMarkdown(loadingMsgId, '❌ Görsel adresi alınamadı!');
+        showToast('❌ Görsel adresi alınamadı', 'error');
+        return;
+    }
 
-            // Görsel gösterimi
-            let imageHtml = '';
-            if (imageSrc.startsWith('data:image')) {
-                imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
-            } else if (imageSrc.startsWith('http')) {
-                imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
-            } else {
-                imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
-            }
-            
-            const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n✨ Görsel başarıyla oluşturuldu!`;
-            updateMessageMarkdown(loadingMsgId, resultText);
-            showToast('✅ Görsel oluşturuldu!', 'success');
+    // Görsel gösterimi
+    let imageHtml = '';
+    if (imageSrc.startsWith('data:image')) {
+        imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+    } else if (imageSrc.startsWith('http')) {
+        imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+    } else {
+        imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
+    }
+    
+    const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n✨ Görsel başarıyla oluşturuldu!`;
+    updateMessageMarkdown(loadingMsgId, resultText);
+    showToast('✅ Görsel oluşturuldu!', 'success');
+}
         } else {
             updateMessageMarkdown(loadingMsgId, '❌ Görsel üretilemedi: ' + (data.error || 'Bilinmeyen hata'));
             showToast('❌ Görsel üretilemedi', 'error');
