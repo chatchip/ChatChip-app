@@ -272,52 +272,146 @@ body {
 
 /* ----- INPUT AREA ----- */
 .input-area {
-    padding: 8px 16px 12px 16px;
+    padding: 8px 12px 16px 12px;
     background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
     flex-shrink: 0;
     transition: background 0.3s;
+    width: 100%;
 }
 
 .input-wrapper {
     display: flex;
     align-items: flex-end;
-    gap: 4px;
-    background: var(--input-bg);
-    border-radius: 24px;
-    padding: 4px 4px 4px 16px;
-    border: 1.5px solid var(--input-border);
-    transition: all 0.2s;
+    gap: 6px;
+    background: var(--bg);
+    border-radius: 16px;
+    padding: 6px 8px 6px 16px;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    max-width: 100%;
+    min-height: 48px;
 }
 
 .input-wrapper:focus-within {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.1);
+    box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.15);
 }
 
 .input-wrapper textarea {
     flex: 1;
     border: none;
     background: transparent;
-    padding: 8px 0;
-    font-size: 0.9rem;
+    padding: 10px 4px;
+    font-size: 0.95rem;
+    font-family: inherit;
     resize: none;
     outline: none;
-    max-height: 120px;
-    font-family: inherit;
     color: var(--text-primary);
     min-height: 24px;
+    max-height: 150px;
+    line-height: 1.5;
+    width: 100%;
 }
 
 .input-wrapper textarea::placeholder {
     color: var(--text-secondary);
-    opacity: 0.6;
+    opacity: 0.7;
+    font-size: 0.9rem;
 }
 
+/* 🔥 Tüm butonlar - ikon butonları */
+.input-wrapper .icon-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    border: none;
+    border-radius: 10px;
+    background: transparent !important;
+    color: var(--text-light);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
 
-.input-wrapper button:hover {
-    background: var(--primary-dark);
+.input-wrapper .icon-btn:hover {
+    background: rgba(0, 0, 0, 0.05) !important;
+    color: var(--text-primary);
+}
+
+.input-wrapper .icon-btn svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+}
+
+/* 🔥 Gönder butonu */
+.input-wrapper #sendBtn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border: none;
+    border-radius: 12px;
+    background: var(--primary) !important;
+    color: white;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.input-wrapper #sendBtn:hover {
+    background: var(--primary-dark) !important;
     transform: scale(1.04);
+}
+
+.input-wrapper #sendBtn svg {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    fill: none;
+}
+
+/* 🔥 Durdur butonu */
+.input-wrapper #stopBtn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    border: none;
+    border-radius: 12px;
+    background: #EF4444 !important;
+    color: white;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.input-wrapper #stopBtn:hover {
+    background: #DC2626 !important;
+    transform: scale(1.04);
+}
+
+.input-wrapper #stopBtn svg {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    fill: none;
 }
 
 .input-wrapper button:disabled {
@@ -326,6 +420,50 @@ body {
     transform: none;
 }
 
+/* 🔥 Mobil için daha geniş */
+@media (max-width: 480px) {
+    .input-area {
+        padding: 6px 8px 12px 8px;
+    }
+    
+    .input-wrapper {
+        padding: 4px 6px 4px 12px;
+        border-radius: 14px;
+        min-height: 42px;
+    }
+    
+    .input-wrapper textarea {
+        font-size: 0.9rem;
+        padding: 8px 2px;
+        max-height: 120px;
+    }
+    
+    .input-wrapper .icon-btn {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+    
+    .input-wrapper .icon-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .input-wrapper #sendBtn,
+    .input-wrapper #stopBtn {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+    }
+    
+    .input-wrapper #sendBtn svg,
+    .input-wrapper #stopBtn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
 /* ===== SIDEBARS ===== */
 .sidebar-left,
 .sidebar-right {
