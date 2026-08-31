@@ -306,7 +306,7 @@ body {
     min-height: 64px;
     border: none;
     background: transparent;
-    padding: 24px 85px 12px 85px;
+    padding: 28px 85px 12px 85px !important; /* 🔥 !important ekledik ki başka bir şey ezemesin */
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
