@@ -305,7 +305,7 @@ body {
     min-height: 52px;
     border: none;
     background: transparent;
-    padding: 12px 80px 12px 16px;   /* ← Sağda ikonlar için boşluk! */
+    padding: 12px 90px 12px 16px;   /* ← Sağdaki boşluğu 90px yaptık! */
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -367,7 +367,7 @@ body {
 
 /* 📌 Sağ ikon - Sesli Okuma */
 .input-wrapper .icon-btn:nth-child(4) { 
-    right: 48px; 
+    right: 50px;   /* ← 50px sola kaydırdık */
     bottom: 10px;
 }
 
