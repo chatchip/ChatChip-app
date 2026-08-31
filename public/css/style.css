@@ -301,13 +301,14 @@ body {
 }
 
 /* 🔥 Textarea - padding ile ikonlara yer açar ve üste konumlanır */
-input-wrapper textarea {
+.input-wrapper textarea {
     width: 100%;
     min-height: 64px;
     border: none;
     background: transparent;
-    /* 🔥 SOL ve SAĞ padding'i düşürdük (soldan 75px, sağdan 80px) ki yazı sıkışmasın */
-    padding: 22px 80px 12px 75px !important; 
+    /* 🔥 Üst: 24px, Sağ: 85px, ALT: 45px, Sol: 75px yaptık! */
+    /* Alt tarafa 45px vererek yazının ikonların olduğu bölgeye inmesini kesin olarak engelliyoruz. */
+    padding: 24px 85px 45px 75px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
