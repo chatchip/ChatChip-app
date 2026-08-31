@@ -289,10 +289,10 @@ body {
     border: 1.5px solid var(--border);
     width: 100%;
     min-height: 56px;
-    max-height: 140px; /* Kutunun büyüyeceği son sınır */
+    /* max-height buradan silindi, JS yönetecek */
     box-sizing: border-box;
     display: flex;
-    align-items: flex-end; /* İçeriği alta dengeler */
+    align-items: flex-end;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -301,14 +301,13 @@ body {
     box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.12);
 }
 
-/* 🔥 Textarea: Üstten ve alttan güvenli paya sahip, sağa sola tam yayılan yapı */
+/* 🔥 Textarea */
 .input-wrapper textarea {
     width: 100%;
     min-height: 56px;
-    max-height: 140px;
+    max-height: 120px; /* JavaScript'teki sınırla aynı olmalı */
     border: none;
     background: transparent;
-    /* 🔥 Üstten 16px boşlukla başlar, Sağ ve Sol ikonlara çarpmaz, Altta 42px güvenli pay bırakır */
     padding: 16px 50px 42px 50px !important; 
     font-size: 0.95rem;
     font-family: inherit;
@@ -318,7 +317,7 @@ body {
     line-height: 1.5;
     box-sizing: border-box;
     flex: 1;
-    overflow-y: auto !important; /* Sınıra gelince kendi içinde kaydırır */
+    overflow-y: hidden !important; /* 🔥 Başlangıçta gizli, JS açacak */
 }
 
 .input-wrapper textarea::placeholder {
@@ -326,7 +325,6 @@ body {
     opacity: 0.6;
     font-size: 0.9rem;
 }
-
 /* 🔥 İkonlar - Her zaman en dipte sabit ve güvenli alanda */
 .input-wrapper .icon-btn {
     position: absolute;
