@@ -271,7 +271,7 @@ body {
 }
 
 /* ============================================================
-   📝 CHAT INPUT - GEMINI TARZI (MOBİL DÜZELTMELİ)
+   📝 CHAT INPUT - GEMINI MANTIĞI (KUSURSUZ ESNEYEN YAPI)
    ============================================================ */
 .input-area {
     padding: 8px 12px 16px 12px;
@@ -288,7 +288,7 @@ body {
     border-radius: 16px;
     border: 1.5px solid var(--border);
     width: 100%;
-    min-height: 64px;
+    min-height: 56px;
     box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
     display: flex;
@@ -300,15 +300,15 @@ body {
     box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.12);
 }
 
-/* 🔥 Textarea - padding ile ikonlara yer açar ve üste konumlanır */
+/* 🔥 Textarea: Üstten ve alttan güvenli paya sahip, sağa sola tam yayılan yapı */
 .input-wrapper textarea {
     width: 100%;
-    min-height: 64px;
+    min-height: 56px;
     border: none;
     background: transparent;
-    /* 🔥 Üst: 24px, Sağ: 85px, ALT: 45px, Sol: 75px yaptık! */
-    /* Alt tarafa 45px vererek yazının ikonların olduğu bölgeye inmesini kesin olarak engelliyoruz. */
-    padding: 24px 85px 45px 75px !important; 
+    /* Üstten ferah başlar, sağ ve sol uçlara tam yayılır, 
+       ALT KISIMDA 50px boşluk bırakır ki uzun yazı asla ikonlara çarpmasın! */
+    padding: 16px 50px 50px 20px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -326,15 +326,13 @@ body {
     font-size: 0.9rem;
 }
 
-/* 🔥 Tüm ikonlar - Absolute ile alta sabit */
+/* 🔥 İkonlar - Her zaman en dipte sabit ve güvenli alanda */
 .input-wrapper .icon-btn {
     position: absolute;
-    bottom: 10px;
+    bottom: 8px;
     z-index: 2;
     width: 32px;
     height: 32px;
-    min-width: 32px;
-    min-height: 32px;
     border: none;
     border-radius: 8px;
     background: transparent !important;
@@ -359,17 +357,14 @@ body {
     fill: none;
 }
 
-/* 📌 Sol ikonlar */
-.input-wrapper .icon-left-1 { 
-    left: 14px; /* Sol kenardan biraz içeri aldık */
-    bottom: 10px; 
+/* 📌 Sol ikonlar (Soldan içeriye dengeli mesafe) */
+.input-wrapper .icon-left-1 { left: 12px; }
+.input-wrapper .icon-left-2 { left: 48px; }
+
+/* 📌 Sağ sesli okuma butonu */
+.input-wrapper .icon-right-extra { 
+    right: 48px; 
 }
-.input-wrapper .icon-left-2 { 
-    left: 48px; /* İki ikon arasındaki mesafeyi koruduk */
-    bottom: 10px; 
-}
-/* 📌 Sağ ikon - Sesli Okuma */
-.input-wrapper .icon-right-extra { right: 50px; bottom: 10px; }
 
 /* 🔥 Gönder butonu */
 .input-wrapper #sendBtn {
@@ -379,8 +374,6 @@ body {
     z-index: 2;
     width: 36px;
     height: 36px;
-    min-width: 36px;
-    min-height: 36px;
     border: none;
     border-radius: 10px;
     background: var(--primary) !important;
@@ -413,8 +406,6 @@ body {
     z-index: 2;
     width: 36px;
     height: 36px;
-    min-width: 36px;
-    min-height: 36px;
     border: none;
     border-radius: 10px;
     background: #EF4444 !important;
@@ -443,53 +434,6 @@ body {
     opacity: 0.4;
     cursor: not-allowed;
     transform: none;
-}
-
-/* 🔥 Mobil */
-@media (max-width: 480px) {
-    .input-area {
-        padding: 6px 8px 12px 8px;
-    }
-    
-    .input-wrapper {
-        min-height: 54px;
-        border-radius: 14px;
-    }
-    
-    .input-wrapper textarea {
-        min-height: 54px;
-        padding: 20px 75px 10px 75px;  /* ← Mobilde üst boşluk korunsun! */
-        font-size: 0.9rem;
-        max-height: 120px;
-    }
-    
-    .input-wrapper .icon-btn {
-        width: 28px;
-        height: 28px;
-        min-width: 28px;
-        min-height: 28px;
-        bottom: 8px;
-    }
-    
-    .input-wrapper .icon-left-1 { left: 8px; }
-    .input-wrapper .icon-left-2 { left: 38px; }
-    .input-wrapper .icon-right-extra { right: 42px; }
-    
-    .input-wrapper #sendBtn,
-    .input-wrapper #stopBtn {
-        width: 34px;
-        height: 34px;
-        min-width: 34px;
-        min-height: 34px;
-        right: 6px;
-        bottom: 6px;
-    }
-    
-    .input-wrapper #sendBtn svg,
-    .input-wrapper #stopBtn svg {
-        width: 18px;
-        height: 18px;
-    }
 }
 /* ===== SIDEBARS ===== */
 .sidebar-left,
