@@ -283,7 +283,7 @@ body {
 
 .input-wrapper {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     gap: 6px;
     background: var(--bg);
     border-radius: 16px;
