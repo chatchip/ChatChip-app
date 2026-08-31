@@ -292,8 +292,8 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    /* 🔥 İkonların rahatça durabilmesi için kutunun altına dıştan net bir zemin payı veriyoruz */
-    padding-bottom: 42px; 
+    /* İkonların duracağı alt alanı dışarıdan sabitliyoruz */
+    padding-bottom: 44px; 
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -302,15 +302,15 @@ body {
     box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.12);
 }
 
-/* 🔥 Textarea (Alt padding sıfırlandı, yazı asla ikonların olduğu yere inemez) */
+/* 🔥 Saf CSS Esneme Özelliği */
 .input-wrapper textarea {
     width: 100%;
-    min-height: 56px;
-    max-height: 150px; /* 🔥 İstediğin gibi max yüksekliği 150px yaptık, yukarı doğru genişleyecek */
+    min-height: 40px;
+    max-height: 150px; /* İstediğin 150px sınır */
     border: none;
     background: transparent;
-    /* 🔥 Üstten 14px, Sağ-Soldan 50px, Alttan 44px güvenli pay (ikonların üstüne asla çıkmaz) */
-    padding: 14px 50px 44px 50px !important; 
+    /* Altta boşluk bırakmıyoruz çünkü kapsayıcı padding-bottom verdi */
+    padding: 14px 50px 0px 50px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -319,7 +319,9 @@ body {
     line-height: 1.5;
     box-sizing: border-box;
     flex: 1;
-    overflow-y: auto !important; /* 150px'i geçince sağda kaydırma çubuğu çıkar ve üste kayar */
+    /* Modern tarayıcılarda JavaScript'siz otomatik esneme sağlar */
+    field-sizing: content; 
+    overflow-y: auto !important;
 }
 
 .input-wrapper textarea::placeholder {
