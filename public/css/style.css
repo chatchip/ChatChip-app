@@ -289,10 +289,11 @@ body {
     border: 1.5px solid var(--border);
     width: 100%;
     min-height: 56px;
+    max-height: 130px; /* 🔥 Kutu toplamda bu boydan fazla ASLA büyümeyecek */
     box-sizing: border-box;
-    transition: border-color 0.2s, box-shadow 0.2s;
     display: flex;
-    align-items: stretch;
+    flex-direction: column;
+    overflow: hidden; /* 🔥 Kutudan taşan her şeyi (ikonların üstüne giden kısmı) kesin olarak gizler */
 }
 
 .input-wrapper:focus-within {
@@ -303,21 +304,19 @@ body {
 /* 🔥 Textarea: Üstten ve alttan güvenli paya sahip, sağa sola tam yayılan yapı */
 .input-wrapper textarea {
     width: 100%;
-    min-height: 56px;
     border: none;
     background: transparent;
-    /* 🔥 ÇÖZÜM BURADA: Üst: 14px, Sağ: 50px, ALT: 42px (İkonlara çarpmasın diye), Sol: 20px */
-    padding: 14px 50px 42px 20px !important; 
+    /* Sağ ve soldan boşluk, alttan ise ikonlara yer kalacak kadar sabit padding */
+    padding: 14px 50px 12px 20px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
     outline: none;
     color: var(--text-primary);
-    max-height: 120px; /* Maksimum yüksekliği biraz daha kısa tuttuk ki erken kaydırsın */
+    height: 100%; /* Kapsayıcıya göre esner */
     line-height: 1.5;
     box-sizing: border-box;
-    flex: 1;
-    overflow-y: auto !important; /* Yazı sınıra gelince kaydırma çubuğunu aktif eder */
+    overflow-y: auto !important; /* 🔥 Yazı çoğalınca dışarı taşmak yerine kendi içinde scroll oluşturur ve üste kayar */
 }
 
 .input-wrapper textarea::placeholder {
