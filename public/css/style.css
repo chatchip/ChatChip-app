@@ -306,18 +306,18 @@ body {
     min-height: 56px;
     border: none;
     background: transparent;
-    /* Üstten ferah başlar, sağ ve sol uçlara tam yayılır, 
-       ALT KISIMDA 50px boşluk bırakır ki uzun yazı asla ikonlara çarpmasın! */
-    padding: 16px 50px 50px 20px !important; 
+    /* 🔥 Üst: 16px, Sağ: 50px, Alt: 16px (Sıfırladık ki alta taşmasın), Sol: 20px */
+    padding: 16px 50px 16px 20px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
     outline: none;
     color: var(--text-primary);
-    max-height: 150px;
+    max-height: 130px; /* Maksimum yüksekliği biraz daha derli toplu yaptık */
     line-height: 1.5;
     box-sizing: border-box;
     flex: 1;
+    overflow-y: auto; /* 🔥 Maksimum boya gelince otomatik kaydırma çubuğu çıkar ve yazı yukarı kayar */
 }
 
 .input-wrapper textarea::placeholder {
