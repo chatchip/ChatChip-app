@@ -271,7 +271,7 @@ body {
 }
 
 /* ============================================================
-   📝 CHAT INPUT - GEMINI MANTIĞI (KUSURSUZ ESNEYEN YAPI)
+    📝 CHAT INPUT - KUSURSUZ ESNEYEN YAPI
    ============================================================ */
 .input-area {
     padding: 8px 12px 16px 12px;
@@ -289,10 +289,11 @@ body {
     border: 1.5px solid var(--border);
     width: 100%;
     min-height: 56px;
-    /* max-height buradan silindi, JS yönetecek */
     box-sizing: border-box;
     display: flex;
-    align-items: flex-end;
+    flex-direction: column;
+    /* 🔥 İkonların rahatça durabilmesi için kutunun altına dıştan net bir zemin payı veriyoruz */
+    padding-bottom: 42px; 
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -301,14 +302,15 @@ body {
     box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.12);
 }
 
-/* 🔥 Textarea */
+/* 🔥 Textarea (Alt padding sıfırlandı, yazı asla ikonların olduğu yere inemez) */
 .input-wrapper textarea {
     width: 100%;
-    min-height: 56px;
-    max-height: 120px; /* JavaScript'teki sınırla aynı olmalı */
+    min-height: 40px;
+    max-height: 110px;
     border: none;
     background: transparent;
-    padding: 16px 50px 42px 50px !important; 
+    /* 🔥 Sadece üstten ve yanlardan boşluk, altta boşluk yok! */
+    padding: 16px 50px 0px 50px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -317,7 +319,7 @@ body {
     line-height: 1.5;
     box-sizing: border-box;
     flex: 1;
-    overflow-y: hidden !important; /* 🔥 Başlangıçta gizli, JS açacak */
+    overflow-y: auto !important;
 }
 
 .input-wrapper textarea::placeholder {
@@ -325,10 +327,11 @@ body {
     opacity: 0.6;
     font-size: 0.9rem;
 }
-/* 🔥 İkonlar - Her zaman en dipte sabit ve güvenli alanda */
+
+/* 🔥 İkonlar - Kutunun rezerve ettiği alt boşlukta sabit durur */
 .input-wrapper .icon-btn {
     position: absolute;
-    bottom: 8px;
+    bottom: 6px;
     z-index: 2;
     width: 32px;
     height: 32px;
@@ -356,17 +359,17 @@ body {
     fill: none;
 }
 
-/* 📌 Sol ikonlar (Soldan içeriye dengeli mesafe) */
+/* 📌 Sol ikonlar */
 .input-wrapper .icon-left-1 { 
     position: absolute;
     left: 12px; 
-    bottom: 10px; 
+    bottom: 6px; 
     z-index: 2;
 }
 .input-wrapper .icon-left-2 { 
     position: absolute;
     left: 44px; 
-    bottom: 10px; 
+    bottom: 6px; 
     z-index: 2;
 }
 
@@ -374,15 +377,15 @@ body {
 .input-wrapper .icon-right-extra { 
     position: absolute;
     right: 50px; 
-    bottom: 10px; 
+    bottom: 6px; 
     z-index: 2;
 }
 
 /* 🔥 Gönder butonu */
 .input-wrapper #sendBtn {
     position: absolute;
-    right: 8px;
-    bottom: 8px;
+    right: 6px;
+    bottom: 6px;
     z-index: 2;
     width: 36px;
     height: 36px;
@@ -412,8 +415,8 @@ body {
 /* 🔥 Durdur butonu */
 .input-wrapper #stopBtn {
     position: absolute;
-    right: 8px;
-    bottom: 8px;
+    right: 6px;
+    bottom: 6px;
     z-index: 2;
     width: 36px;
     height: 36px;
@@ -427,6 +430,7 @@ body {
     justify-content: center;
     padding: 0;
 }
+
 .input-wrapper #stopBtn:hover {
     background: #DC2626 !important;
     transform: scale(1.04);
