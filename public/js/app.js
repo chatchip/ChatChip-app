@@ -2497,3 +2497,20 @@ async function triggerBiometricLogin() {
         return false;
     }
 }
+// Chat Input Dinamik Yükseklik Ayarı
+const textarea = document.querySelector('.input-wrapper textarea');
+
+if (textarea) {
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto'; // Yüksekliği sıfırla
+        
+        // 120px sınırını geçerse büyümeyi durdur ve kaydırmayı aç
+        if (this.scrollHeight > 120) {
+            this.style.height = '120px';
+            this.style.overflowY = 'auto';
+        } else {
+            this.style.height = (this.scrollHeight) + 'px';
+            this.style.overflowY = 'hidden';
+        }
+    });
+}
