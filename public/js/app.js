@@ -853,14 +853,13 @@ async function generateAndShowImage(prompt, originalText) {
         imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
     }
     
-    const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n✨ Görsel başarıyla oluşturuldu!`;
+ const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n✨ Görsel başarıyla oluşturuldu!`;
     updateMessageMarkdown(loadingMsgId, resultText);
     showToast('✅ Görsel oluşturuldu!', 'success');
+} else {
+    updateMessageMarkdown(loadingMsgId, '❌ Görsel üretilemedi: ' + (data.error || 'Bilinmeyen hata'));
+    showToast('❌ Görsel üretilemedi', 'error');
 }
-        } else {
-            updateMessageMarkdown(loadingMsgId, '❌ Görsel üretilemedi: ' + (data.error || 'Bilinmeyen hata'));
-            showToast('❌ Görsel üretilemedi', 'error');
-        }
     } catch (error) {
         console.error('Görsel üretim hatası:', error);
         updateMessageMarkdown(loadingMsgId, '❌ Hata: ' + error.message);
