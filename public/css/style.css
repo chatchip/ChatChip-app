@@ -305,12 +305,12 @@ body {
 /* 🔥 Textarea (Alt padding sıfırlandı, yazı asla ikonların olduğu yere inemez) */
 .input-wrapper textarea {
     width: 100%;
-    min-height: 40px;
-    max-height: 110px;
+    min-height: 56px;
+    max-height: 120px; /* Kutusunun büyüdüğü son sınır */
     border: none;
     background: transparent;
-    /* 🔥 Sadece üstten ve yanlardan boşluk, altta boşluk yok! */
-    padding: 16px 50px 0px 50px !important; 
+    /* 🔥 Üstten 14px, Sağ-Soldan 50px, Alttan ise 42px (ikonlara çarpmasın diye güvenli pay) */
+    padding: 14px 50px 42px 50px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -319,7 +319,7 @@ body {
     line-height: 1.5;
     box-sizing: border-box;
     flex: 1;
-    overflow-y: auto !important;
+    overflow-y: auto !important; /* Kutu dolunca kendi içinde kaydırmayı açar */
 }
 
 .input-wrapper textarea::placeholder {
