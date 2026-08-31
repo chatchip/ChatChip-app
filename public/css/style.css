@@ -303,7 +303,7 @@ body {
     width: 100%;
     border: none;
     background: transparent;
-    padding: 10px 50px 10px 80px;
+    padding: 10px 60px 10px 85px;  /* ← Sağ ve sol boşluk artırıldı! */
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -324,7 +324,7 @@ body {
 /* 🔥 Tüm ikon butonları - absolute */
 .input-wrapper .icon-btn {
     position: absolute;
-    bottom: 8px;
+    bottom: 10px;
     z-index: 2;
     width: 32px;
     height: 32px;
@@ -354,23 +354,32 @@ body {
     fill: none;
 }
 
-/* Sol ikonlar */
-.input-wrapper .icon-btn:first-child { left: 10px; }
-.input-wrapper .icon-btn:nth-child(2) { left: 46px; }
+/* 🔥 Sol ikonlar */
+.input-wrapper .icon-btn:first-child { 
+    left: 10px; 
+    bottom: 10px;
+}
+.input-wrapper .icon-btn:nth-child(2) { 
+    left: 46px; 
+    bottom: 10px;
+}
 
-/* Sağ ikonlar (sesli okuma) */
-.input-wrapper .icon-btn:nth-child(4) { right: 50px; }
+/* 🔥 Sağ ikon - Sesli Okuma */
+.input-wrapper .icon-btn:nth-child(4) { 
+    right: 48px; 
+    bottom: 10px;
+}
 
 /* 🔥 Gönder butonu */
 .input-wrapper #sendBtn {
     position: absolute;
     right: 8px;
-    bottom: 6px;
+    bottom: 8px;
     z-index: 2;
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
     border: none;
     border-radius: 10px;
     background: var(--primary) !important;
@@ -399,12 +408,12 @@ body {
 .input-wrapper #stopBtn {
     position: absolute;
     right: 8px;
-    bottom: 6px;
+    bottom: 8px;
     z-index: 2;
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
     border: none;
     border-radius: 10px;
     background: #EF4444 !important;
@@ -446,21 +455,30 @@ body {
     }
     
     .input-wrapper textarea {
-        padding: 8px 40px 8px 68px;
+        padding: 8px 48px 8px 70px;
         font-size: 0.9rem;
         max-height: 120px;
+        min-height: 20px;
     }
     
-    .input-wrapper .icon-btn:first-child { left: 6px; }
-    .input-wrapper .icon-btn:nth-child(2) { left: 38px; }
-    .input-wrapper .icon-btn:nth-child(4) { right: 42px; }
+    .input-wrapper .icon-btn:first-child { 
+        left: 6px; 
+        bottom: 8px;
+    }
+    .input-wrapper .icon-btn:nth-child(2) { 
+        left: 38px; 
+        bottom: 8px;
+    }
+    .input-wrapper .icon-btn:nth-child(4) { 
+        right: 40px; 
+        bottom: 8px;
+    }
     
     .input-wrapper .icon-btn {
         width: 28px;
         height: 28px;
         min-width: 28px;
         min-height: 28px;
-        bottom: 6px;
     }
     
     .input-wrapper #sendBtn,
@@ -470,7 +488,13 @@ body {
         min-width: 34px;
         min-height: 34px;
         right: 6px;
-        bottom: 4px;
+        bottom: 6px;
+    }
+    
+    .input-wrapper #sendBtn svg,
+    .input-wrapper #stopBtn svg {
+        width: 18px;
+        height: 18px;
     }
 }
 /* ===== SIDEBARS ===== */
