@@ -303,10 +303,10 @@ body {
 /* 🔥 Textarea - padding ile ikonlara yer açar! */
 .input-wrapper textarea {
     width: 100%;
-    min-height: 52px;
+    min-height: 64px;
     border: none;
     background: transparent;
-    padding: 28px 85px 12px 85px;   /* ← Üst:28px, Sağ:85px, Alt:12px, Sol:85px */
+    padding: 24px 85px 12px 85px;   /* ← Üst boşluk 24px */
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -448,16 +448,19 @@ body {
     }
     
     .input-wrapper {
-        min-height: 44px;
+        min-height: 54px;
         border-radius: 14px;
     }
     
     .input-wrapper textarea {
-        min-height: 44px;
-        padding: 10px 75px 10px 75px;
+        min-height: 54px;
+        padding: 20px 75px 10px 75px;  /* ← Mobilde de üst boşluk korunsun! */
         font-size: 0.9rem;
         max-height: 120px;
     }
+    
+    /* Diğer mobil stiller aynen kalabilir */
+}
     
     .input-wrapper .icon-btn {
         width: 28px;
