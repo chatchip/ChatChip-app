@@ -271,7 +271,7 @@ body {
 }
 
 /* ============================================================
-   📝 CHAT INPUT - CLASS BAZLI (KUSURSUZ)
+   📝 CHAT INPUT - GEMINI TARZI (MOBİL DÜZELTMELİ)
    ============================================================ */
 .input-area {
     padding: 8px 12px 16px 12px;
@@ -288,7 +288,7 @@ body {
     border-radius: 16px;
     border: 1.5px solid var(--border);
     width: 100%;
-    min-height: 52px;
+    min-height: 64px;
     box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
     display: flex;
@@ -300,13 +300,13 @@ body {
     box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.12);
 }
 
-/* 🔥 Textarea - padding ile ikonlara yer açar! */
+/* 🔥 Textarea - padding ile ikonlara yer açar ve üste konumlanır */
 .input-wrapper textarea {
     width: 100%;
     min-height: 64px;
     border: none;
     background: transparent;
-    padding: 24px 85px 12px 85px;   /* ← Üst boşluk 24px */
+    padding: 24px 85px 12px 85px;
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -324,7 +324,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* 🔥 Tüm ikonlar - Absolute ile alta sabit! */
+/* 🔥 Tüm ikonlar - Absolute ile alta sabit */
 .input-wrapper .icon-btn {
     position: absolute;
     bottom: 10px;
@@ -358,14 +358,11 @@ body {
 }
 
 /* 📌 Sol ikonlar */
-.input-wrapper .icon-left-1 { left: 10px; }
-.input-wrapper .icon-left-2 { left: 46px; }
+.input-wrapper .icon-left-1 { left: 10px; bottom: 10px; }
+.input-wrapper .icon-left-2 { left: 46px; bottom: 10px; }
 
 /* 📌 Sağ ikon - Sesli Okuma */
-.input-wrapper .icon-right-extra { 
-    right: 50px; 
-    bottom: 10px;
-}
+.input-wrapper .icon-right-extra { right: 50px; bottom: 10px; }
 
 /* 🔥 Gönder butonu */
 .input-wrapper #sendBtn {
@@ -454,13 +451,10 @@ body {
     
     .input-wrapper textarea {
         min-height: 54px;
-        padding: 20px 75px 10px 75px;  /* ← Mobilde de üst boşluk korunsun! */
+        padding: 20px 75px 10px 75px;  /* ← Mobilde üst boşluk korunsun! */
         font-size: 0.9rem;
         max-height: 120px;
     }
-    
-    /* Diğer mobil stiller aynen kalabilir */
-}
     
     .input-wrapper .icon-btn {
         width: 28px;
