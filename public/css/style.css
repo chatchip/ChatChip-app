@@ -1630,11 +1630,6 @@ body {
     opacity: 0.6;
 }
 
-/* File input gizle */
-#fileInput {
-    display: none !important;
-}
-
 /* ============================================================
    📝 MESAJ KUTUSU İYİLEŞTİRMELERİ
    ============================================================ */
