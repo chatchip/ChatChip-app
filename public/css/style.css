@@ -284,14 +284,14 @@ body {
 .input-wrapper {
     display: flex;
     align-items: flex-start;
-    gap: 6px;
+    gap: 4px;
     background: var(--bg);
     border-radius: 16px;
-    padding: 6px 8px 6px 16px;
+    padding: 6px 8px;
     border: 1.5px solid var(--border);
     transition: border-color 0.2s, box-shadow 0.2s;
-    width: 100%;
-    max-width: 100%;
+    width: 100% !important;
+    max-width: none !important;
     min-height: 48px;
     box-sizing: border-box;
 }
@@ -301,13 +301,14 @@ body {
     box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.15);
 }
 
+/* 🔥 Textarea - TÜM GENİŞLİĞİ AL! */
 .input-wrapper textarea {
     flex: 1 1 auto;
     min-width: 0;
-    width: 100%;
+    width: 100% !important;
     border: none;
     background: transparent;
-    padding: 10px 6px;
+    padding: 10px 8px;
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -317,7 +318,7 @@ body {
     max-height: 150px;
     line-height: 1.5;
     box-sizing: border-box;
-    align-self: stretch;  /* ← Textarea'yı esnet! */
+    align-self: stretch;
 }
 
 .input-wrapper textarea::placeholder {
@@ -326,7 +327,24 @@ body {
     font-size: 0.9rem;
 }
 
-/* 🔥 Tüm butonlar - ikon butonları */
+/* 🔥 Sol ikonlar - solda sabit */
+.input-wrapper .icon-btn:first-child {
+    order: 0;
+    flex-shrink: 0;
+}
+
+.input-wrapper .icon-btn:nth-child(2) {
+    order: 0;
+    flex-shrink: 0;
+}
+
+/* 🔥 Sağ ikonlar - sağda sabit */
+.input-wrapper .icon-btn:nth-child(4) {
+    order: 1;
+    flex-shrink: 0;
+}
+
+/* 🔥 Tüm ikon butonları */
 .input-wrapper .icon-btn {
     width: 36px;
     height: 36px;
@@ -343,7 +361,7 @@ body {
     transition: all 0.2s ease;
     padding: 0;
     flex-shrink: 0;
-    align-self: flex-end;  /* ← İkonlar altta sabit! */
+    align-self: flex-end;
 }
 
 .input-wrapper .icon-btn:hover {
@@ -358,8 +376,10 @@ body {
     fill: none;
 }
 
-/* 🔥 Gönder butonu */
+/* 🔥 Gönder butonu - sağda sabit */
 .input-wrapper #sendBtn {
+    order: 1;
+    flex-shrink: 0;
     width: 40px;
     height: 40px;
     min-width: 40px;
@@ -374,8 +394,7 @@ body {
     justify-content: center;
     transition: all 0.2s ease;
     padding: 0;
-    flex-shrink: 0;
-    align-self: flex-end;  /* ← Buton altta sabit! */
+    align-self: flex-end;
 }
 
 .input-wrapper #sendBtn:hover {
@@ -390,8 +409,10 @@ body {
     fill: none;
 }
 
-/* 🔥 Durdur butonu */
+/* 🔥 Durdur butonu - sağda sabit */
 .input-wrapper #stopBtn {
+    order: 1;
+    flex-shrink: 0;
     width: 40px;
     height: 40px;
     min-width: 40px;
@@ -406,8 +427,7 @@ body {
     justify-content: center;
     transition: all 0.2s ease;
     padding: 0;
-    flex-shrink: 0;
-    align-self: flex-end;  /* ← Buton altta sabit! */
+    align-self: flex-end;
 }
 
 .input-wrapper #stopBtn:hover {
@@ -428,17 +448,17 @@ body {
     transform: none;
 }
 
-/* 🔥 Mobil için daha geniş */
+/* 🔥 Mobil için */
 @media (max-width: 480px) {
     .input-area {
         padding: 6px 8px 12px 8px;
     }
     
     .input-wrapper {
-        padding: 4px 6px 4px 12px;
+        padding: 4px 6px;
         border-radius: 14px;
         min-height: 40px;
-        gap: 4px;
+        gap: 3px;
     }
     
     .input-wrapper textarea {
