@@ -2497,23 +2497,3 @@ async function triggerBiometricLogin() {
         return false;
     }
 }
-// Chat Input Dinamik Yükseklik ve Kaydırma Ayarı
-const textarea = document.querySelector('.input-wrapper textarea');
-
-if (textarea) {
-    textarea.addEventListener('input', function() {
-        // İçeriğe göre yüksekliği sıfırlayıp yeniden ölçüyoruz
-        this.style.height = 'auto';
-        
-        // scrollHeight değerini alıp max sınıra (örn: 105px) göre ayarlıyoruz
-        let newHeight = this.scrollHeight;
-        
-        if (newHeight > 105) {
-            this.style.height = '105px';
-            this.style.overflowY = 'auto'; // Sınırda scroll açılır, yazı üste kayar
-        } else {
-            this.style.height = newHeight + 'px';
-            this.style.overflowY = 'hidden';
-        }
-    });
-}
