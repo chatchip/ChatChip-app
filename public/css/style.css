@@ -301,12 +301,13 @@ body {
 }
 
 /* 🔥 Textarea - padding ile ikonlara yer açar ve üste konumlanır */
-.input-wrapper textarea {
+input-wrapper textarea {
     width: 100%;
     min-height: 64px;
     border: none;
     background: transparent;
-    padding: 28px 85px 12px 85px !important; /* 🔥 !important ekledik ki başka bir şey ezemesin */
+    /* 🔥 SOL ve SAĞ padding'i düşürdük (soldan 75px, sağdan 80px) ki yazı sıkışmasın */
+    padding: 22px 80px 12px 75px !important; 
     font-size: 0.95rem;
     font-family: inherit;
     resize: none;
@@ -358,9 +359,14 @@ body {
 }
 
 /* 📌 Sol ikonlar */
-.input-wrapper .icon-left-1 { left: 10px; bottom: 10px; }
-.input-wrapper .icon-left-2 { left: 46px; bottom: 10px; }
-
+.input-wrapper .icon-left-1 { 
+    left: 14px; /* Sol kenardan biraz içeri aldık */
+    bottom: 10px; 
+}
+.input-wrapper .icon-left-2 { 
+    left: 48px; /* İki ikon arasındaki mesafeyi koruduk */
+    bottom: 10px; 
+}
 /* 📌 Sağ ikon - Sesli Okuma */
 .input-wrapper .icon-right-extra { right: 50px; bottom: 10px; }
 
