@@ -954,6 +954,12 @@ async function sendMessage() {
 
     if (data.success && data.imageUrl) {
         const imageHtml = `<img src="${data.imageUrl}" alt="${data.prompt}" style="max-width:100%; max-height:400px; border-radius:12px; border:1px solid var(--border); object-fit:contain;" />`;
+      // ✅ BURAYA EKLE (İndirme butonu)
+    const timestamp = new Date().getTime();
+    const random = Math.floor(Math.random() * 10000);
+    const fileName = `gorsel_${timestamp}_${random}.jpg`; // 🔥 WebP formatına uygun isim
+    
+    const downloadBtn = `<a href="${data.imageUrl}" download="${fileName}" style="display:inline-flex; align-items:center; justify-content:center; margin-top:4px; padding:4px 8px; background:transparent; color:var(--text-light); border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:500; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'; this.style.color='var(--text)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-light)';">📥 İndir</a>`;
         const resultText = `🖼️ **${data.prompt}**\n\n${imageHtml}\n\n✨ Görsel düzenlendi!`;
         updateMessageMarkdown(loadingMsgId, resultText);
         showToast('✅ Görsel düzenlendi!', 'success');
