@@ -94,7 +94,6 @@ async function loadModels() {
         
         if (result.success && result.models) {
             availableModels = result.models;
-            console.log('📦 Modeller yüklendi:', availableModels);
             updateModelSelector();
         }
     } catch (error) {
