@@ -851,8 +851,14 @@ async function generateAndShowImage(prompt, originalText) {
     } else {
         imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
     }
-    
- const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n✨ Görsel başarıyla oluşturuldu!`;
+  // ✅ BURAYA EKLE (İndirme butonu)
+const timestamp = new Date().getTime();
+const random = Math.floor(Math.random() * 10000);
+const fileName = `gorsel_${timestamp}_${random}.jpg`;
+
+const downloadBtn = `<a href="${imageSrc}" download="${fileName}" style="display:inline-block; margin-top:8px; padding:8px 16px; background:#7BD3C9; color:white; border-radius:8px; text-decoration:none; font-weight:600;">📥 İndir</a>`;
+
+const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n${downloadBtn}\n\n✨ Görsel başarıyla oluşturuldu!`;
     updateMessageMarkdown(loadingMsgId, resultText);
     showToast('✅ Görsel oluşturuldu!', 'success');
 } else {
