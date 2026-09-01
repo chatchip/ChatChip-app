@@ -785,7 +785,7 @@ function stopMessage() {
 async function generateAndShowImage(prompt, originalText) {
     console.log(`🎨 Görsel üretiliyor: "${prompt}"`);
     
-    const loadingMsgId = addMessage(`🎨 "${originalText || prompt}" görseli üretiliyor...`, 'bot', true);
+        const loadingMsgId = addMessage(`🎨 Görsel üretiliyor...`, 'bot', true);
     
     try {
         const dm = window.DataManager;
