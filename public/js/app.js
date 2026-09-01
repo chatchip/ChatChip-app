@@ -1011,7 +1011,6 @@ if (isImageCommand && !isInfoQuestion) {
         cleanPrompt = text;
     }
 
-    addMessage(text, 'user');
 input.value = '';
 input.style.height = 'auto';
 removeImagePreviewUI();
