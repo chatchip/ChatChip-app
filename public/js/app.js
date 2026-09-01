@@ -851,12 +851,12 @@ async function generateAndShowImage(prompt, originalText) {
     } else {
         imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
     }
-  // ✅ BURAYA EKLE (İndirme butonu)
+  // ✅ Minimalist indirme butonu
 const timestamp = new Date().getTime();
 const random = Math.floor(Math.random() * 10000);
 const fileName = `gorsel_${timestamp}_${random}.jpg`;
 
-const downloadBtn = `<a href="${imageSrc}" download="${fileName}" style="display:inline-block; margin-top:8px; padding:8px 16px; background:#7BD3C9; color:white; border-radius:8px; text-decoration:none; font-weight:600;">📥 İndir</a>`;
+const downloadBtn = `<a href="${imageSrc}" download="${fileName}" style="display:inline-flex; align-items:center; justify-content:center; margin-top:4px; padding:4px 8px; background:transparent; color:var(--text-light); border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:500; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'; this.style.color='var(--text)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-light)';">📥 İndir</a>`;
 
 const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n${downloadBtn}\n\n✨ Görsel başarıyla oluşturuldu!`;
     updateMessageMarkdown(loadingMsgId, resultText);
