@@ -2181,24 +2181,6 @@ function shareMessage(button) {
         });
     }
 }
-function updateSpeechButton(isActive) {
-    const speechBtn = document.getElementById('speechPlayBtn');
-    if (!speechBtn) return;
-    
-    if (isActive) {
-        speechBtn.style.color = '#EF4444';
-        speechBtn.style.background = 'rgba(239, 68, 68, 0.1)';
-        speechBtn.style.borderRadius = '50%';
-        speechBtn.style.padding = '4px';
-        speechBtn.title = 'Konuşmayı durdur';
-    } else {
-        speechBtn.style.color = '';
-        speechBtn.style.background = '';
-        speechBtn.style.borderRadius = '';
-        speechBtn.style.padding = '';
-        speechBtn.title = 'Sesli Oku';
-    }
-}
 
 // ============================================================
 // 🎤🔊 EVENT LISTENER'LAR
@@ -2212,15 +2194,6 @@ document.addEventListener('DOMContentLoaded', function() {
         speechBtn.parentNode.replaceChild(newBtn, speechBtn);
         newBtn.addEventListener('click', toggleSpeech);
         console.log('🎤 Mikrofon butonu hazır');
-    }
-    
-    // Sesli okuma butonu
-    const speechPlayBtn = document.getElementById('speechPlayBtn');
-    if (speechPlayBtn) {
-        const newBtn = speechPlayBtn.cloneNode(true);
-        speechPlayBtn.parentNode.replaceChild(newBtn, speechPlayBtn);
-        newBtn.addEventListener('click', toggleSpeechPlayback);
-        console.log('🔊 Sesli okuma butonu hazır');
     }
 });
 
