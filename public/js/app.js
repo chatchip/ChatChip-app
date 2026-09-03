@@ -2036,6 +2036,7 @@ function stopListening() {
 let speechSynthesis = window.speechSynthesis;
 let currentUtterance = null;
 let isSpeaking = false;
+let currentSpeechButton = null;
 
 function cleanTextForSpeech(text) {
     let clean = text
@@ -2053,9 +2054,22 @@ function cleanTextForSpeech(text) {
         .trim();
     return clean;
 }
+function updateMessageSpeechButton(isActive) {
+    if (!currentSpeechButton) return;
 
-function speakText(text) {
+    const span = currentSpeechButton.querySelector('span');
+    if (!span) return;
+
+    span.textContent = isActive ? 'Durdur' : 'Sesli oku';
+
+    currentSpeechButton.title = isActive
+        ? 'Sesli okumayı durdur'
+        : 'Sesli oku';
+}
+
+function speakText(text, button = null) {
     stopSpeaking();
+    currentSpeechButton = button;
     
     if (!text || text.trim().length === 0) return;
     
@@ -2073,14 +2087,16 @@ function speakText(text) {
     utterance.volume = 1.0;
     
     utterance.onstart = function() {
-        isSpeaking = true;
-        showToast('🔊 Sesli yanıt başladı...', 'info');
-    };
+    isSpeaking = true;
+    updateMessageSpeechButton(true);
+    showToast('🔊 Sesli yanıt başladı...', 'info');
+};
     
-    utterance.onend = function() {
-        isSpeaking = false;
-        showToast('✅ Sesli yanıt tamamlandı!', 'success');
-    };
+   utterance.onend = function() {
+    isSpeaking = false;
+    updateMessageSpeechButton(false);
+    showToast('✅ Sesli yanıt tamamlandı!', 'success');
+};
     
    utterance.onerror = function(event) {
     console.error('Speech error:', event);
@@ -2103,8 +2119,14 @@ function stopSpeaking() {
     if (speechSynthesis) {
         speechSynthesis.cancel();
     }
+
+    if (currentSpeechButton) {
+        updateMessageSpeechButton(false);
+    }
+
     isSpeaking = false;
     currentUtterance = null;
+    currentSpeechButton = null;
 }
 
 function toggleSpeechPlayback(button) {
@@ -2125,7 +2147,7 @@ function toggleSpeechPlayback(button) {
     const text = content.textContent || content.innerText;
 
     if (text && text.trim().length > 0) {
-        speakText(text);
+        speakText(text, button);
     } else {
         showToast('⚠️ Okunacak metin yok!', 'info');
     }
