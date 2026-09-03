@@ -1207,7 +1207,7 @@ body {
 /* Bot mesajları - solda, kutu yok */
 .message.bot {
     align-self: flex-start;
-    max-width: 92%;
+    max-width: 100%;
     margin: 4px 0;
 }
 
