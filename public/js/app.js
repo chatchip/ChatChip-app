@@ -1385,7 +1385,7 @@ actions.style.display = 'none';
                 <span>Sesli oku</span>
             </button>
 
-            <button type="button" class="message-action-btn" data-action="copy" title="Kopyala">
+            <button type="button" class="message-action-btn" data-action="copy" title="Kopyala" onclick="copyMessage(this)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -2127,7 +2127,27 @@ function toggleSpeechPlayback(button) {
         showToast('⚠️ Okunacak metin yok!', 'info');
     }
 }
+function copyMessage(button) {
+    const message = button.closest('.message');
+    if (!message) return;
 
+    const content = message.querySelector('.markdown-body');
+    if (!content) return;
+
+    const text = content.innerText || content.textContent;
+
+    if (!text.trim()) {
+        showToast('⚠️ Kopyalanacak metin yok!', 'info');
+        return;
+    }
+
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('✅ Yanıt kopyalandı!', 'success');
+    }).catch(error => {
+        console.error('Kopyalama hatası:', error);
+        showToast('❌ Kopyalama başarısız!', 'error');
+    });
+}
 function updateSpeechButton(isActive) {
     const speechBtn = document.getElementById('speechPlayBtn');
     if (!speechBtn) return;
