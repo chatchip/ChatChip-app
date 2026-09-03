@@ -2795,3 +2795,83 @@ body {
         max-width: 280px;
     }
 }
+/* ============================================================
+   🤖 AI MESAJ AKSİYONLARI
+   ============================================================ */
+
+.message-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid var(--border);
+}
+
+.message-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 0.75rem;
+    font-family: inherit;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.message-action-btn:hover {
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.message-action-btn svg {
+    flex-shrink: 0;
+}
+
+.message-action-btn:active {
+    transform: scale(0.96);
+}
+/* ============================================================
+   🤖 AI MESAJ AKSİYONLARI
+   ============================================================ */
+
+.message-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding-top: 7px;
+    border-top: 1px solid var(--border);
+}
+
+.message-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 0.75rem;
+    font-family: inherit;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.message-action-btn:hover {
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.message-action-btn svg {
+    flex-shrink: 0;
+}
+
+.message-action-btn:active {
+    transform: scale(0.96);
+}
