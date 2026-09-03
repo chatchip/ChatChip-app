@@ -316,46 +316,49 @@ body {
 .input-wrapper .icon-left-1 { 
     position: absolute;
     left: 12px; 
-    bottom: 6px; 
+    bottom: 8px; 
     z-index: 2;
 }
 .input-wrapper .icon-left-2 { 
     position: absolute;
-    left: 44px; 
-    bottom: 6px; 
+    left: 48px; 
+    bottom: 8px; 
     z-index: 2;
 }
-
-/* 📌 Sağ sesli okuma butonu */
-.input-wrapper .icon-right-extra { 
-    position: absolute;
-    right: 50px; 
-    bottom: 6px; 
-    z-index: 2;
-}
-
 /* 🔥 Gönder butonu */
 .input-wrapper #sendBtn {
     position: absolute;
     right: 6px;
-    bottom: 6px;
+    bottom: 8px;
     z-index: 2;
-    width: 36px;
-    height: 36px;
+
+    width: 38px;
+    height: 38px;
+
     border: none;
-    border-radius: 10px;
+    border-radius: 11px;
+
     background: var(--primary) !important;
     color: white;
+
     cursor: pointer;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     padding: 0;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
 }
 
 .input-wrapper #sendBtn:hover {
     background: var(--primary-dark) !important;
     transform: scale(1.04);
+    box-shadow: 0 4px 12px rgba(123, 211, 201, 0.25);
 }
 
 .input-wrapper #sendBtn svg {
@@ -365,28 +368,41 @@ body {
     fill: none;
 }
 
+
 /* 🔥 Durdur butonu */
 .input-wrapper #stopBtn {
     position: absolute;
     right: 6px;
-    bottom: 6px;
+    bottom: 8px;
     z-index: 2;
-    width: 36px;
-    height: 36px;
+
+    width: 38px;
+    height: 38px;
+
     border: none;
-    border-radius: 10px;
-    background: #EF4444 !important;
+    border-radius: 11px;
+
+    background: var(--primary) !important;
     color: white;
+
     cursor: pointer;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     padding: 0;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
 }
 
 .input-wrapper #stopBtn:hover {
-    background: #DC2626 !important;
+    background: var(--primary-dark) !important;
     transform: scale(1.04);
+    box-shadow: 0 4px 12px rgba(123, 211, 201, 0.25);
 }
 
 .input-wrapper #stopBtn svg {
@@ -396,6 +412,8 @@ body {
     fill: none;
 }
 
+
+/* Disabled */
 .input-wrapper button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
