@@ -1267,38 +1267,56 @@ body {
 }
 
 .input-wrapper {
+    position: relative;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    width: 100%;
+    min-height: 58px;
+    box-sizing: border-box;
     display: flex;
-    align-items: flex-end;
-    gap: 4px;
-    max-width: 100%;
-    margin: 0 auto;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 4px 6px 4px 14px;
-    transition: border-color 0.2s;
+    flex-direction: column;
+    padding-bottom: 44px;
+    overflow: hidden;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
 .input-wrapper:focus-within {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.15);
+    box-shadow:
+        0 0 0 3px rgba(123, 211, 201, 0.10),
+        0 4px 18px rgba(123, 211, 201, 0.08);
 }
 
 .input-wrapper textarea {
     flex: 1;
     border: none;
     background: transparent;
-    padding: 10px 0;
-    font-size: 0.95rem;
+
+    padding: 13px 56px 2px 56px !important;
+
+    font-size: 0.96rem;
     font-family: inherit;
+    font-weight: 400;
+
     resize: none;
     outline: none;
-    color: var(--text);
-    min-height: 24px;
-    max-height: 120px;
-    line-height: 1.5;
-}
 
+    color: var(--text);
+    min-height: 42px;
+    max-height: 150px;
+    line-height: 1.55;
+
+    box-sizing: border-box;
+    field-sizing: content;
+    overflow-y: auto !important;
+
+    transition: color 0.2s ease;
+}
 .input-wrapper textarea::placeholder {
     color: var(--text-light);
 }
@@ -1589,25 +1607,43 @@ body {
     fill: none;
 }
 
-/* 🔥 Durdur butonu kırmızı */
+/* 🔥 Durdur butonu ChatChip Color */
 .input-wrapper #stopBtn {
-    background: #EF4444 !important;
+    background: var(--primary) !important;
 }
 
 .input-wrapper #stopBtn:hover {
-    background: #DC2626 !important;
+    background: var(--primary-dark) !important;
 }
 
 /* 🔥 Input alanı düzeni */
 .input-wrapper {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 3px;
+
+    width: 100%;
+    min-height: 58px;
+    box-sizing: border-box;
+
     padding: 4px 6px 4px 12px;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    transition: border-color 0.2s;
+
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--primary);
+    box-shadow:
+        0 0 0 3px rgba(123, 211, 201, 0.10),
+        0 4px 18px rgba(123, 211, 201, 0.08);
 }
 
 .input-wrapper textarea {
@@ -1634,76 +1670,6 @@ body {
    📝 MESAJ KUTUSU İYİLEŞTİRMELERİ
    ============================================================ */
 
-.input-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    padding: 6px 8px 6px 16px;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    transition: border-color 0.2s;
-    min-height: 48px;
-}
-
-.input-wrapper:focus-within {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(123, 211, 201, 0.15);
-}
-
-.input-wrapper textarea {
-    flex: 1;
-    min-width: 80px;
-    border: none;
-    background: transparent;
-    padding: 10px 4px;
-    font-size: 0.95rem;
-    font-family: inherit;
-    resize: none;
-    outline: none;
-    color: var(--text);
-    min-height: 24px;
-    max-height: 150px;
-    line-height: 1.5;
-}
-
-.input-wrapper textarea::placeholder {
-    color: var(--text-secondary);
-    opacity: 0.7;
-    font-size: 0.9rem;
-}
-
-/* 🔥 İkon butonları - optimize */
-.input-wrapper .icon-btn {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    min-height: 32px;
-    border: none;
-    border-radius: 8px;
-    background: transparent !important;
-    color: var(--text-light);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    padding: 0;
-    flex-shrink: 0;
-}
-
-.input-wrapper .icon-btn:hover {
-    background: rgba(0, 0, 0, 0.05) !important;
-    color: var(--text-primary);
-}
-
-.input-wrapper .icon-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    fill: none;
-}
-
 /* 🔥 Gönder butonu */
 .input-wrapper #sendBtn {
     width: 38px;
@@ -1729,37 +1695,6 @@ body {
 }
 
 .input-wrapper #sendBtn svg {
-    width: 20px;
-    height: 20px;
-    stroke: white;
-    fill: none;
-}
-
-/* 🔥 Durdur butonu */
-.input-wrapper #stopBtn {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
-    border: none;
-    border-radius: 10px;
-    background: #EF4444 !important;
-    color: white;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    padding: 0;
-    flex-shrink: 0;
-}
-
-.input-wrapper #stopBtn:hover {
-    background: #DC2626 !important;
-    transform: scale(1.05);
-}
-
-.input-wrapper #stopBtn svg {
     width: 20px;
     height: 20px;
     stroke: white;
