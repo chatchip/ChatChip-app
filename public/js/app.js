@@ -2074,22 +2074,26 @@ function speakText(text) {
     
     utterance.onstart = function() {
         isSpeaking = true;
-        updateSpeechButton(true);
         showToast('🔊 Sesli yanıt başladı...', 'info');
     };
     
     utterance.onend = function() {
         isSpeaking = false;
-        updateSpeechButton(false);
         showToast('✅ Sesli yanıt tamamlandı!', 'success');
     };
     
-    utterance.onerror = function(event) {
-        console.error('Speech error:', event);
-        isSpeaking = false;
-        updateSpeechButton(false);
-        showToast('❌ Ses oynatma hatası!', 'error');
-    };
+   utterance.onerror = function(event) {
+    console.error('Speech error:', event);
+
+    isSpeaking = false;
+
+    // Kullanıcı konuşmayı kendisi durdurduysa hata gösterme
+    if (event.error === 'canceled' || event.error === 'interrupted') {
+        return;
+    }
+
+    showToast('❌ Ses oynatma hatası!', 'error');
+};
     
     currentUtterance = utterance;
     speechSynthesis.speak(utterance);
