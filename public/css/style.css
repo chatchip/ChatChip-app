@@ -276,7 +276,6 @@ body {
 .input-area {
     padding: 8px 12px 16px 12px;
     background: var(--bg-secondary);
-    border-top: 1px solid var(--border-color);
     flex-shrink: 0;
     width: 100%;
     box-sizing: border-box;
@@ -1463,7 +1462,6 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
-    border-bottom: 1px solid var(--border);
     background: var(--bg-secondary);
     flex-shrink: 0;
 }
