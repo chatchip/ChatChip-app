@@ -843,14 +843,15 @@ async function generateAndShowImage(prompt, originalText) {
     }
 
     // Görsel gösterimi
-    let imageHtml = '';
-    if (imageSrc.startsWith('data:image')) {
-        imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
-    } else if (imageSrc.startsWith('http')) {
-        imageHtml = `<img src="${imageSrc}" alt="${prompt}" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
-    } else {
-        imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
-    }
+let imageHtml = '';
+
+if (imageSrc.startsWith('data:image')) {
+    imageHtml = `<img src="${imageSrc}" alt="Üretilen görsel" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+} else if (imageSrc.startsWith('http')) {
+    imageHtml = `<img src="${imageSrc}" alt="Üretilen görsel" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
+} else {
+    imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
+}
   // ✅ Minimalist indirme butonu
 const timestamp = new Date().getTime();
 const random = Math.floor(Math.random() * 10000);
