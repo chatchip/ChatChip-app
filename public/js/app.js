@@ -1306,6 +1306,13 @@ console.log('📜 Geçmiş mesajlar:', historyMessages.length);
             }
         }
     }
+            // 🤖 AI yanıtı tamamlandı → aksiyon butonlarını göster
+    const botMessage = document.getElementById(botMsgId);
+    const actions = botMessage?.querySelector('.message-actions');
+
+    if (actions) {
+        actions.style.display = 'flex';
+    }
 
    // 🔐 3. AI yanıtını şifrele ve kaydet (CryptoKey ile)
 if (fullText && currentCryptoKey) {
@@ -1363,11 +1370,12 @@ function addMessage(text, type, isTemp = false, timestamp = null) {
         // ============================================================
         // 🔧 AI MESAJ AKSİYONLARI
         // ============================================================
-        const actions = document.createElement('div');
-        actions.className = 'message-actions';
+   const actions = document.createElement('div');
+actions.className = 'message-actions';
+actions.style.display = 'none';
 
         actions.innerHTML = `
-            <button type="button" class="message-action-btn" data-action="speak" title="Sesli oku">
+    <button type="button" class="message-action-btn" data-action="speak" title="Sesli oku" onclick="toggleSpeechPlayback(this)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5 11 5"></polygon>
@@ -2096,22 +2104,27 @@ function stopSpeaking() {
     updateSpeechButton(false);
 }
 
-function toggleSpeechPlayback() {
+function toggleSpeechPlayback(button) {
     if (isSpeaking) {
         stopSpeaking();
+        return;
+    }
+
+    const message = button.closest('.message');
+    if (!message) return;
+
+    const content = message.querySelector('.markdown-body');
+    if (!content) {
+        showToast('⚠️ Okunacak metin yok!', 'info');
+        return;
+    }
+
+    const text = content.textContent || content.innerText;
+
+    if (text && text.trim().length > 0) {
+        speakText(text);
     } else {
-        const messages = document.querySelectorAll('.message.bot .bubble .markdown-body');
-        if (messages.length > 0) {
-            const lastMessage = messages[messages.length - 1];
-            const text = lastMessage.textContent || lastMessage.innerText;
-            if (text && text.trim().length > 0) {
-                speakText(text);
-            } else {
-                showToast('⚠️ Okunacak metin yok!', 'info');
-            }
-        } else {
-            showToast('⚠️ Hiç mesaj yok!', 'info');
-        }
+        showToast('⚠️ Okunacak metin yok!', 'info');
     }
 }
 
