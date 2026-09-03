@@ -234,7 +234,7 @@ body {
 }
 
 .message .bubble {
-    max-width: 80%;
+    max-width: 100%;
     padding: 10px 16px;
     border-radius: 18px;
     font-size: 1.1rem;
