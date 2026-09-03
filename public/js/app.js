@@ -1359,8 +1359,51 @@ function addMessage(text, type, isTemp = false, timestamp = null) {
         contentDiv.className = 'markdown-body';
         contentDiv.innerHTML = renderMarkdown(text || '...');
         bubble.appendChild(contentDiv);
+
+        // ============================================================
+        // 🔧 AI MESAJ AKSİYONLARI
+        // ============================================================
+        const actions = document.createElement('div');
+        actions.className = 'message-actions';
+
+        actions.innerHTML = `
+            <button type="button" class="message-action-btn" data-action="speak" title="Sesli oku">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <span>Sesli oku</span>
+            </button>
+
+            <button type="button" class="message-action-btn" data-action="copy" title="Kopyala">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span>Kopyala</span>
+            </button>
+
+            <button type="button" class="message-action-btn" data-action="share" title="Paylaş">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                <span>Paylaş</span>
+            </button>
+        `;
+
+        bubble.appendChild(actions);
+
     } else {
         const imageMatch = text.match(/!\[.*?\]\((.*?)\)/);
+
         if (imageMatch) {
             const imageUrl = imageMatch[1];
             const textWithoutImage = text.replace(/!\[.*?\]\(.*?\)/, '').trim();
@@ -1385,11 +1428,13 @@ function addMessage(text, type, isTemp = false, timestamp = null) {
             
             img.onerror = function() {
                 this.style.display = 'none';
+
                 const errorMsg = document.createElement('div');
                 errorMsg.textContent = '❌ Görsel yüklenemedi';
                 errorMsg.style.color = '#EF4444';
                 errorMsg.style.fontSize = '0.8rem';
                 errorMsg.style.padding = '8px';
+
                 container.appendChild(errorMsg);
             };
             
@@ -1402,10 +1447,12 @@ function addMessage(text, type, isTemp = false, timestamp = null) {
                 textNode.style.fontSize = '0.9rem';
                 textNode.style.color = 'var(--text)';
                 textNode.style.wordBreak = 'break-word';
+
                 container.appendChild(textNode);
             }
             
             bubble.appendChild(container);
+
         } else {
             bubble.textContent = text || '...';
         }
@@ -1413,16 +1460,24 @@ function addMessage(text, type, isTemp = false, timestamp = null) {
 
     const time = document.createElement('span');
     time.className = 'time';
+
     if (timestamp) {
         const date = new Date(timestamp);
-        time.textContent = date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        time.textContent = date.toLocaleTimeString('tr-TR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     } else {
-        time.textContent = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+        time.textContent = new Date().toLocaleTimeString('tr-TR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 
     bubble.appendChild(time);
     wrapper.appendChild(bubble);
     messagesDiv.appendChild(wrapper);
+
     chatArea.scrollTop = chatArea.scrollHeight;
 
     return wrapper.id;
@@ -1431,19 +1486,35 @@ function addMessage(text, type, isTemp = false, timestamp = null) {
 function updateMessageMarkdown(id, text) {
     const wrapper = document.getElementById(id);
     if (!wrapper) return;
+
     const bubble = wrapper.querySelector('.bubble');
+
     if (bubble) {
-        bubble.innerHTML = '';
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'markdown-body';
-        contentDiv.innerHTML = renderMarkdown(text);
-        bubble.appendChild(contentDiv);
-        
-        const time = document.createElement('span');
-        time.className = 'time';
-        time.textContent = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-        bubble.appendChild(time);
+        // Sadece AI cevabını güncelle
+        const contentDiv = bubble.querySelector('.markdown-body');
+
+        if (contentDiv) {
+            contentDiv.innerHTML = renderMarkdown(text);
+        } else {
+            const newContentDiv = document.createElement('div');
+            newContentDiv.className = 'markdown-body';
+            newContentDiv.innerHTML = renderMarkdown(text);
+            bubble.prepend(newContentDiv);
+        }
+
+        // Saat
+        let time = bubble.querySelector('.time');
+
+        if (!time) {
+            time = document.createElement('span');
+            time.className = 'time';
+            bubble.appendChild(time);
+        }
+
+        time.textContent = new Date().toLocaleTimeString('tr-TR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     }
 }
 
