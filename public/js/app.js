@@ -1394,7 +1394,7 @@ actions.style.display = 'none';
                 <span>Kopyala</span>
             </button>
 
-            <button type="button" class="message-action-btn" data-action="share" title="Paylaş">
+            <button type="button" class="message-action-btn" data-action="share" title="Paylaş" onclick="shareMessage(this)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="18" cy="5" r="3"></circle>
@@ -2147,6 +2147,39 @@ function copyMessage(button) {
         console.error('Kopyalama hatası:', error);
         showToast('❌ Kopyalama başarısız!', 'error');
     });
+}
+function shareMessage(button) {
+    const message = button.closest('.message');
+    if (!message) return;
+
+    const content = message.querySelector('.markdown-body');
+    if (!content) return;
+
+    const text = content.innerText || content.textContent;
+
+    if (!text.trim()) {
+        showToast('⚠️ Paylaşılacak metin yok!', 'info');
+        return;
+    }
+
+    if (navigator.share) {
+        navigator.share({
+            title: 'ChatChip AI',
+            text: text
+        }).catch(error => {
+            if (error.name !== 'AbortError') {
+                console.error('Paylaşım hatası:', error);
+                showToast('❌ Paylaşım başarısız!', 'error');
+            }
+        });
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('📋 Paylaşım desteklenmiyor, yanıt kopyalandı!', 'info');
+        }).catch(error => {
+            console.error('Kopyalama hatası:', error);
+            showToast('❌ Paylaşım başarısız!', 'error');
+        });
+    }
 }
 function updateSpeechButton(isActive) {
     const speechBtn = document.getElementById('speechPlayBtn');
