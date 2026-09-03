@@ -2105,7 +2105,6 @@ function stopSpeaking() {
     }
     isSpeaking = false;
     currentUtterance = null;
-    updateSpeechButton(false);
 }
 
 function toggleSpeechPlayback(button) {
