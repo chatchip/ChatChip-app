@@ -857,8 +857,38 @@ const timestamp = new Date().getTime();
 const random = Math.floor(Math.random() * 10000);
 const fileName = `gorsel_${timestamp}_${random}.jpg`;
 
-const downloadBtn = `<a href="${imageSrc}" download="${fileName}" style="display:inline-flex; align-items:center; justify-content:center; margin-top:4px; padding:4px 8px; background:transparent; color:var(--text-light); border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:500; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'; this.style.color='var(--text)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-light)';">📥 İndir</a>`;
-
+const downloadBtn = `
+<a href="${data.imageUrl}" 
+   download="${fileName}"
+   title="Görseli indir"
+   style="
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:32px;
+      height:32px;
+      margin-top:4px;
+      background:transparent;
+      color:var(--text-light);
+      border-radius:8px;
+      text-decoration:none;
+      transition:all 0.2s ease;
+   "
+   onmouseover="
+      this.style.background='rgba(0,0,0,0.06)';
+      this.style.color='var(--text)';
+   "
+   onmouseout="
+      this.style.background='transparent';
+      this.style.color='var(--text-light)';
+   "
+>
+   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v12"></path>
+      <path d="m7 10 5 5 5-5"></path>
+      <path d="M5 21h14"></path>
+   </svg>
+</a>`;
 const wrapper = document.getElementById(loadingMsgId);
 const bubble = wrapper?.querySelector('.bubble');
 
@@ -978,8 +1008,38 @@ async function sendMessage() {
     const random = Math.floor(Math.random() * 10000);
     const fileName = `gorsel_${timestamp}_${random}.jpg`; // 🔥 JPEG formatına uygun isim
     
-    const downloadBtn = `<a href="${data.imageUrl}" download="${fileName}" style="display:inline-flex; align-items:center; justify-content:center; margin-top:4px; padding:4px 8px; background:transparent; color:var(--text-light); border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:500; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'; this.style.color='var(--text)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-light)';">📥 İndir</a>`;
-    
+const downloadBtn = `
+<a href="${data.imageUrl}" 
+   download="${fileName}"
+   title="Görseli indir"
+   style="
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:32px;
+      height:32px;
+      margin-top:4px;
+      background:transparent;
+      color:var(--text-light);
+      border-radius:8px;
+      text-decoration:none;
+      transition:all 0.2s ease;
+   "
+   onmouseover="
+      this.style.background='rgba(0,0,0,0.06)';
+      this.style.color='var(--text)';
+   "
+   onmouseout="
+      this.style.background='transparent';
+      this.style.color='var(--text-light)';
+   "
+>
+   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3v12"></path>
+      <path d="m7 10 5 5 5-5"></path>
+      <path d="M5 21h14"></path>
+   </svg>
+</a>`;    
     const resultText = `${imageHtml}\n\n${downloadBtn}\n\n✨ Görsel düzenlendi!`;
 updateMessageMarkdown(loadingMsgId, resultText);
 showToast('✅ Görsel düzenlendi!', 'success');
