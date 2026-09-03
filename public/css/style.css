@@ -2842,36 +2842,68 @@ body {
 .message-actions {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-top: 8px;
-    padding-top: 7px;
+    gap: 2px;
+    margin-top: 10px;
+    padding-top: 8px;
     border-top: 1px solid var(--border);
 }
 
 .message-action-btn {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 5px 7px;
+    gap: 6px;
+    padding: 5px 8px;
     border: none;
     background: transparent;
     color: var(--text-light);
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-family: inherit;
-    border-radius: 6px;
+    font-weight: 500;
+    border-radius: 7px;
     cursor: pointer;
-    transition: all 0.18s ease;
+    transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        transform 0.12s ease;
 }
 
 .message-action-btn:hover {
     color: var(--text);
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--hover-bg, rgba(0, 0, 0, 0.05));
 }
 
 .message-action-btn svg {
+    width: 15px;
+    height: 15px;
     flex-shrink: 0;
+    opacity: 0.85;
+    transition: opacity 0.18s ease;
+}
+
+.message-action-btn:hover svg {
+    opacity: 1;
 }
 
 .message-action-btn:active {
     transform: scale(0.96);
+}
+
+/* 📱 Mobil */
+@media (max-width: 600px) {
+    .message-actions {
+        gap: 1px;
+        margin-top: 8px;
+        padding-top: 7px;
+    }
+
+    .message-action-btn {
+        padding: 5px 6px;
+        font-size: 0.7rem;
+        gap: 4px;
+    }
+
+    .message-action-btn svg {
+        width: 14px;
+        height: 14px;
+    }
 }
