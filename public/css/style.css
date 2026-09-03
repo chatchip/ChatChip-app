@@ -2836,15 +2836,15 @@ body {
     transform: scale(0.96);
 }
 /* ============================================================
-   🤖 AI MESAJ AKSİYONLARI
+   🤖 AI MESAJ AKSİYONLARI — PREMIUM
    ============================================================ */
 
 .message-actions {
     display: flex;
     align-items: center;
-    gap: 2px;
-    margin-top: 10px;
-    padding-top: 8px;
+    gap: 3px;
+    margin-top: 12px;
+    padding-top: 9px;
     border-top: 1px solid var(--border);
 }
 
@@ -2852,54 +2852,87 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 8px;
-    border: none;
+
+    padding: 6px 9px;
+
+    border: 0;
+    border-radius: 8px;
+
     background: transparent;
     color: var(--text-light);
-    font-size: 0.74rem;
+
     font-family: inherit;
+    font-size: 0.74rem;
     font-weight: 500;
-    border-radius: 7px;
+
     cursor: pointer;
+
     transition:
-        color 0.18s ease,
         background 0.18s ease,
+        color 0.18s ease,
         transform 0.12s ease;
 }
 
 .message-action-btn:hover {
+    background: var(--hover-bg, rgba(0, 0, 0, 0.06));
     color: var(--text);
-    background: var(--hover-bg, rgba(0, 0, 0, 0.05));
+}
+
+.message-action-btn:active {
+    transform: scale(0.95);
 }
 
 .message-action-btn svg {
     width: 15px;
     height: 15px;
+
     flex-shrink: 0;
-    opacity: 0.85;
-    transition: opacity 0.18s ease;
+
+    opacity: 0.75;
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
 }
 
 .message-action-btn:hover svg {
     opacity: 1;
+    transform: scale(1.05);
 }
 
-.message-action-btn:active {
-    transform: scale(0.96);
+/* İlk buton biraz daha belirgin */
+.message-action-btn[data-action="speak"]:hover {
+    color: var(--primary, #6366f1);
 }
 
-/* 📱 Mobil */
+/* Kopyalama */
+.message-action-btn[data-action="copy"]:hover {
+    color: var(--primary, #6366f1);
+}
+
+/* Paylaşma */
+.message-action-btn[data-action="share"]:hover {
+    color: var(--primary, #6366f1);
+}
+
+
+/* ============================================================
+   📱 MOBİL
+   ============================================================ */
+
 @media (max-width: 600px) {
+
     .message-actions {
-        gap: 1px;
-        margin-top: 8px;
-        padding-top: 7px;
+        gap: 2px;
+        margin-top: 10px;
+        padding-top: 8px;
     }
 
     .message-action-btn {
-        padding: 5px 6px;
-        font-size: 0.7rem;
+        padding: 6px 7px;
         gap: 4px;
+        font-size: 0.7rem;
+        border-radius: 7px;
     }
 
     .message-action-btn svg {
