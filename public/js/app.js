@@ -889,6 +889,16 @@ const downloadBtn = `
       <path d="M5 21h14"></path>
    </svg>
 </a>`;
+           const privacyNote = `
+<span style="
+    margin-left:8px;
+    font-size:0.72rem;
+    color:var(--text-light);
+    opacity:0.6;
+    white-space:nowrap;
+">
+    Görseller oturum sonunda silinir.
+</span>`;
 const wrapper = document.getElementById(loadingMsgId);
 const bubble = wrapper?.querySelector('.bubble');
 
@@ -897,7 +907,7 @@ if (bubble) {
         <div class="markdown-body">
             ${imageHtml}
             <br>
-            ${downloadBtn}
+            ${downloadBtn}${privacyNote}
             <br><br>
             ✨ Görsel başarıyla oluşturuldu!
         </div>
@@ -907,7 +917,6 @@ if (bubble) {
         })}</span>
     `;
 }
-
 showToast('✅ Görsel oluşturuldu!', 'success');
 } else {
     updateMessageMarkdown(loadingMsgId, '❌ Görsel üretilemedi: ' + (data.error || 'Bilinmeyen hata'));
@@ -1039,8 +1048,18 @@ const downloadBtn = `
       <path d="m7 10 5 5 5-5"></path>
       <path d="M5 21h14"></path>
    </svg>
-</a>`;    
-    const resultText = `${imageHtml}\n\n${downloadBtn}\n\n✨ Görsel düzenlendi!`;
+</a>`;
+       const privacyNote = `
+<span style="
+    margin-left:8px;
+    font-size:0.72rem;
+    color:var(--text-light);
+    opacity:0.6;
+    white-space:nowrap;
+">
+    Görseller oturum sonunda silinir.
+</span>`;
+    const resultText = `${imageHtml}\n\n${downloadBtn}${privacyNote}\n\n✨ Görsel düzenlendi!`;
 updateMessageMarkdown(loadingMsgId, resultText);
 showToast('✅ Görsel düzenlendi!', 'success');
 } else {
