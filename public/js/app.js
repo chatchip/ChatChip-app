@@ -1488,36 +1488,52 @@ function updateMessageMarkdown(id, text) {
     if (!wrapper) return;
 
     const bubble = wrapper.querySelector('.bubble');
+    if (!bubble) return;
 
-    if (bubble) {
-        // Sadece AI cevabını güncelle
-        const contentDiv = bubble.querySelector('.markdown-body');
+    // ============================================================
+    // 🤖 AI CEVABINI GÜNCELLE
+    // ============================================================
+    let contentDiv = bubble.querySelector('.markdown-body');
 
-        if (contentDiv) {
-            contentDiv.innerHTML = renderMarkdown(text);
-        } else {
-            const newContentDiv = document.createElement('div');
-            newContentDiv.className = 'markdown-body';
-            newContentDiv.innerHTML = renderMarkdown(text);
-            bubble.prepend(newContentDiv);
-        }
-
-        // Saat
-        let time = bubble.querySelector('.time');
-
-        if (!time) {
-            time = document.createElement('span');
-            time.className = 'time';
-            bubble.appendChild(time);
-        }
-
-        time.textContent = new Date().toLocaleTimeString('tr-TR', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+    if (!contentDiv) {
+        contentDiv = document.createElement('div');
+        contentDiv.className = 'markdown-body';
+        bubble.prepend(contentDiv);
     }
-}
 
+    contentDiv.innerHTML = renderMarkdown(text);
+
+    // ============================================================
+    // 🔧 SIRALAMA
+    // AI cevabı → butonlar → saat
+    // ============================================================
+    const actions = bubble.querySelector('.message-actions');
+    const time = bubble.querySelector('.time');
+
+    if (actions) {
+        bubble.appendChild(actions);
+    }
+
+    if (time) {
+        bubble.appendChild(time);
+    }
+
+    // ============================================================
+    // ⏰ SAAT
+    // ============================================================
+    let currentTime = bubble.querySelector('.time');
+
+    if (!currentTime) {
+        currentTime = document.createElement('span');
+        currentTime.className = 'time';
+        bubble.appendChild(currentTime);
+    }
+
+    currentTime.textContent = new Date().toLocaleTimeString('tr-TR', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
 // ============================================================
 // TOAST
 // ============================================================
