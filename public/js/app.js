@@ -858,9 +858,9 @@ const fileName = `gorsel_${timestamp}_${random}.jpg`;
 
 const downloadBtn = `<a href="${imageSrc}" download="${fileName}" style="display:inline-flex; align-items:center; justify-content:center; margin-top:4px; padding:4px 8px; background:transparent; color:var(--text-light); border-radius:6px; text-decoration:none; font-size:0.8rem; font-weight:500; transition:all 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'; this.style.color='var(--text)';" onmouseout="this.style.background='transparent'; this.style.color='var(--text-light)';">📥 İndir</a>`;
 
-const resultText = `🖼️ **${prompt}**\n\n${imageHtml}\n\n${downloadBtn}\n\n✨ Görsel başarıyla oluşturuldu!`;
-    updateMessageMarkdown(loadingMsgId, resultText);
-    showToast('✅ Görsel oluşturuldu!', 'success');
+const resultText = `${imageHtml}\n\n${downloadBtn}\n\n✨ Görsel başarıyla oluşturuldu!`;
+updateMessageMarkdown(loadingMsgId, resultText);
+showToast('✅ Görsel oluşturuldu!', 'success');
 } else {
     updateMessageMarkdown(loadingMsgId, '❌ Görsel üretilemedi: ' + (data.error || 'Bilinmeyen hata'));
     showToast('❌ Görsel üretilemedi', 'error');
