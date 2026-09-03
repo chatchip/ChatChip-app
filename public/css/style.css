@@ -1272,7 +1272,7 @@ body {
     border-radius: 20px;
     border: 1px solid var(--border-color);
     width: 100%;
-    min-height: 58px;
+    min-height: 64px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
