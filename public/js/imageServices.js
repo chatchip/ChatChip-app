@@ -180,12 +180,12 @@ const ImageService = {
             const token = dm?.getToken();
 
             if (!token) {
-                updateMessage(
-                    loadingMsgId,
-                    '❌ Lütfen önce giriş yapın!'
-                );
-                return;
-            }
+    updateMessage(
+        loadingMsgId,
+        'ℹ️ Görsel oluşturmak için önce giriş yapmalısın.'
+    );
+    return;
+}
 
             const currentPlan = getPlan ? getPlan() : null;
 
@@ -217,21 +217,28 @@ const ImageService = {
 
             if (!data.success || !data.imageUrl) {
 
-                updateMessage(
-                    loadingMsgId,
-                    '❌ Görsel üretilemedi: ' +
-                    (data.error || 'Bilinmeyen hata')
-                );
+    let message =
+        '✦ Bu görsel isteğini şu anda oluşturamadım. İstersen farklı bir ifadeyle tekrar deneyebilirsin.';
 
-                if (showToast) {
-                    showToast(
-                        '❌ Görsel üretilemedi',
-                        'error'
-                    );
-                }
+    if (data.code === 'IMAGE_POLICY_BLOCK') {
+        message =
+            '✦ Bu görsel isteği içerik kuralları nedeniyle oluşturulamadı. İsteğini değiştirerek tekrar deneyebilirsin.';
+    }
 
-                return;
-            }
+    updateMessage(
+        loadingMsgId,
+        message
+    );
+
+    if (showToast) {
+        showToast(
+            'Görsel isteği tamamlanamadı',
+            'error'
+        );
+    }
+
+    return;
+}
 
             // 🔥 KRİTİK NOKTA
             // String ise URL
@@ -248,9 +255,9 @@ const ImageService = {
                 );
 
                 updateMessage(
-                    loadingMsgId,
-                    '❌ Görsel adresi alınamadı!'
-                );
+    loadingMsgId,
+    '✦ Görsel oluşturuldu ancak görüntü ekrana getirilemedi. Lütfen tekrar dene.'
+);
 
                 return;
             }
@@ -318,15 +325,16 @@ const ImageService = {
             );
 
             updateMessage(
-                loadingMsgId,
-                '❌ Hata: ' + error.message
-            );
+    loadingMsgId,
+    '✦ Görsel oluşturulurken bir sorun oluştu. Lütfen tekrar dene.'
+);
 
             if (showToast) {
-                showToast(
-                    '❌ Görsel üretim hatası',
-                    'error'
-                );
+    showToast(
+        'Görsel isteği tamamlanamadı',
+        'error'
+    );
+}
             }
         }
     },
@@ -365,10 +373,10 @@ const ImageService = {
             const token = dm?.getToken();
 
             if (!token) {
-                updateMessage(
-                    loadingMsgId,
-                    '❌ Lütfen önce giriş yapın!'
-                );
+    updateMessage(
+        loadingMsgId,
+        'ℹ️ Görsel oluşturmak için önce giriş yapmalısın.'
+    );
                 return;
             }
 
@@ -407,18 +415,17 @@ const ImageService = {
 
             if (!data.success || !data.imageUrl) {
 
-                updateMessage(
-                    loadingMsgId,
-                    '❌ Görsel düzenlenemedi: ' +
-                    (data.error || 'Bilinmeyen hata')
-                );
+               updateMessage(
+    loadingMsgId,
+    '✦ Görsel düzenleme isteğini şu anda tamamlayamadım. Lütfen tekrar dene.'
+);
 
                 if (showToast) {
-                    showToast(
-                        '❌ Görsel düzenlenemedi',
-                        'error'
-                    );
-                }
+    showToast(
+        'Görsel düzenleme isteği tamamlanamadı',
+        'error'
+    );
+}
 
                 return;
             }
@@ -504,17 +511,16 @@ const ImageService = {
             );
 
             updateMessage(
-                loadingMsgId,
-                '❌ Hata: ' + error.message
-            );
+    loadingMsgId,
+    '✦ Görsel düzenlenirken bir sorun oluştu. Lütfen tekrar dene.'
+);
 
             if (showToast) {
-                showToast(
-                    '❌ Düzenleme hatası: ' +
-                    error.message,
-                    'error'
-                );
-            }
+    showToast(
+        'Görsel düzenleme isteği tamamlanamadı',
+        'error'
+    );
+}
         }
     }
 };
