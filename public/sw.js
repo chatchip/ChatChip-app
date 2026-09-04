@@ -1,13 +1,15 @@
 // ChatChip Service Worker
-const CACHE_NAME = 'chatchip-v1';
+const CACHE_NAME = 'chatchip-v2';
+
 const urlsToCache = [
-  '/public/index.html',
-  '/public/backoffice.html',
-  '/public/admin-panel.html',
-  '/public/pricing.html',
-  '/public/register.html',
-  '/public/tree-detail.html',
-  '/public/cuzdan.html',
+  '/index.html',
+  '/backoffice.html',
+  '/admin-panel.html',
+  '/pricing.html',
+  '/register.html',
+  '/tree-detail.html',
+  '/cuzdan.html',
+
   '/css/style.css',
   '/css/backoffice.css',
   '/css/admin-panel.css',
@@ -15,14 +17,18 @@ const urlsToCache = [
   '/css/register.css',
   '/css/tree-detail.css',
   '/css/cuzdan.css',
-  '/js/datamanager.js',
-  '/js/app.js',
-  '/js/backoffice.js',
-  '/js/admin-panel.js',
-  '/js/pricing.js',
-  '/js/register.js',
-  '/js/tree-detail.js',
-  '/js/cuzdan.js',
+
+'/js/crypto.js',
+'/js/datamanager.js',
+'/js/sidebar.js',
+'/js/imageServices.js',
+'/js/app.js',
+'/js/backoffice.js',
+'/js/admin-panel.js',
+'/js/pricing.js',
+'/js/tree-detail.js',
+'/js/cuzdan.js',
+
   '/assets/logo.svg',
   '/assets/pwalogo.png',
   '/assets/icon-72.png',
@@ -71,6 +77,7 @@ self.addEventListener('fetch', event => {
         if (response) {
           return response;
         }
+
         return fetch(event.request).catch(() => {
           return new Response('🚀 ChatChip - Çevrimdışı', {
             status: 200,
