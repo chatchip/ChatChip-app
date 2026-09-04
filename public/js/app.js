@@ -2578,3 +2578,29 @@ async function triggerBiometricLogin() {
         return false;
     }
 }
+}
+
+// ============================================================
+// 🖼️ ÜRETİLEN GÖRSELE TIKLAMA
+// ============================================================
+
+document.addEventListener('click', function (e) {
+
+    const image = e.target.closest('.chatchip-editable-image');
+
+    if (!image) return;
+
+    const imageSrc = image.dataset.imageSrc;
+
+    console.log(
+        '🖌️ Düzenlenecek görsel seçildi:',
+        imageSrc
+    );
+
+    currentImageUrl = imageSrc;
+
+    localStorage.setItem(
+        'chatchip_current_image_url',
+        imageSrc
+    );
+});
