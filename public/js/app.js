@@ -1824,6 +1824,33 @@ function showImagePreview(imageUrl) {
 // 🗑️ GÖRSEL PREVIEW TEMİZLE
 // ============================================================
 
+function clearImagePreview() {
+    // Preview kutusunu kaldır
+    if (previewContainer) {
+        previewContainer.remove();
+        previewContainer = null;
+    }
+
+    // Aktif görseli temizle
+    currentImageUrl = null;
+
+    // LocalStorage'daki görseli temizle
+    localStorage.removeItem('chatchip_current_image_url');
+
+    // File input'u temizle
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.value = '';
+    }
+
+    // Mesaj kutusunu normale döndür
+    const input = document.getElementById('messageInput');
+    if (input) {
+        input.placeholder = 'Mesajınızı yazın...';
+    }
+
+    console.log('🗑️ Görsel preview temizlendi');
+}
 // ============================================================
 // 🗑️ GÖRSEL STATE YÖNETİMİ
 // ============================================================
