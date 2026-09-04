@@ -792,155 +792,25 @@ function setImageLoadingAnimation(loadingMsgId, text) {
 }
 
 // ============================================================
-// 🎨 GÖRSEL ÜRETİM FONKSİYONU (sendMessage DIŞINDA)
+// 🎨 GÖRSEL ÜRETİM FONKSİYONU
+// ImageService → API / Base64 / HTML / Download
+// app.js → sadece UI callback'lerini sağlar
 // ============================================================
 async function generateAndShowImage(prompt, originalText) {
-    console.log(`🎨 Görsel üretiliyor: "${prompt}"`);
-    
-const loadingMsgId = addMessage('', 'bot', true);
-setImageLoadingAnimation(loadingMsgId, 'Görsel üretiliyor...');
-    
-    try {
-        const dm = window.DataManager;
-        const token = dm.getToken();
-        
-        if (!token) {
-            updateMessageMarkdown(loadingMsgId, '❌ Lütfen önce giriş yapın!');
-            return;
-        }
 
-        if (currentPlan && currentPlan.isExpired) {
-            updateMessageMarkdown(loadingMsgId, '⛔ Planınız sona erdi! Görsel üretimi için plan satın alın.');
-            return;
-        }
+    return ImageService.generate(prompt, {
 
-        const response = await fetch('https://chatchip-production.up.railway.app/api/image/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ prompt: prompt })
-        });
+        addMessage: addMessage,
 
-        const data = await response.json();
-        console.log('📥 Görsel yanıtı:', data);
+        setLoading: setImageLoadingAnimation,
 
-       if (data.success && data.imageUrl) {
-    let imageSrc = '';
-    
-    if (typeof data.imageUrl === 'string') {
-        imageSrc = data.imageUrl;
-    } else if (typeof data.imageUrl === 'object' && data.imageUrl !== null) {
-        // 🔥 GROK IMAGINE 2.0 FORMATI
-        console.log('📦 imageUrl bir nesne:', data.imageUrl);
-        
-        // data.imageUrl = { data: "...base64...", media_type: "image/jpeg" }
-        const base64Data = data.imageUrl.data || '';
-        const mediaType = data.imageUrl.media_type || 'image/jpeg';
-        
-        if (base64Data) {
-            imageSrc = `data:${mediaType};base64,${base64Data}`;
-            console.log('✅ Base64 data URL\'ye çevrildi');
-        } else {
-            // Diğer olası formatlar
-            imageSrc = data.imageUrl.url || data.imageUrl.image_url || data.imageUrl.output || Object.values(data.imageUrl)[0] || '';
-            console.log('🔧 diğer alanlardan çekildi:', imageSrc?.substring(0, 100));
-        }
-    }
+        updateMessage: updateMessageMarkdown,
 
-    if (!imageSrc) {
-        console.error('❌ Görsel adresi alınamadı! data.imageUrl:', data.imageUrl);
-        updateMessageMarkdown(loadingMsgId, '❌ Görsel adresi alınamadı!');
-        showToast('❌ Görsel adresi alınamadı', 'error');
-        return;
-    }
+        showToast: showToast,
 
-    // Görsel gösterimi
-let imageHtml = '';
+        getPlan: () => currentPlan
 
-if (imageSrc.startsWith('data:image')) {
-    imageHtml = `<img src="${imageSrc}" alt="Üretilen görsel" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
-} else if (imageSrc.startsWith('http')) {
-    imageHtml = `<img src="${imageSrc}" alt="Üretilen görsel" style="max-width:100%; max-height:400px; border-radius:12px; margin:6px 0; border:1px solid var(--border); object-fit:contain;" />`;
-} else {
-    imageHtml = `<pre style="white-space:pre-wrap;word-break:break-all;font-size:0.7rem;background:rgba(0,0,0,0.05);padding:8px;border-radius:6px;">${imageSrc}</pre>`;
-}
-  // ✅ Minimalist indirme butonu
-const timestamp = new Date().getTime();
-const random = Math.floor(Math.random() * 10000);
-const fileName = `gorsel_${timestamp}_${random}.jpg`;
-
-const downloadBtn = `
-<a href="${data.imageUrl}" 
-   download="${fileName}"
-   title="Görseli indir"
-   style="
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width:32px;
-      height:32px;
-      margin-top:4px;
-      background:transparent;
-      color:var(--text-light);
-      border-radius:8px;
-      text-decoration:none;
-      transition:all 0.2s ease;
-   "
-   onmouseover="
-      this.style.background='rgba(0,0,0,0.06)';
-      this.style.color='var(--text)';
-   "
-   onmouseout="
-      this.style.background='transparent';
-      this.style.color='var(--text-light)';
-   "
->
-   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 3v12"></path>
-      <path d="m7 10 5 5 5-5"></path>
-      <path d="M5 21h14"></path>
-   </svg>
-</a>`;
-           const privacyNote = `
-<span style="
-    margin-left:8px;
-    font-size:0.72rem;
-    color:var(--text-light);
-    opacity:0.6;
-    white-space:nowrap;
-">
-    Görseller oturum sonunda silinir.
-</span>`;
-const wrapper = document.getElementById(loadingMsgId);
-const bubble = wrapper?.querySelector('.bubble');
-
-if (bubble) {
-    bubble.innerHTML = `
-        <div class="markdown-body">
-            ${imageHtml}
-            <br>
-            ${downloadBtn}${privacyNote}
-            <br><br>
-            ✨ Görsel başarıyla oluşturuldu!
-        </div>
-        <span class="time">${new Date().toLocaleTimeString('tr-TR', {
-            hour: '2-digit',
-            minute: '2-digit'
-        })}</span>
-    `;
-}
-showToast('✅ Görsel oluşturuldu!', 'success');
-} else {
-    updateMessageMarkdown(loadingMsgId, '❌ Görsel üretilemedi: ' + (data.error || 'Bilinmeyen hata'));
-    showToast('❌ Görsel üretilemedi', 'error');
-}
-    } catch (error) {
-        console.error('Görsel üretim hatası:', error);
-        updateMessageMarkdown(loadingMsgId, '❌ Hata: ' + error.message);
-        showToast('❌ Görsel üretim hatası', 'error');
-    }
+    });
 }
 async function sendMessage() {
     const text = input.value.trim();
@@ -997,94 +867,20 @@ async function sendMessage() {
         input.style.height = 'auto';
         removeImagePreviewUI();
 
-const loadingMsgId = addMessage('', 'bot', true);
-setImageLoadingAnimation(loadingMsgId, 'Görsel düzenleniyor...');
-       try {
-    const editImageUrl = currentImageUrl || localStorage.getItem('chatchip_current_image_url');
-    
-    console.log('📸 editImageUrl:', editImageUrl);
+const editImageUrl =
+    currentImageUrl ||
+    localStorage.getItem('chatchip_current_image_url');
 
-    if (!editImageUrl) {
-        throw new Error('Görsel URL bulunamadı');
+await ImageService.edit(
+    text,
+    editImageUrl,
+    {
+        addMessage: addMessage,
+        setLoading: setImageLoadingAnimation,
+        updateMessage: updateMessageMarkdown,
+        showToast: showToast
     }
-
-    const response = await fetch('https://chatchip-production.up.railway.app/api/image/edit', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-            prompt: text,
-            imageUrl: editImageUrl
-        })
-    });
-
-    const data = await response.json();
-    console.log('📥 Düzenleme yanıtı:', data);
-
-   if (data.success && data.imageUrl) {
-    const imageHtml = `<img src="${data.imageUrl}" alt="${data.prompt}" style="max-width:100%; max-height:400px; border-radius:12px; border:1px solid var(--border); object-fit:contain;" />`;
-    
-    // ✅ BURAYA EKLE (İndirme butonu)
-    const timestamp = new Date().getTime();
-    const random = Math.floor(Math.random() * 10000);
-    const fileName = `gorsel_${timestamp}_${random}.jpg`; // 🔥 JPEG formatına uygun isim
-    
-const downloadBtn = `
-<a href="${data.imageUrl}" 
-   download="${fileName}"
-   title="Görseli indir"
-   style="
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width:32px;
-      height:32px;
-      margin-top:4px;
-      background:transparent;
-      color:var(--text-light);
-      border-radius:8px;
-      text-decoration:none;
-      transition:all 0.2s ease;
-   "
-   onmouseover="
-      this.style.background='rgba(0,0,0,0.06)';
-      this.style.color='var(--text)';
-   "
-   onmouseout="
-      this.style.background='transparent';
-      this.style.color='var(--text-light)';
-   "
->
-   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 3v12"></path>
-      <path d="m7 10 5 5 5-5"></path>
-      <path d="M5 21h14"></path>
-   </svg>
-</a>`;
-       const privacyNote = `
-<span style="
-    margin-left:8px;
-    font-size:0.72rem;
-    color:var(--text-light);
-    opacity:0.6;
-    white-space:nowrap;
-">
-    Görseller oturum sonunda silinir.
-</span>`;
-    const resultText = `${imageHtml}\n\n${downloadBtn}${privacyNote}\n\n✨ Görsel düzenlendi!`;
-updateMessageMarkdown(loadingMsgId, resultText);
-showToast('✅ Görsel düzenlendi!', 'success');
-} else {
-    updateMessageMarkdown(loadingMsgId, '❌ Görsel düzenlenemedi: ' + (data.error || 'Bilinmeyen hata'));
-    showToast('❌ Görsel düzenlenemedi', 'error');
-}
-} catch (error) {
-    console.error('❌ Düzenleme hatası:', error);
-    updateMessageMarkdown(loadingMsgId, '❌ Hata: ' + error.message);
-    showToast('❌ Düzenleme hatası: ' + error.message, 'error');
-}
+);
 
         chatArea.scrollTop = chatArea.scrollHeight;
         return;
