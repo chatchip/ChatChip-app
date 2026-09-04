@@ -1710,14 +1710,6 @@ async function handleFileUpload(event) {
         if (data.success) {
             console.log('📸 data.fileUrl:', data.fileUrl);
             
-            // 🔥 DOSYAYI FILEINPUT'A KAYDET!
-            const fileInput = document.getElementById('fileInput');
-            if (fileInput && file) {
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                fileInput.files = dataTransfer.files;
-                console.log('📸 Dosya fileInput\'a kaydedildi:', file.name);
-            }
             
             let imageUrl = data.fileUrl;
             if (imageUrl && imageUrl.startsWith('http://')) {
