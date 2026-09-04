@@ -921,6 +921,11 @@ const isInfoQuestion = lower.includes('nasıl') ||
                        lower.includes('yardım');
 
 const isImageCommand = imagePatterns.some(pattern => pattern.test(text));
+    console.log('🖼️ IMAGE DEBUG:', {
+    text,
+    isImageCommand,
+    isInfoQuestion
+});
 
 if (isImageCommand && !isInfoQuestion) {
     let cleanPrompt = text
