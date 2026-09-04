@@ -162,7 +162,6 @@ const ImageService = {
             addMessage,
             setLoading,
             updateMessage,
-            showToast,
             getPlan
         } = callbacks;
 
@@ -229,13 +228,6 @@ const ImageService = {
         loadingMsgId,
         message
     );
-
-    if (showToast) {
-        showToast(
-            'Görsel isteği tamamlanamadı',
-            'error'
-        );
-    }
 
     return;
 }
@@ -310,13 +302,6 @@ const ImageService = {
                 `;
             }
 
-            if (showToast) {
-                showToast(
-                    '✅ Görsel oluşturuldu!',
-                    'success'
-                );
-            }
-
         } catch (error) {
 
             console.error(
@@ -328,13 +313,6 @@ const ImageService = {
     loadingMsgId,
     '✦ Görsel oluşturulurken bir sorun oluştu. Lütfen tekrar dene.'
 );
-
-            if (showToast) {
-    showToast(
-        'Görsel isteği tamamlanamadı',
-        'error'
-    );
-            }
         }
     },
 
@@ -348,7 +326,6 @@ const ImageService = {
             addMessage,
             setLoading,
             updateMessage,
-            showToast
         } = callbacks;
 
         console.log(
@@ -418,14 +395,6 @@ const ImageService = {
     loadingMsgId,
     '✦ Görsel düzenleme isteğini şu anda tamamlayamadım. Lütfen tekrar dene.'
 );
-
-                if (showToast) {
-    showToast(
-        'Görsel düzenleme isteği tamamlanamadı',
-        'error'
-    );
-}
-
                 return;
             }
 
@@ -495,13 +464,6 @@ const ImageService = {
                 `;
             }
 
-            if (showToast) {
-                showToast(
-                    '✅ Görsel düzenlendi!',
-                    'success'
-                );
-            }
-
         } catch (error) {
 
             console.error(
@@ -514,12 +476,6 @@ const ImageService = {
     '✦ Görsel düzenlenirken bir sorun oluştu. Lütfen tekrar dene.'
 );
 
-            if (showToast) {
-    showToast(
-        'Görsel düzenleme isteği tamamlanamadı',
-        'error'
-    );
-}
         }
     }
 };
