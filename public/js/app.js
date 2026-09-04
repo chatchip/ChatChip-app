@@ -777,6 +777,19 @@ function stopMessage() {
     isProcessing = false;
     showToast('⏹️ Yanıt durduruldu', 'info');
 }
+function setImageLoadingAnimation(loadingMsgId, text) {
+    const wrapper = document.getElementById(loadingMsgId);
+    const bubble = wrapper?.querySelector('.bubble');
+
+    if (!bubble) return;
+
+    bubble.innerHTML = `
+        <div class="markdown-body">
+            <span class="chatchip-loading-icon">✦</span>
+            <span>${text}</span>
+        </div>
+    `;
+}
 
 // ============================================================
 // 🎨 GÖRSEL ÜRETİM FONKSİYONU (sendMessage DIŞINDA)
@@ -784,7 +797,8 @@ function stopMessage() {
 async function generateAndShowImage(prompt, originalText) {
     console.log(`🎨 Görsel üretiliyor: "${prompt}"`);
     
-        const loadingMsgId = addMessage(`🎨 Görsel üretiliyor...`, 'bot', true);
+const loadingMsgId = addMessage('', 'bot', true);
+setImageLoadingAnimation(loadingMsgId, 'Görsel üretiliyor...');
     
     try {
         const dm = window.DataManager;
@@ -983,8 +997,8 @@ async function sendMessage() {
         input.style.height = 'auto';
         removeImagePreviewUI();
 
-        const loadingMsgId = addMessage('🎨 Görsel düzenleniyor...', 'bot', true);
-
+const loadingMsgId = addMessage('', 'bot', true);
+setImageLoadingAnimation(loadingMsgId, 'Görsel düzenleniyor...');
        try {
     const editImageUrl = currentImageUrl || localStorage.getItem('chatchip_current_image_url');
     
@@ -1894,22 +1908,6 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================================
 // 📝 SİSTEM PROMPTU PANELİ
 // ============================================================
-
-
-
-// Mevcut loadSystemPrompt ve saveSystemPrompt fonksiyonlarını güncelle
-// (Zaten var, sadece panel için uyumlu)
-
-// ============================================================
-// 📝 SİSTEM PROMPTU PANELİ
-// ============================================================
-
-
-
-// ============================================================
-// 📝 SİSTEM PROMPTU PANELİ
-// ============================================================
-
 
 
 // ============================================================
