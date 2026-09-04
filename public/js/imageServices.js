@@ -56,27 +56,30 @@ const ImageService = {
     // ========================================================
     // 🖼️ GÖRSEL HTML OLUŞTUR
     // ========================================================
-    createImageHtml(imageSrc, altText = 'Görsel') {
+   createImageHtml(imageSrc, altText = 'Görsel') {
 
-        if (!imageSrc) {
-            return '';
-        }
+    if (!imageSrc) {
+        return '';
+    }
 
-        return `
-            <img 
-                src="${imageSrc}" 
-                alt="${altText}"
-                style="
-                    max-width:100%;
-                    max-height:400px;
-                    border-radius:12px;
-                    margin:6px 0;
-                    border:1px solid var(--border);
-                    object-fit:contain;
-                "
-            />
-        `;
-    },
+    return `
+        <img 
+            src="${imageSrc}" 
+            alt="${altText}"
+            class="chatchip-editable-image"
+            data-image-src="${imageSrc}"
+            style="
+                max-width:100%;
+                max-height:400px;
+                border-radius:12px;
+                margin:6px 0;
+                border:1px solid var(--border);
+                object-fit:contain;
+                cursor:pointer;
+            "
+        />
+    `;
+},
 
 
     // ========================================================
