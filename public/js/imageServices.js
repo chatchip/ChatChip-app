@@ -334,7 +334,6 @@ const ImageService = {
         'Görsel isteği tamamlanamadı',
         'error'
     );
-}
             }
         }
     },
