@@ -2578,7 +2578,6 @@ async function triggerBiometricLogin() {
         return false;
     }
 }
-}
 
 // ============================================================
 // 🖼️ ÜRETİLEN GÖRSELE TIKLAMA
