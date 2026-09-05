@@ -2756,42 +2756,111 @@ window.addEventListener('pageshow', () => {
     });
 });
 // ============================================================
-// 🚀 GÖNDER BUTONU - YUKARI KAYDIRMA HAREKETİ
+// 🚀 GÖNDER BUTONU + MESAJ - YUKARI KAYDIRMA HAREKETİ
 // ============================================================
 
 const swipeSendBtn = document.getElementById('sendBtn');
+const swipeMessageInput = document.getElementById('messageInput');
 
-if (swipeSendBtn) {
+if (swipeSendBtn && swipeMessageInput) {
+
     let startY = 0;
     let currentY = 0;
     let isDraggingSend = false;
+    let floatingMessage = null;
+
+    function removeFloatingMessage() {
+        if (floatingMessage) {
+            floatingMessage.remove();
+            floatingMessage = null;
+        }
+    }
 
     swipeSendBtn.addEventListener('pointerdown', (e) => {
+
         startY = e.clientY;
         currentY = 0;
         isDraggingSend = true;
 
         swipeSendBtn.setPointerCapture(e.pointerId);
         swipeSendBtn.style.transition = 'none';
+
+        const text = swipeMessageInput.value.trim();
+
+        // Input boşsa uçan yazı oluşturma
+        if (!text) return;
+
+        const inputRect = swipeMessageInput.getBoundingClientRect();
+
+        floatingMessage = document.createElement('div');
+        floatingMessage.textContent = text;
+
+        Object.assign(floatingMessage.style, {
+            position: 'fixed',
+
+            left: `${inputRect.left}px`,
+            top: `${inputRect.top}px`,
+
+            maxWidth: `${inputRect.width}px`,
+
+            padding: '8px 12px',
+
+            borderRadius: '18px',
+
+            background: 'var(--primary)',
+            color: '#fff',
+
+            fontSize: '14px',
+            lineHeight: '1.4',
+
+            zIndex: '9999',
+
+            pointerEvents: 'none',
+
+            opacity: '0',
+
+            transform: 'translateY(0px) scale(0.96)',
+
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)'
+        });
+
+        document.body.appendChild(floatingMessage);
     });
 
     swipeSendBtn.addEventListener('pointermove', (e) => {
+
         if (!isDraggingSend) return;
 
         const distance = e.clientY - startY;
 
-        // Sadece yukarı hareket etsin
+        // Sadece yukarı
         currentY = Math.min(0, distance);
 
-        // Maksimum 100px yukarı
-        currentY = Math.max(currentY, -100);
+        // Maksimum 120px
+        currentY = Math.max(currentY, -120);
 
+        // Buton parmağı takip ediyor
         swipeSendBtn.style.transform =
             `translateY(${currentY}px)`;
+
+        if (floatingMessage) {
+
+            const progress =
+                Math.min(Math.abs(currentY) / 100, 1);
+
+            floatingMessage.style.opacity =
+                String(progress);
+
+            floatingMessage.style.transform =
+                `translateY(${currentY}px) scale(${0.96 + progress * 0.04})`;
+
+            // Gerçek textarea yazısı yavaşça kayboluyor
+            swipeMessageInput.style.opacity =
+                String(1 - progress);
+        }
     });
 
-    swipeSendBtn.addEventListener('pointerup', () => {
-        if (!isDraggingSend) return;
+    function resetSwipeSend() {
 
         isDraggingSend = false;
 
@@ -2799,14 +2868,26 @@ if (swipeSendBtn) {
             'transform 0.25s cubic-bezier(.2,.8,.2,1)';
 
         swipeSendBtn.style.transform = 'translateY(0)';
-    });
 
-    swipeSendBtn.addEventListener('pointercancel', () => {
-        isDraggingSend = false;
+        swipeMessageInput.style.transition =
+            'opacity 0.2s ease';
 
-        swipeSendBtn.style.transition =
-            'transform 0.25s cubic-bezier(.2,.8,.2,1)';
+        swipeMessageInput.style.opacity = '1';
 
-        swipeSendBtn.style.transform = 'translateY(0)';
-    });
+        if (floatingMessage) {
+
+            floatingMessage.style.transition =
+                'transform 0.25s ease, opacity 0.2s ease';
+
+            floatingMessage.style.transform =
+                'translateY(0px) scale(0.96)';
+
+            floatingMessage.style.opacity = '0';
+
+            setTimeout(removeFloatingMessage, 250);
+        }
+    }
+
+    swipeSendBtn.addEventListener('pointerup', resetSwipeSend);
+    swipeSendBtn.addEventListener('pointercancel', resetSwipeSend);
 }
