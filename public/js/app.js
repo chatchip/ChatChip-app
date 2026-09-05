@@ -1011,7 +1011,7 @@ removeImagePreviewUI();
 
     let fullMessage = text || '';
 
-    addMessage(fullMessage, 'user');
+    const userMsgId = addMessage(fullMessage, 'user');
     input.value = '';
     input.style.height = 'auto';
     removeImagePreviewUI();
