@@ -2665,11 +2665,11 @@ document.addEventListener('click', function (e) {
                         border-radius:12px;
                         cursor:pointer;
                         background:transparent;
-                        color:white;
+                        color:#9CA3AF;
                         font-size:18px;
                     "
                 >
-                    ➜
+                    ↑
                 </button>
 
             </div>
