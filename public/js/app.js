@@ -2765,9 +2765,10 @@ const swipeMessageInput = document.getElementById('messageInput');
 if (swipeSendBtn && swipeMessageInput) {
 
     let startY = 0;
-    let currentY = 0;
-    let isDraggingSend = false;
-    let floatingMessage = null;
+let currentY = 0;
+let isDraggingSend = false;
+let floatingMessage = null;
+let sendThreshold = 0;
 
     function removeFloatingMessage() {
         if (floatingMessage) {
@@ -2779,6 +2780,15 @@ if (swipeSendBtn && swipeMessageInput) {
     swipeSendBtn.addEventListener('pointerdown', (e) => {
 
         startY = e.clientY;
+        const inputWrapper = swipeSendBtn.closest('.input-wrapper');
+const buttonRect = swipeSendBtn.getBoundingClientRect();
+const wrapperRect = inputWrapper.getBoundingClientRect();
+
+// Butonun üst kenarının inputun üst çizgisine ulaşacağı mesafe
+sendThreshold = Math.max(
+    1,
+    buttonRect.top - wrapperRect.top
+);
         currentY = 0;
         isDraggingSend = true;
 
@@ -2836,17 +2846,25 @@ if (swipeSendBtn && swipeMessageInput) {
         // Sadece yukarı
         currentY = Math.min(0, distance);
 
-        // Maksimum 120px
-        currentY = Math.max(currentY, -120);
+       // Input ne kadar yüksekse swipe alanı da o kadar büyür
+    currentY = Math.max(
+    currentY,
+    -(sendThreshold + 30)
+    );
 
         // Buton parmağı takip ediyor
-        swipeSendBtn.style.transform =
-            `translateY(${currentY}px)`;
+        const isReadyToSend =
+    Math.abs(currentY) >= sendThreshold;
 
+    swipeSendBtn.style.transform =
+    `translateY(${currentY}px) scale(${isReadyToSend ? 1.08 : 1})`;
         if (floatingMessage) {
 
             const progress =
-                Math.min(Math.abs(currentY) / 100, 1);
+    Math.min(
+        Math.abs(currentY) / Math.max(sendThreshold, 1),
+        1
+    );
 
             floatingMessage.style.opacity =
                 String(progress);
@@ -2867,7 +2885,7 @@ if (swipeSendBtn && swipeMessageInput) {
         swipeSendBtn.style.transition =
             'transform 0.25s cubic-bezier(.2,.8,.2,1)';
 
-        swipeSendBtn.style.transform = 'translateY(0)';
+        swipeSendBtn.style.transform = 'translateY(0) scale(1)';
 
         swipeMessageInput.style.transition =
             'opacity 0.2s ease';
@@ -2901,7 +2919,8 @@ swipeSendBtn.addEventListener('click', (e) => {
 
 swipeSendBtn.addEventListener('pointerup', () => {
 
-    const shouldSend = Math.abs(currentY) >= 70;
+    const shouldSend =
+    Math.abs(currentY) >= sendThreshold;
 
     if (shouldSend && swipeMessageInput.value.trim()) {
 
