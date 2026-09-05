@@ -2870,3 +2870,13 @@ body.chat-page .input-area {
     z-index: 20;
     background: transparent;
 }
+/* ============================================================
+   📱 PWA GÖRÜNÜR EKRAN YÜKSEKLİĞİ DÜZELTMESİ
+   ============================================================ */
+
+body.chat-page,
+body.chat-page .app-container,
+body.chat-page .main-content {
+    height: 100svh !important;
+    max-height: 100svh !important;
+}
