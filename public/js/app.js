@@ -2747,5 +2747,11 @@ function updateAppViewportHeight() {
 updateAppViewportHeight();
 
 window.addEventListener('pageshow', () => {
-    requestAnimationFrame(updateAppViewportHeight);
+    requestAnimationFrame(() => {
+        updateAppViewportHeight();
+
+        setTimeout(() => {
+            updateAppViewportHeight();
+        }, 150);
+    });
 });
