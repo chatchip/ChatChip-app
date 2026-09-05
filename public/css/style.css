@@ -72,7 +72,7 @@ body {
     width: 100%;
     max-width: 480px;
     height: 100dvh;
-    max-height: 900px;
+    max-height: 100dvh !important;
     background: var(--bg-secondary);
     display: flex;
     border-radius: 36px;
@@ -90,13 +90,15 @@ body {
     }
 }
 
-/* ===== MAIN CONTENT ===== */
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     width: 100%;
     min-width: 0;
+    overflow: hidden;
+    background: var(--bg);
+    height: 100dvh !important;
 }
 
 /* ----- HEADER ----- */
@@ -132,20 +134,6 @@ body {
 .menu-btn:hover,
 .profile-btn:hover {
     background: var(--hover-bg);
-}
-
-.header-center {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
-    justify-content: center;
-}
-
-.page-title {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 0.95rem;
 }
 
 /* ----- PLAN BADGE ----- */
@@ -188,34 +176,9 @@ body {
     text-decoration: underline;
 }
 
-/* ----- CHAT AREA ----- */
-.chat-area {
-    flex: 1;
-    padding: 16px 20px;
-    overflow-y: auto;
-    background: var(--bg-chat);
-    transition: background 0.3s;
-}
-
-.welcome {
-    text-align: center;
-    padding: 30px 0;
-}
-
-.welcome h2 {
-    font-size: 1.2rem;
-    color: var(--text-primary);
-}
-
-.welcome p {
-    color: var(--text-secondary);
-    margin-top: 4px;
-    font-size: 0.9rem;
-}
-
 /* ----- MESSAGES ----- */
 .message {
-    margin-bottom: 12px;
+    margin: 2px 0;
     display: flex;
     animation: fadeIn 0.3s ease;
 }
@@ -224,52 +187,6 @@ body {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-.message.user {
-    justify-content: flex-end;
-}
-
-.message.bot {
-    justify-content: flex-start;
-}
-
-.message .bubble {
-    max-width: 100%;
-    padding: 10px 16px;
-    border-radius: 18px;
-    font-size: 1.1rem;
-    line-height: 1.5;
-    word-wrap: break-word;
-}
-
-.message.user .bubble {
-    background: var(--bubble-user);
-    color: var(--bubble-user-text);
-    border-bottom-right-radius: 4px;
-    max-width: 95%;
-    width: fit-content;
-}
-
-.message.bot .bubble {
-    background: var(--bubble-bot);
-    backdrop-filter: blur(8px);
-    color: var(--text-primary);
-    border: 1px solid var(--bubble-bot-border);
-    border-bottom-left-radius: 4px;
-}
-
-.message .time {
-    font-size: 0.55rem;
-    color: var(--text-secondary);
-    margin-top: 4px;
-    display: block;
-    opacity: 0.7;
-}
-
-.message.user .time {
-    color: rgba(255,255,255,0.7);
-}
-
 /* ============================================================
     📝 CHAT INPUT - KUSURSUZ ESNEYEN YAPI
    ============================================================ */
@@ -280,37 +197,6 @@ body {
     width: 100%;
     box-sizing: border-box;
 }
-/* 🔥 İkonlar - Kutunun rezerve ettiği alt boşlukta sabit durur */
-.input-wrapper .icon-btn {
-    position: absolute;
-    bottom: 6px;
-    z-index: 2;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 8px;
-    background: transparent !important;
-    color: var(--text-light);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: all 0.2s ease;
-}
-
-.input-wrapper .icon-btn:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
-    color: var(--text-primary);
-}
-
-.input-wrapper .icon-btn svg {
-    width: 18px;
-    height: 18px;
-    stroke: currentColor;
-    fill: none;
-}
-
 /* 📌 Sol ikonlar */
 .input-wrapper .icon-left-1 { 
     position: absolute;
@@ -324,94 +210,6 @@ body {
     bottom: 8px; 
     z-index: 2;
 }
-/* 🔥 Gönder butonu */
-.input-wrapper #sendBtn {
-    position: absolute;
-    right: 6px;
-    bottom: 8px;
-    z-index: 2;
-
-    width: 38px;
-    height: 38px;
-
-    border: none;
-    border-radius: 11px;
-
-    background: var(--primary) !important;
-    color: white;
-
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    transition:
-        background 0.2s ease,
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
-}
-
-.input-wrapper #sendBtn:hover {
-    background: var(--primary-dark) !important;
-    transform: scale(1.04);
-    box-shadow: 0 4px 12px rgba(123, 211, 201, 0.25);
-}
-
-.input-wrapper #sendBtn svg {
-    width: 20px;
-    height: 20px;
-    stroke: white;
-    fill: none;
-}
-
-
-/* 🔥 Durdur butonu */
-.input-wrapper #stopBtn {
-    position: absolute;
-    right: 6px;
-    bottom: 8px;
-    z-index: 2;
-
-    width: 38px;
-    height: 38px;
-
-    border: none;
-    border-radius: 11px;
-
-    background: var(--primary) !important;
-    color: white;
-
-    cursor: pointer;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0;
-
-    transition:
-        background 0.2s ease,
-        transform 0.15s ease,
-        box-shadow 0.2s ease;
-}
-
-.input-wrapper #stopBtn:hover {
-    background: var(--primary-dark) !important;
-    transform: scale(1.04);
-    box-shadow: 0 4px 12px rgba(123, 211, 201, 0.25);
-}
-
-.input-wrapper #stopBtn svg {
-    width: 20px;
-    height: 20px;
-    stroke: white;
-    fill: none;
-}
-
-
 /* Disabled */
 .input-wrapper button:disabled {
     opacity: 0.4;
@@ -881,11 +679,7 @@ body {
 
 /* ----- RESPONSIVE ----- */
 @media (max-width: 480px) {
-    .app-container {
-        max-height: 100dvh;
-        border-radius: 0;
-        box-shadow: none;
-    }
+    
     .sidebar-left,
     .sidebar-right {
         width: 85%;
@@ -898,9 +692,7 @@ body {
         padding: 8px 12px;
         min-height: 48px;
     }
-    .chat-area {
-        padding: 12px 14px;
-    }
+   
     .plan-badge {
         font-size: 0.45rem;
         padding: 1px 8px;
@@ -932,21 +724,35 @@ body {
     color: var(--text);
 }
 
-.markdown-body h1 { font-size: 1.6em; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
-.markdown-body h2 { font-size: 1.35em; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-.markdown-body h3 { font-size: 1.15em; }
+.markdown-body h1 {
+    font-size: 1.6em;
+    font-weight: 700;
+    margin: 12px 0 8px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 6px;
+}
+.markdown-body h2 {
+    font-size: 1.3em;
+    margin: 10px 0 6px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 4px;
+}
+.markdown-body h3 {
+    font-size: 1.1em;
+    margin: 8px 0 4px;
+}
 .markdown-body h4 { font-size: 1em; }
 .markdown-body h5 { font-size: 0.9em; }
 .markdown-body h6 { font-size: 0.85em; color: var(--text-light); }
 
 .markdown-body p {
-    margin: 8px 0;
+    margin: 6px 0;
 }
 
 .markdown-body ul,
 .markdown-body ol {
-    padding-left: 24px;
-    margin: 8px 0;
+    padding-left: 22px;
+    margin: 6px 0;
 }
 
 .markdown-body ul ul,
@@ -957,7 +763,7 @@ body {
 }
 
 .markdown-body li {
-    margin: 4px 0;
+    margin: 3px 0;
 }
 
 .markdown-body li::marker {
@@ -965,8 +771,8 @@ body {
 }
 
 .markdown-body blockquote {
-    margin: 12px 0;
-    padding: 8px 16px;
+    margin: 8px 0;
+    padding: 6px 14px;
     border-left: 4px solid var(--primary);
     background: rgba(123, 211, 201, 0.08);
     border-radius: 0 8px 8px 0;
@@ -983,8 +789,8 @@ body {
 }
 
 .markdown-body pre {
-    margin: 12px 0;
-    padding: 12px 16px;
+    margin: 8px 0;
+    padding: 10px 14px;
     background: rgba(0, 0, 0, 0.06);
     border-radius: 8px;
     overflow-x: auto;
@@ -1002,13 +808,13 @@ body {
 .markdown-body table {
     border-collapse: collapse;
     width: 100%;
-    margin: 12px 0;
+    margin: 8px 0;
 }
 
 .markdown-body table th,
 .markdown-body table td {
     border: 1px solid var(--border);
-    padding: 8px 12px;
+    padding: 6px 10px;
     text-align: left;
 }
 
@@ -1036,9 +842,9 @@ body {
 }
 
 .markdown-body hr {
-    margin: 16px 0;
+    margin: 12px 0;
     border: none;
-    border-top: 2px solid var(--border);
+    border-top: 1px solid var(--border);
 }
 
 .markdown-body a {
@@ -1050,6 +856,7 @@ body {
 
 .markdown-body a:hover {
     border-bottom-color: var(--primary);
+    text-decoration: underline;
 }
 
 /* Koyu tema için */
@@ -1066,7 +873,7 @@ body {
 }
 
 [data-theme="dark"] .markdown-body table tr:nth-child(even) {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 [data-theme="dark"] .markdown-body table th {
@@ -1074,22 +881,6 @@ body {
 }
 
 /* Bot mesajlarında markdown */
-.message.bot .bubble {
-    background: rgba(123, 211, 201, 0.1);
-    border: 1px solid rgba(123, 211, 201, 0.2);
-    padding: 12px 16px;
-    border-radius: 12px 12px 12px 4px;
-    max-width: 85%;
-    font-size: 16px;
-}
-
-.message.bot .bubble .time {
-    display: block;
-    margin-top: 8px;
-    font-size: 0.7rem;
-    color: var(--text-light);
-    text-align: right;
-}
 
 /* Loading animation */
 .typing-indicator {
@@ -1129,6 +920,7 @@ body {
     flex-direction: column;
     height: 100%;
     width: 100%;
+   transition: background 0.3s;
 }
 
 /* Mesajlar - tam genişlik */
@@ -1144,6 +936,7 @@ body {
 
 /* Kullanıcı mesajları - sağda, kutu yok */
 .message.user {
+    justify-content: flex-end;
     align-self: flex-end;
     max-width: 85%;
     margin: 4px 0;
@@ -1174,6 +967,7 @@ body {
 
 /* Bot mesajları - solda, kutu yok */
 .message.bot {
+    justify-content: flex-start;
     align-self: flex-start;
     max-width: 100%;
     margin: 4px 0;
@@ -1188,6 +982,10 @@ body {
     box-shadow: none;
     border: none;
     max-width: 100%;
+    word-wrap: break-word;
+    color: var(--text-primary);
+    backdrop-filter: blur(8px);
+    opacity: 0.7;
 }
 
 .message.bot .bubble .markdown-body {
@@ -1202,11 +1000,7 @@ body {
     font-size: 0.65rem;
     color: var(--text-light);
     text-align: left;
-}
-
-/* Mesajlar arası boşluk */
-.message {
-    margin: 2px 0;
+    opacity: 0.7;
 }
 
 /* Welcome mesajı */
@@ -1230,6 +1024,7 @@ body {
     line-height: 1.5;
     color: var(--text-light);
     opacity: 0.88;
+    margin-top: 4px;
 }
 
 .input-wrapper {
@@ -1300,167 +1095,6 @@ body {
     opacity: 0.4;
     cursor: not-allowed;
 }
-
-/* Markdown stilleri - bot için */
-.markdown-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--text);
-    word-wrap: break-word;
-}
-
-.markdown-body h1 {
-    font-size: 1.6em;
-    font-weight: 700;
-    margin: 12px 0 8px;
-    border-bottom: 2px solid var(--border);
-    padding-bottom: 6px;
-    color: var(--text);
-}
-
-.markdown-body h2 {
-    font-size: 1.3em;
-    font-weight: 600;
-    margin: 10px 0 6px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 4px;
-    color: var(--text);
-}
-
-.markdown-body h3 {
-    font-size: 1.1em;
-    font-weight: 600;
-    margin: 8px 0 4px;
-    color: var(--text);
-}
-
-.markdown-body p {
-    margin: 6px 0;
-}
-
-.markdown-body ul,
-.markdown-body ol {
-    padding-left: 22px;
-    margin: 6px 0;
-}
-
-.markdown-body li {
-    margin: 3px 0;
-}
-
-.markdown-body li::marker {
-    color: var(--primary);
-}
-
-.markdown-body strong {
-    font-weight: 600;
-    color: var(--text);
-}
-
-.markdown-body em {
-    font-style: italic;
-}
-
-.markdown-body code {
-    padding: 2px 6px;
-    background: rgba(0, 0, 0, 0.06);
-    border-radius: 4px;
-    font-family: "SF Mono", "Fira Code", monospace;
-    font-size: 0.85em;
-}
-
-.markdown-body pre {
-    margin: 8px 0;
-    padding: 10px 14px;
-    background: rgba(0, 0, 0, 0.06);
-    border-radius: 8px;
-    overflow-x: auto;
-}
-
-.markdown-body pre code {
-    background: transparent;
-    padding: 0;
-}
-
-.markdown-body blockquote {
-    margin: 8px 0;
-    padding: 6px 14px;
-    border-left: 4px solid var(--primary);
-    background: rgba(123, 211, 201, 0.08);
-    border-radius: 0 8px 8px 0;
-}
-
-.markdown-body table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 8px 0;
-}
-
-.markdown-body table th,
-.markdown-body table td {
-    border: 1px solid var(--border);
-    padding: 6px 10px;
-    text-align: left;
-}
-
-.markdown-body table th {
-    background: rgba(123, 211, 201, 0.12);
-    font-weight: 600;
-}
-
-.markdown-body hr {
-    margin: 12px 0;
-    border: none;
-    border-top: 1px solid var(--border);
-}
-
-.markdown-body a {
-    color: var(--primary);
-    text-decoration: none;
-}
-
-.markdown-body a:hover {
-    text-decoration: underline;
-}
-
-/* Koyu tema */
-[data-theme="dark"] .markdown-body code {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-[data-theme="dark"] .markdown-body pre {
-    background: rgba(255, 255, 255, 0.06);
-}
-
-[data-theme="dark"] .markdown-body blockquote {
-    background: rgba(123, 211, 201, 0.12);
-}
-
-[data-theme="dark"] .markdown-body table th {
-    background: rgba(123, 211, 201, 0.2);
-}
-
-[data-theme="dark"] .markdown-body table tr:nth-child(even) {
-    background: rgba(255, 255, 255, 0.02);
-}
-
-/* Tüm ekran kaplama için */
-.app-container {
-    height: 100dvh;
-    display: flex;
-    overflow: hidden;
-}
-
-.main-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-    overflow: hidden;
-    background: var(--bg);
-}
-
 /* Header - sadeleştir */
 .header {
     display: flex;
@@ -1475,6 +1109,8 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
+    flex: 1;
+    justify-content: center;
 }
 
 .page-title {
@@ -1513,6 +1149,9 @@ body {
 
 /* Tüm ikon butonları - şeffaf zemin */
 .input-wrapper .icon-btn {
+    position: absolute;
+    bottom: 8px;
+    z-index: 2;
     width: 32px;
     height: 32px;
     min-width: 32px;
@@ -1540,11 +1179,15 @@ body {
     height: 16px;
     stroke: currentColor;
     stroke-width: 1.7;
+    fill: none;
 }
 
 /* 🔥 Sadece gönder ve durdur butonları - renkli */
-.input-wrapper #sendBtn,
 .input-wrapper #stopBtn {
+    position: absolute;
+    right: 6px;
+    bottom: 8px;
+    z-index: 2;
     width: 36px;
     height: 36px;
     min-width: 36px;
@@ -1562,27 +1205,16 @@ body {
     flex-shrink: 0;
 }
 
-.input-wrapper #sendBtn:hover,
 .input-wrapper #stopBtn:hover {
     background: var(--primary-dark) !important;
     transform: scale(1.05);
 }
 
-.input-wrapper #sendBtn svg,
 .input-wrapper #stopBtn svg {
     width: 20px;
     height: 20px;
     stroke: white;
     fill: none;
-}
-
-/* 🔥 Durdur butonu ChatChip Color */
-.input-wrapper #stopBtn {
-    background: var(--primary) !important;
-}
-
-.input-wrapper #stopBtn:hover {
-    background: var(--primary-dark) !important;
 }
 
 /* ============================================================
@@ -1591,6 +1223,10 @@ body {
 
 /* 🔥 Gönder butonu */
 .input-wrapper #sendBtn {
+    position: absolute;
+    right: 6px;
+    bottom: 8px;
+    z-index: 2;
     width: 38px;
     height: 38px;
     min-width: 38px;
@@ -1707,108 +1343,16 @@ body {
     color: #EF4444;
 }
 
-/* ============================================================
-   🖼️ GÖRSEL PREVIEW
-   ============================================================ */
-
-.image-preview-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 6px;
-    animation: fadeIn 0.3s ease;
-}
-
-.image-preview-container img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-}
-
-.image-preview-container .info {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    flex: 1;
-}
-
-.image-preview-container .remove-btn {
-    background: none;
-    border: none;
-    color: var(--text-light);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s;
-}
-
-.image-preview-container .remove-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
-}
-
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-
-/* ============================================================
-   🖼️ GÖRSEL PREVIEW
-   ============================================================ */
-
-.image-preview-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 6px;
-    animation: fadeIn 0.3s ease;
-}
-
-.image-preview-container img {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-}
-
-.image-preview-container .info {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    flex: 1;
-}
-
-.image-preview-container .remove-btn {
-    background: none;
-    border: none;
-    color: var(--text-light);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s;
-}
-
-.image-preview-container .remove-btn:hover {
-    background: rgba(239, 68, 68, 0.1);
-    color: #EF4444;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 /* ============================================================
    🎨 PROFİL MENÜ İKONLARI - MODERN
    ============================================================ */
@@ -2585,39 +2129,13 @@ body {
     }
 }
 
-/* ============================================================
-   📱 MOBİL - DİNAMİK YÜKSEKLİK (100dvh)
-   ============================================================ */
-
-/* Tüm ekran kaplama için - dinamik yükseklik */
-.app-container {
-    height: 100dvh !important;
-    max-height: 100dvh !important;
-}
-
-.main-content {
-    height: 100dvh !important;
-}
 
 /* Mobilde (480px ve altı) */
 @media (max-width: 480px) {
-    .app-container {
-        height: 100dvh !important;
-        max-height: 100dvh !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-    }
-    
-    .main-content {
-        height: 100dvh !important;
-        overflow: hidden !important;
-    }
-    
+   
     /* Chat alanı - esnek ve taşmaz */
     .chat-area {
-        flex: 1 !important;
         min-height: 0 !important;
-        overflow-y: auto !important;
         padding: 12px 14px !important;
     }
 }
@@ -2640,46 +2158,6 @@ body {
     .chat-area img {
         max-width: 280px;
     }
-}
-/* ============================================================
-   🤖 AI MESAJ AKSİYONLARI
-   ============================================================ */
-
-.message-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 8px;
-    padding-top: 7px;
-    border-top: 1px solid var(--border);
-}
-
-.message-action-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 7px;
-    border: none;
-    background: transparent;
-    color: var(--text-light);
-    font-size: 0.75rem;
-    font-family: inherit;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.18s ease;
-}
-
-.message-action-btn:hover {
-    color: var(--text);
-    background: rgba(0, 0, 0, 0.05);
-}
-
-.message-action-btn svg {
-    flex-shrink: 0;
-}
-
-.message-action-btn:active {
-    transform: scale(0.96);
 }
 /* ============================================================
    🤖 AI MESAJ AKSİYONLARI — PREMIUM
