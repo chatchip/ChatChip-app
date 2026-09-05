@@ -2731,3 +2731,21 @@ if (input) {
 }
 
 });
+// ============================================================
+// 📱 PWA - SAYFAYA GERİ DÖNÜŞTE VIEWPORT YÜKSEKLİĞİNİ DÜZELT
+// ============================================================
+
+function updateAppViewportHeight() {
+    const height = window.visualViewport?.height || window.innerHeight;
+
+    document.documentElement.style.setProperty(
+        '--app-height',
+        `${height}px`
+    );
+}
+
+updateAppViewportHeight();
+
+window.addEventListener('pageshow', () => {
+    requestAnimationFrame(updateAppViewportHeight);
+});
