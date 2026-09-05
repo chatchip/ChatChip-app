@@ -2851,3 +2851,21 @@ body.chat-page {
     overflow: hidden;
     overscroll-behavior: none;
 }
+/* ============================================================
+   📌 CHAT INPUTU EKRANDAN BAĞIMSIZ SABİTLE
+   ============================================================ */
+
+body.chat-page .main-content {
+    position: relative;
+}
+
+body.chat-page .input-area {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 20;
+
+    background: transparent;
+}
