@@ -2753,6 +2753,9 @@ window.addEventListener('pageshow', () => {
         }, 150);
     });
 });
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateAppViewportHeight);
+}
 // ============================================================
 // 🚀 GÖNDER BUTONU + MESAJ - YUKARI KAYDIRMA HAREKETİ
 // ============================================================
