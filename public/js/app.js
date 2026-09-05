@@ -27,11 +27,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             localStorage.setItem('chatchip_last_close_time', Date.now().toString());
             console.log('⏰ Uygulama kapatıldı, zaman kaydedildi');
         } else {
-            // Uygulama tekrar açıldı (arka plandan geldi)
-            console.log('👁️ Uygulama tekrar görünür oldu');
-            // 15 dakika kontrolü için autoLoginWithBiometric'i çağır!
-            autoLoginWithBiometric();
-        }
+    console.log('👁️ Uygulama tekrar görünür oldu');
+
+    updateAppViewportHeight();
+
+    setTimeout(() => {
+        updateAppViewportHeight();
+    }, 300);
+
+    autoLoginWithBiometric();
+}
     });
     await checkAuth();
     checkPlan();
