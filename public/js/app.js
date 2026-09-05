@@ -2856,8 +2856,9 @@ sendThreshold = Math.max(
         const isReadyToSend =
     Math.abs(currentY) >= sendThreshold;
 
+    const visualOffset = currentY < -6 ? -26 : 0;
     swipeSendBtn.style.transform =
-    `translateY(${currentY}px) scale(${isReadyToSend ? 1.08 : 1})`;
+    `translateY(${currentY + visualOffset}px) scale(${isReadyToSend ? 1.08 : 1})`;
         if (floatingMessage) {
 
             const progress =
