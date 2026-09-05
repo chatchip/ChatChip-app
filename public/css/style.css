@@ -364,7 +364,7 @@ body {
     width: 100%;
     padding: 6px 12px;
     border-radius: 16px;
-    border: 1px solid var(--border-color);
+    border: none;
     background: var(--input-bg);
     font-size: 0.7rem;
     outline: none;
