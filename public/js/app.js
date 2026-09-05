@@ -2749,8 +2749,12 @@ window.addEventListener('pageshow', () => {
         updateAppViewportHeight();
 
         setTimeout(() => {
-            updateAppViewportHeight();
-        }, 150);
+    updateAppViewportHeight();
+}, 150);
+
+setTimeout(() => {
+    updateAppViewportHeight();
+}, 600);
     });
 });
 if (window.visualViewport) {
