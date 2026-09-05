@@ -2650,7 +2650,7 @@ document.addEventListener('click', function (e) {
                         border-radius:12px;
                         background:var(--background);
                         color:var(--text);
-                        font-size:16px;
+                        font-size:13px;
                         outline:none;
                     "
                 />
