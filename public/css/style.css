@@ -985,7 +985,6 @@ body {
     word-wrap: break-word;
     color: var(--text-primary);
     backdrop-filter: blur(8px);
-    opacity: 0.7;
 }
 
 .message.bot .bubble .markdown-body {
