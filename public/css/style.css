@@ -82,14 +82,6 @@ body {
     transition: background 0.3s;
 }
 
-@media (max-width: 480px) {
-    .app-container {
-        max-height: 100dvh;
-        border-radius: 0;
-        box-shadow: none;
-    }
-}
-
 .main-content {
     flex: 1;
     display: flex;
@@ -671,28 +663,6 @@ body {
 [data-theme="dark"] .toast.error { background: #DC2626; }
 [data-theme="dark"] .toast.info { background: #2563EB; }
 
-/* ----- RESPONSIVE ----- */
-@media (max-width: 480px) {
-    
-    .sidebar-left,
-    .sidebar-right {
-        width: 85%;
-    }
-    .message .bubble {
-        max-width: 90%;
-        font-size: 0.85rem;
-    }
-    .header {
-        padding: 8px 12px;
-        min-height: 48px;
-    }
-   
-    .plan-badge {
-        font-size: 0.45rem;
-        padding: 1px 8px;
-    }
-}
-
 /* ============================================================
    MARKDOWN STİLLERİ - DEEPSEEK TARZI
    ============================================================ */
@@ -1089,14 +1059,6 @@ body {
     cursor: not-allowed;
 }
 /* Header - sadeleştir */
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background: var(--bg-secondary);
-    flex-shrink: 0;
-}
 
 .header-center {
     display: flex;
@@ -1110,11 +1072,6 @@ body {
     font-weight: 600;
     font-size: 1rem;
     color: var(--text);
-}
-
-.menu-btn:hover,
-.profile-btn:hover {
-    background: var(--hover-bg);
 }
 
 /* ============================================================
@@ -1284,7 +1241,7 @@ body {
     border: 1px solid var(--border);
     border-radius: 8px;
     margin-bottom: 6px;
-    animation: fadeIn 0.3s ease;
+    animation: fadeInPreview 0.3s ease;
 }
 
 .image-preview-container img {
@@ -1317,7 +1274,7 @@ body {
     color: #EF4444;
 }
 
-@keyframes fadeIn {
+@keyframes fadeInPreview {
     from {
         opacity: 0;
         transform: translateY(-10px);
@@ -1481,18 +1438,6 @@ body {
     }
 }
 
-/* iPhone/iOS için ekstra güvenlik */
-@supports (-webkit-touch-callout: none) {
-    #menuToggle,
-    #profileToggle {
-        min-width: 52px !important;
-        min-height: 52px !important;
-        width: 52px !important;
-        height: 52px !important;
-        font-size: 2rem !important;
-    }
-}
-
 /* Çok küçük ekranlar (380px altı) */
 @media (max-width: 380px) {
     #menuToggle,
@@ -1524,342 +1469,37 @@ body {
    📱 MOBİL - ORTA KISMI DARALT, BUTONLARA YER AÇ!
    ============================================================ */
 
-/* 480px ve altı */
-@media (max-width: 480px) {
-    
-    /* Header - sıkıştır */
-    .header {
-        padding: 4px 6px !important;
-        min-height: 48px !important;
-        gap: 2px !important;
-    }
-    
-    /* Orta kısım - daralt */
-    .header > div:not(.sidebar-left):not(.sidebar-right) {
-        gap: 4px !important;
-        padding: 0 2px !important;
-        flex: 0 1 auto !important;
-    }
-    
-    /* Versiyon etiketini gizle (sadece numara kalsın) */
-    .header > div span:first-child {
-        display: none !important;
-    }
-    
-    /* Coach etiketini gizle (sadece select kalsın) */
-    .header > div div span:first-child {
-        display: none !important;
-    }
-    
-    /* Coach bölümündeki çizgiyi kaldır */
-    .header > div div {
-        border-left: none !important;
-        padding-left: 0 !important;
-    }
-    
-    /* Select'i küçült */
-    #coachSelector {
-        font-size: 0.5rem !important;
-        padding: 2px 4px !important;
-        max-width: 50px !important;
-    }
-    
-    /* Versiyon numarasını küçült */
-    #versionDisplay {
-        font-size: 0.5rem !important;
-    }
-    
-    /* Butonlar - zorla görünür */
-    #menuToggle, #profileToggle {
-        min-width: 40px !important;
-        min-height: 40px !important;
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.3rem !important;
-        display: flex !important;
-        flex-shrink: 0 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-}
-
-/* iPhone için */
-@supports (-webkit-touch-callout: none) {
-    #menuToggle, #profileToggle {
-        min-width: 48px !important;
-        min-height: 48px !important;
-        width: 48px !important;
-        height: 48px !important;
-        font-size: 1.6rem !important;
-    }
-}
-
 /* ============================================================
-   📱 MOBİL - VERSİYON GİZLİ, COACH GÖRÜNSÜN
+   📱 MOBİL — 480px VE ALTI
    ============================================================ */
 
 @media (max-width: 480px) {
-    
+
+    /* APP */
+    .app-container {
+        max-height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    /* SIDEBAR */
+    .sidebar-left,
+    .sidebar-right {
+        width: 85%;
+    }
+
+    /* MESAJ */
+    .message .bubble {
+        max-width: 90%;
+        font-size: 0.85rem;
+    }
+
     /* HEADER */
     .header {
-        padding: 4px 8px !important;
-        min-height: 48px !important;
-        gap: 4px !important;
-    }
-    
-    /* Menü butonu */
-    #menuToggle {
-        min-width: 36px !important;
-        min-height: 36px !important;
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1.2rem !important;
-        display: flex !important;
-        flex-shrink: 0 !important;
-    }
-    
-    /* Profil butonu */
-    #profileToggle {
-        min-width: 36px !important;
-        min-height: 36px !important;
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1.2rem !important;
-        display: flex !important;
-        flex-shrink: 0 !important;
-    }
-    
-    /* ORTA KISIM */
-    .header-center {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        flex: 1 !important;
-        gap: 6px !important;
-        min-width: 0 !important;
-        overflow: hidden !important;
-        padding: 0 4px !important;
-    }
-    
-    /* ============================================
-       🔥 VERSİYON BÖLÜMÜ - TAMAMEN GİZLİ
-       ============================================ */
-    .header-center div:first-child {
-        display: none !important;
-    }
-    
-    /* ============================================
-       🔥 COACH BÖLÜMÜ - GÖRÜNSÜN
-       ============================================ */
-    .header-center div:last-child {
-        border-left: none !important;
-        padding-left: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 3px !important;
-    }
-    
-    /* "Coach" etiketini gizle, sadece select kalsın */
-    .header-center div:last-child span:first-child {
-        display: none !important;
-    }
-    
-    /* Coach select - okunur boyut */
-    .header-center #coachSelector {
-        font-size: 0.65rem !important;
-        padding: 2px 8px !important;
-        max-width: 70px !important;
-        border-radius: 4px !important;
-        background: var(--bg, #F2FCF9) !important;
-        border: 1px solid var(--border-color, #D4F0EA) !important;
-        color: var(--text-primary, #2D4A44) !important;
-        outline: none !important;
-        cursor: pointer !important;
-        font-weight: 500 !important;
-    }
-}
-
-/* iPhone/iOS için */
-@supports (-webkit-touch-callout: none) {
-    #menuToggle, #profileToggle {
-        min-width: 40px !important;
-        min-height: 40px !important;
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.4rem !important;
-    }
-}
-
-/* 400px altı */
-@media (max-width: 400px) {
-    #menuToggle, #profileToggle {
-        min-width: 32px !important;
-        min-height: 32px !important;
-        width: 32px !important;
-        height: 32px !important;
-        font-size: 1rem !important;
-    }
-    
-    .header-center #coachSelector {
-        font-size: 0.55rem !important;
-        max-width: 55px !important;
-        padding: 1px 4px !important;
-    }
-}
-
-/* ============================================================
-   📱 MOBİL - SADECE İHTİYAÇ OLANLAR
-   ============================================================ */
-
-@media (max-width: 480px) {
-    
-    /* HEADER - sıkıştır ama butonlara yer ver */
-    .header {
         display: flex !important;
         align-items: center !important;
         justify-content: space-between !important;
-        padding: 4px 8px !important;
-        min-height: 48px !important;
-        gap: 4px !important;
-        width: 100% !important;
-        flex-shrink: 0 !important;
-        box-sizing: border-box !important;
-    }
-    
-    /* SOL MENÜ BUTONU */
-    #menuToggle {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 36px !important;
-        min-height: 36px !important;
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1.2rem !important;
-        background: transparent !important;
-        border: none !important;
-        cursor: pointer !important;
-        color: var(--text-primary, #2D4A44) !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-        z-index: 999 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-    
-    /* SAĞ PROFİL BUTONU */
-    #profileToggle {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 36px !important;
-        min-height: 36px !important;
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1.2rem !important;
-        background: transparent !important;
-        border: none !important;
-        cursor: pointer !important;
-        color: var(--text-primary, #2D4A44) !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-        z-index: 999 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-    
-    /* ORTA KISIM */
-    .header-center {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        flex: 1 !important;
-        gap: 6px !important;
-        min-width: 0 !important;
-        overflow: hidden !important;
-        padding: 0 4px !important;
-    }
-    
-    /* ============================================
-       VERSİYON BÖLÜMÜ - TAMAMEN GİZLİ
-       ============================================ */
-    .header-center > div:first-child {
-        display: none !important;
-    }
-    
-    /* ============================================
-       COACH BÖLÜMÜ - GÖRÜNSÜN
-       ============================================ */
-    .header-center > div:last-child {
-        border-left: none !important;
-        padding-left: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 3px !important;
-    }
-    
-    /* "Coach" yazısını gizle */
-    .header-center > div:last-child span:first-child {
-        display: none !important;
-    }
-    
-    /* Coach select - görünsün */
-    #coachSelector {
-        font-size: 0.7rem !important;
-        padding: 2px 8px !important;
-        max-width: 75px !important;
-        min-width: 55px !important;
-        border-radius: 4px !important;
-        background: var(--bg, #F2FCF9) !important;
-        border: 1px solid var(--border-color, #D4F0EA) !important;
-        color: var(--text-primary, #2D4A44) !important;
-        outline: none !important;
-        cursor: pointer !important;
-        font-weight: 500 !important;
-        font-size: 0.65rem !important;
-    }
-}
-
-/* iPhone/iOS için */
-@supports (-webkit-touch-callout: none) {
-    #menuToggle, #profileToggle {
-        min-width: 40px !important;
-        min-height: 40px !important;
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.4rem !important;
-    }
-}
-
-/* 400px altı (çok küçük telefonlar) */
-@media (max-width: 400px) {
-    #menuToggle, #profileToggle {
-        min-width: 32px !important;
-        min-height: 32px !important;
-        width: 32px !important;
-        height: 32px !important;
-        font-size: 1rem !important;
-    }
-    #coachSelector {
-        font-size: 0.55rem !important;
-        max-width: 55px !important;
-        min-width: 40px !important;
-        padding: 1px 4px !important;
-    }
-}
-
-/* ============================================================
-   📱 TELEFON (DİKEY) - PROFİL VE MENÜ BUTONLARI
-   ============================================================ */
-
-@media (max-width: 480px) {
-    
-    /* HEADER - düzenli */
-    .header {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        padding: 4px 8px !important;
+        padding: 6px 10px !important;
         min-height: 48px !important;
         width: 100% !important;
         gap: 4px !important;
@@ -1870,52 +1510,8 @@ body {
         position: relative !important;
         z-index: 10 !important;
     }
-    
-    /* MENU BUTONU - görünsün */
-    #menuToggle {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.3rem !important;
-        background: transparent !important;
-        border: none !important;
-        cursor: pointer !important;
-        color: var(--text-primary, #2D4A44) !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-        z-index: 999 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        order: 0 !important;
-    }
-    
-    /* PROFİL BUTONU - kesin görünsün! */
-    #profileToggle {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 1.3rem !important;
-        background: transparent !important;
-        border: none !important;
-        cursor: pointer !important;
-        color: var(--text-primary, #2D4A44) !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-        z-index: 999 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        order: 2 !important;
-    }
-    
-    /* ORTA KISIM - esnek */
+
+    /* HEADER ORTA */
     .header-center {
         display: flex !important;
         align-items: center !important;
@@ -1927,13 +1523,28 @@ body {
         padding: 0 2px !important;
         order: 1 !important;
     }
-    
-    /* VERSİYON BÖLÜMÜ - TAMAMEN GİZLİ */
+
+    /* SAYFA BAŞLIĞI */
+    .header-center .page-title {
+        font-size: 0.7rem !important;
+        max-width: 50px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: inline-block !important;
+    }
+
+    /* VERSİYON */
     .header-center > div:first-child {
         display: none !important;
     }
-    
-    /* COACH BÖLÜMÜ - görünsün */
+
+    #versionDisplay {
+        font-size: 0.7rem !important;
+        font-weight: 600 !important;
+    }
+
+    /* COACH */
     .header-center > div:last-child {
         border-left: none !important;
         padding-left: 0 !important;
@@ -1941,18 +1552,18 @@ body {
         align-items: center !important;
         gap: 2px !important;
     }
-    
-    /* "Coach" yazısı - GİZLİ */
-    .header-center > div:last-child span:first-child {
+
+    .header-center > div:last-child span:first-child,
+    .header > div span:first-child,
+    .header > div div span:first-child {
         display: none !important;
     }
-    
-    /* COACH SELECT - görünsün */
+
     #coachSelector {
         display: inline-block !important;
-        font-size: 0.6rem !important;
-        padding: 2px 6px !important;
-        max-width: 65px !important;
+        font-size: 0.65rem !important;
+        padding: 2px 4px !important;
+        max-width: 85px !important;
         min-width: 50px !important;
         border-radius: 4px !important;
         background: var(--bg, #F2FCF9) !important;
@@ -1964,11 +1575,75 @@ body {
         appearance: auto !important;
         -webkit-appearance: auto !important;
     }
+
+    /* BUTONLAR */
+    #menuToggle,
+    #profileToggle {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1.3rem !important;
+        background: transparent !important;
+        border: none !important;
+        cursor: pointer !important;
+        color: var(--text-primary, #2D4A44) !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+        z-index: 999 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    #menuToggle {
+        order: 0 !important;
+    }
+
+    #profileToggle {
+        order: 2 !important;
+    }
+
+    /* PLAN BADGE */
+    .plan-badge {
+        font-size: 0.45rem;
+        padding: 1px 8px;
+    }
+
+    /* CHAT */
+    .chat-area {
+        min-height: 0 !important;
+        padding: 12px 14px !important;
+    }
+
+    /* GÖRSELLER */
+    .message.bot .bubble img,
+    .message .bubble img,
+    .chat-area img {
+        max-width: 280px;
+    }
+
+    /* MOBILE HEADER FIX */
+    .header-center-mobile-fix {
+        gap: 4px !important;
+    }
+
+    .header-center-mobile-fix .label-text {
+        display: none !important;
+    }
+
+    .coach-box {
+        padding-left: 4px !important;
+        border-left: 1px solid var(--border-color) !important;
+    }
 }
 
-/* iPhone/iOS için ekstra */
+/* iPhone / iOS */
 @supports (-webkit-touch-callout: none) {
-    #menuToggle, #profileToggle {
+    #menuToggle,
+    #profileToggle {
         min-width: 44px !important;
         min-height: 44px !important;
         width: 44px !important;
@@ -1976,143 +1651,35 @@ body {
         font-size: 1.5rem !important;
     }
 }
-
-/* 400px altı (çok küçük telefonlar) */
+/* 400px ve altı - tek birleşik blok */
 @media (max-width: 400px) {
-    #menuToggle, #profileToggle {
+
+    #menuToggle,
+    #profileToggle {
+        width: 32px !important;
+        height: 32px !important;
         min-width: 34px !important;
         min-height: 34px !important;
-        width: 34px !important;
-        height: 34px !important;
         font-size: 1.1rem !important;
     }
-    #coachSelector {
-        font-size: 0.5rem !important;
-        max-width: 50px !important;
+
+    .header-center #coachSelector {
+        font-size: 0.55rem !important;
+        max-width: 55px !important;
         min-width: 40px !important;
         padding: 1px 4px !important;
     }
-}
 
-/* ============================================================
-   📱 MOBİL - HEADER SIKIŞIKLIĞINI GİDER
-   ============================================================ */
-
-@media (max-width: 480px) {
-    
-    /* HEADER - padding azalt */
-    .header {
-        padding: 6px 10px !important;
-        min-height: 48px !important;
-    }
-    
-    /* "Versiyon" ve "Koç" yazılarını gizle */
-    .header-center-mobile-fix .label-text {
-        display: none !important;
-    }
-    
-    /* Orta kısım - boşluğu azalt */
-    .header-center-mobile-fix {
-        gap: 4px !important;
-    }
-    
-    /* Coach kutusu - padding azalt */
-    .coach-box {
-        padding-left: 4px !important;
-        border-left: 1px solid var(--border-color) !important;
-    }
-    
-    /* Coach select - küçült */
-    #coachSelector {
-        font-size: 0.65rem !important;
-        padding: 2px 4px !important;
-        max-width: 85px !important;
-        min-width: 50px !important;
-    }
-    
-    /* Versiyon numarası - küçült */
-    #versionDisplay {
-        font-size: 0.7rem !important;
-        font-weight: 600 !important;
-    }
-    
-    /* ============================================
-       BUTONLAR - KESİN GÖRÜNSÜN
-       ============================================ */
-    #menuToggle {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
-        font-size: 1.3rem !important;
-        background: transparent !important;
-        border: none !important;
-        cursor: pointer !important;
-        color: var(--text-primary, #2D4A44) !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-        z-index: 999 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-    
-    #profileToggle {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
-        font-size: 1.3rem !important;
-        background: transparent !important;
-        border: none !important;
-        cursor: pointer !important;
-        color: var(--text-primary, #2D4A44) !important;
-        padding: 0 !important;
-        flex-shrink: 0 !important;
-        z-index: 999 !important;
-        visibility: visible !important;
-        opacity: 1 !important;
+    /* iPhone'da mevcut 44px boyutu koru */
+    @supports (-webkit-touch-callout: none) {
+        #menuToggle,
+        #profileToggle {
+            width: 44px !important;
+            height: 44px !important;
+        }
     }
 }
 
-/* iPhone/iOS için */
-@supports (-webkit-touch-callout: none) {
-    #menuToggle, #profileToggle {
-        min-width: 44px !important;
-        min-height: 44px !important;
-        font-size: 1.5rem !important;
-    }
-}
-
-/* 400px altı */
-@media (max-width: 400px) {
-    #menuToggle, #profileToggle {
-        min-width: 34px !important;
-        min-height: 34px !important;
-        font-size: 1.1rem !important;
-    }
-    #coachSelector {
-        font-size: 0.55rem !important;
-        max-width: 65px !important;
-        min-width: 40px !important;
-        padding: 1px 3px !important;
-    }
-    #versionDisplay {
-        font-size: 0.6rem !important;
-    }
-}
-
-
-/* Mobilde (480px ve altı) */
-@media (max-width: 480px) {
-   
-    /* Chat alanı - esnek ve taşmaz */
-    .chat-area {
-        min-height: 0 !important;
-        padding: 12px 14px !important;
-    }
-}
 /* 🔥 Sohbetteki görselleri boyutlandır */
 .message.bot .bubble img,
 .message .bubble img,
@@ -2125,14 +1692,6 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
-/* 🔥 Mobil için daha küçük */
-@media (max-width: 480px) {
-    .message.bot .bubble img,
-    .message .bubble img,
-    .chat-area img {
-        max-width: 280px;
-    }
-}
 /* ============================================================
    🤖 AI MESAJ AKSİYONLARI — PREMIUM
    ============================================================ */
