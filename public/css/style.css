@@ -1212,20 +1212,25 @@ body {
 /* Welcome mesajı */
 .welcome {
     text-align: center;
-    padding: 40px 20px;
+    padding: 64px 20px 32px;
     color: var(--text-light);
 }
 
 .welcome h2 {
-    font-size: 1.5rem;
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.25;
     margin-bottom: 8px;
     color: var(--text);
+    letter-spacing: -0.02em;
 }
 
 .welcome p {
     font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-light);
+    opacity: 0.88;
 }
-
 
 .input-wrapper {
     position: relative;
