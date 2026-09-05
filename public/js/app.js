@@ -2888,6 +2888,35 @@ if (swipeSendBtn && swipeMessageInput) {
         }
     }
 
-    swipeSendBtn.addEventListener('pointerup', resetSwipeSend);
-    swipeSendBtn.addEventListener('pointercancel', resetSwipeSend);
-}
+  // Swipe sonrası oluşabilecek normal click'i kontrol et
+let swipeJustSent = false;
+
+swipeSendBtn.addEventListener('click', (e) => {
+    if (swipeJustSent && e.detail !== 0) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        swipeJustSent = false;
+    }
+}, true);
+
+swipeSendBtn.addEventListener('pointerup', () => {
+
+    const shouldSend = Math.abs(currentY) >= 70;
+
+    if (shouldSend && swipeMessageInput.value.trim()) {
+
+        swipeJustSent = true;
+
+        // Mevcut gönderme sistemini çalıştır
+        swipeSendBtn.click();
+
+        setTimeout(() => {
+            swipeJustSent = false;
+        }, 300);
+    }
+
+    resetSwipeSend();
+});
+
+swipeSendBtn.addEventListener('pointercancel', resetSwipeSend);
+    }
