@@ -2664,7 +2664,7 @@ document.addEventListener('click', function (e) {
                         border:none;
                         border-radius:12px;
                         cursor:pointer;
-                        background:var(--primary);
+                        background:transparent;
                         color:white;
                         font-size:18px;
                     "
