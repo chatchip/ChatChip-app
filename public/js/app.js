@@ -2580,7 +2580,7 @@ async function triggerBiometricLogin() {
 }
 
 // ============================================================
-// 🖼️ ÜRETİLEN GÖRSELE TIKLAMA
+// 🖼️ ÜRETİLEN GÖRSELE TIKLAMA + DÜZENLEME PANELİ
 // ============================================================
 
 document.addEventListener('click', function (e) {
@@ -2591,10 +2591,7 @@ document.addEventListener('click', function (e) {
 
     const imageSrc = image.dataset.imageSrc;
 
-    console.log(
-        '🖌️ Düzenlenecek görsel seçildi:',
-        imageSrc
-    );
+    console.log('🖌️ Düzenlenecek görsel seçildi');
 
     currentImageUrl = imageSrc;
 
@@ -2602,4 +2599,90 @@ document.addEventListener('click', function (e) {
         'chatchip_current_image_url',
         imageSrc
     );
+
+    // Eski panel varsa kaldır
+    const oldPanel = document.getElementById('imageEditPanel');
+
+    if (oldPanel) {
+        oldPanel.remove();
+    }
+
+    // Düzenleme paneli
+    const panel = document.createElement('div');
+
+    panel.id = 'imageEditPanel';
+
+    panel.innerHTML = `
+        <div style="
+            margin-top:12px;
+            padding:12px;
+            border:1px solid var(--border);
+            border-radius:14px;
+            background:var(--background);
+        ">
+
+            <img
+                src="${imageSrc}"
+                alt="Düzenlenecek görsel"
+                style="
+                    width:100%;
+                    max-height:420px;
+                    object-fit:contain;
+                    border-radius:12px;
+                    display:block;
+                    margin-bottom:12px;
+                "
+            />
+
+            <div style="
+                display:flex;
+                gap:8px;
+                align-items:center;
+            ">
+
+                <input
+                    type="text"
+                    id="imageEditPrompt"
+                    placeholder="Görselde neyi değiştirmek istiyorsun?"
+                    style="
+                        flex:1;
+                        min-width:0;
+                        padding:12px 14px;
+                        border:1px solid var(--border);
+                        border-radius:12px;
+                        background:var(--background);
+                        color:var(--text);
+                        font-size:16px;
+                        outline:none;
+                    "
+                />
+
+                <button
+                    type="button"
+                    id="imageEditSendBtn"
+                    style="
+                        width:44px;
+                        height:44px;
+                        border:none;
+                        border-radius:12px;
+                        cursor:pointer;
+                        background:var(--primary);
+                        color:white;
+                        font-size:18px;
+                    "
+                >
+                    ➜
+                </button>
+
+            </div>
+        </div>
+    `;
+
+    image.parentElement.appendChild(panel);
+
+    const input = document.getElementById('imageEditPrompt');
+
+    if (input) {
+        input.focus();
+    }
 });
