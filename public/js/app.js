@@ -1302,8 +1302,6 @@ actions.style.display = 'none';
     wrapper.appendChild(bubble);
     messagesDiv.appendChild(wrapper);
 
-    chatArea.scrollTop = chatArea.scrollHeight;
-
     return wrapper.id;
 }
 
