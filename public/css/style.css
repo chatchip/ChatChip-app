@@ -1596,7 +1596,7 @@ body {
     min-width: 38px;
     min-height: 38px;
     border: none;
-    border-radius: 10px;
+    border-radius: 50%;
     background: var(--primary) !important;
     color: white;
     cursor: pointer;
