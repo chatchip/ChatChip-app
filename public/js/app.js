@@ -2683,6 +2683,51 @@ document.addEventListener('click', function (e) {
     const input = document.getElementById('imageEditPrompt');
 
     if (input) {
-        input.focus();
+    input.focus();
+}
+
+const sendBtn = document.getElementById('imageEditSendBtn');
+
+async function submitImageEdit() {
+
+    const prompt = input?.value.trim();
+
+    if (!prompt) return;
+
+    if (sendBtn) {
+        sendBtn.disabled = true;
     }
+
+    if (input) {
+        input.disabled = true;
+    }
+
+    addMessage(prompt, 'user');
+
+    panel.remove();
+
+    await ImageService.edit(
+        prompt,
+        imageSrc,
+        {
+            addMessage: addMessage,
+            setLoading: setImageLoadingAnimation,
+            updateMessage: updateMessageMarkdown
+        }
+    );
+}
+
+if (sendBtn) {
+    sendBtn.addEventListener('click', submitImageEdit);
+}
+
+if (input) {
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitImageEdit();
+        }
+    });
+}
+
 });
