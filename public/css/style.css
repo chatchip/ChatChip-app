@@ -1718,7 +1718,9 @@ body.chat-page .input-area {
 body.chat-page .input-area {
     background: linear-gradient(
         to bottom,
-        color-mix(in srgb, var(--bg-secondary) 30%, transparent) 0%,
+        transparent 0%,
+        color-mix(in srgb, var(--bg-secondary) 15%, transparent) 12%,
+        color-mix(in srgb, var(--bg-secondary) 30%, transparent) 30%,
         color-mix(in srgb, var(--bg-secondary) 50%, transparent) 100%
     );
 }
