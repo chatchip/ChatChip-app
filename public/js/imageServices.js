@@ -24,7 +24,7 @@ const ImageService = {
         // API nesne döndürüyorsa
         if (typeof imageUrl === 'object' && imageUrl !== null) {
 
-            console.log('📦 imageUrl nesnesi:', imageUrl);
+           console.log('📦 imageUrl nesnesi alındı');
 
             // Base64
             const base64Data = imageUrl.data || '';
@@ -44,7 +44,7 @@ const ImageService = {
                 '';
 
             if (url) {
-                console.log('🔗 Görsel URL bulundu:', url);
+                console.log('🔗 Görsel URL bulundu');
                 return url;
             }
         }
@@ -215,7 +215,7 @@ const ImageService = {
 
             const data = await response.json();
 
-            console.log('📥 Görsel yanıtı:', data);
+            console.log('📥 Görsel yanıtı alındı');
 
             if (!data.success || !data.imageUrl) {
 
@@ -244,10 +244,7 @@ const ImageService = {
 
             if (!imageSrc) {
 
-                console.error(
-                    '❌ Görsel adresi alınamadı:',
-                    data.imageUrl
-                );
+               console.error('❌ Görsel adresi alınamadı');
 
                 updateMessage(
     loadingMsgId,
@@ -365,10 +362,7 @@ const ImageService = {
                 );
             }
 
-            console.log(
-                '📸 Edit imageUrl:',
-                imageUrl
-            );
+           console.log('📸 Düzenlenecek görsel alındı');
 
             const response = await fetch(
                 `${this.API_BASE}/edit`,
@@ -387,10 +381,7 @@ const ImageService = {
 
             const data = await response.json();
 
-            console.log(
-                '📥 Düzenleme yanıtı:',
-                data
-            );
+            console.log('📥 Düzenleme yanıtı alındı');
 
             if (!data.success || !data.imageUrl) {
 
