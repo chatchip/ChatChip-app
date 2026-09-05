@@ -2838,3 +2838,16 @@ body {
             0 0 6px rgba(123, 211, 201, 0.15);
     }
 }
+/* ============================================================
+   🔒 SADECE CHAT / INDEX SAYFASI SCROLL KİLİDİ
+   ============================================================ */
+
+body.chat-page {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
+
+    overflow: hidden;
+    overscroll-behavior: none;
+}
