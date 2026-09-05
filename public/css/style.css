@@ -2870,3 +2870,25 @@ body.chat-page .input-area {
     z-index: 20;
     background: transparent;
 }
+/* ============================================================
+   🌫️ HEADER ALTINDA MESAJ GEÇİŞ EFEKTİ
+   ============================================================ */
+
+body.chat-page .header::after {
+    content: "";
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: -20px;
+
+    height: 20px;
+
+    background: linear-gradient(
+        to bottom,
+        var(--bg-secondary),
+        transparent
+    );
+
+    pointer-events: none;
+}
