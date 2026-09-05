@@ -2892,3 +2892,7 @@ body.chat-page .header::after {
 
     pointer-events: none;
 }
+body.chat-page #sendBtn {
+    touch-action: none;
+    user-select: none;
+}
