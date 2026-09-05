@@ -1536,9 +1536,10 @@ body {
 }
 
 .input-wrapper .icon-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     stroke: currentColor;
+    stroke-width: 1.7;
 }
 
 /* 🔥 Sadece gönder ve durdur butonları - renkli */
