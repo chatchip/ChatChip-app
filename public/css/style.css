@@ -1716,6 +1716,23 @@ body.chat-page .input-area {
     z-index: 20;
     background: transparent;
 }
+body.chat-page .input-area::before {
+    content: "";
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: -28px;
+    height: 28px;
+
+    background: linear-gradient(
+        to top,
+        var(--bg-secondary),
+        transparent
+    );
+
+    pointer-events: none;
+}
 /* ============================================================
    🌫️ HEADER ALTINDA MESAJ GEÇİŞ EFEKTİ
    ============================================================ */
