@@ -2838,3 +2838,21 @@ body {
             0 0 6px rgba(123, 211, 201, 0.15);
     }
 }
+/* ============================================================
+   🔒 SAYFA SCROLL KİLİDİ
+   Sadece chat alanı hareket edecek
+   ============================================================ */
+
+html,
+body {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+body {
+    min-height: 100dvh;
+}
