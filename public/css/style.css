@@ -1459,9 +1459,10 @@ body {
 
     /* CHAT */
     .chat-area {
-        min-height: 0 !important;
-        padding: 12px 14px !important;
-    }
+    min-height: 0 !important;
+    padding: 12px 14px !important;
+    padding-bottom: 50vh !important;
+}
 
     /* GÖRSELLER */
     .message.bot .bubble img,
