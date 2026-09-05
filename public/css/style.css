@@ -1752,3 +1752,8 @@ body.chat-page #sendBtn {
     touch-action: none;
     user-select: none;
 }
+@media (display-mode: standalone) {
+    body.chat-page .main-content {
+        height: var(--app-height, 100dvh) !important;
+    }
+}
