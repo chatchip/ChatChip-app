@@ -2755,3 +2755,58 @@ window.addEventListener('pageshow', () => {
         }, 150);
     });
 });
+// ============================================================
+// 🚀 GÖNDER BUTONU - YUKARI KAYDIRMA HAREKETİ
+// ============================================================
+
+const swipeSendBtn = document.getElementById('sendBtn');
+
+if (swipeSendBtn) {
+    let startY = 0;
+    let currentY = 0;
+    let isDraggingSend = false;
+
+    swipeSendBtn.addEventListener('pointerdown', (e) => {
+        startY = e.clientY;
+        currentY = 0;
+        isDraggingSend = true;
+
+        swipeSendBtn.setPointerCapture(e.pointerId);
+        swipeSendBtn.style.transition = 'none';
+    });
+
+    swipeSendBtn.addEventListener('pointermove', (e) => {
+        if (!isDraggingSend) return;
+
+        const distance = e.clientY - startY;
+
+        // Sadece yukarı hareket etsin
+        currentY = Math.min(0, distance);
+
+        // Maksimum 100px yukarı
+        currentY = Math.max(currentY, -100);
+
+        swipeSendBtn.style.transform =
+            `translateY(${currentY}px)`;
+    });
+
+    swipeSendBtn.addEventListener('pointerup', () => {
+        if (!isDraggingSend) return;
+
+        isDraggingSend = false;
+
+        swipeSendBtn.style.transition =
+            'transform 0.25s cubic-bezier(.2,.8,.2,1)';
+
+        swipeSendBtn.style.transform = 'translateY(0)';
+    });
+
+    swipeSendBtn.addEventListener('pointercancel', () => {
+        isDraggingSend = false;
+
+        swipeSendBtn.style.transition =
+            'transform 0.25s cubic-bezier(.2,.8,.2,1)';
+
+        swipeSendBtn.style.transform = 'translateY(0)';
+    });
+}
