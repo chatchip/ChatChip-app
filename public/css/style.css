@@ -1715,13 +1715,11 @@ body.chat-page .input-area {
 
     z-index: 20;
 }
-/* Input alanı yumuşak gradient zemin */
 body.chat-page .input-area {
     background: linear-gradient(
         to bottom,
-        transparent 0px,
-        var(--bg-secondary) 45px,
-        var(--bg-secondary) 100%
+        color-mix(in srgb, var(--bg-secondary) 30%, transparent) 0%,
+        color-mix(in srgb, var(--bg-secondary) 50%, transparent) 100%
     );
 }
 /* ============================================================
