@@ -1714,36 +1714,15 @@ body.chat-page .input-area {
     padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 
     z-index: 20;
-    background: transparent;
 }
-/* Input üstü yumuşak geçiş */
-body.chat-page .input-area::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: -42px;
-    height: 50px;
-
+/* Input alanı yumuşak gradient zemin */
+body.chat-page .input-area {
     background: linear-gradient(
         to bottom,
-        transparent 0%,
+        transparent 0px,
+        var(--bg-secondary) 45px,
         var(--bg-secondary) 100%
     );
-
-    pointer-events: none;
-    z-index: -1;
-}
-body.chat-page .input-area::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 100%;
-    height: 30px;
-
-    background: var(--bg-secondary);
-    pointer-events: none;
 }
 /* ============================================================
    🌫️ HEADER ALTINDA MESAJ GEÇİŞ EFEKTİ
