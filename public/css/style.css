@@ -1818,3 +1818,18 @@ body.chat-page #sendBtn {
 .suggestion-chip:active {
     transform: scale(0.97);
 }
+/* =========================================
+   HIZLI ÖNERİLER - GİZLENME ANİMASYONU
+========================================= */
+
+.quick-suggestions {
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+.quick-suggestions.hidden {
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+}
