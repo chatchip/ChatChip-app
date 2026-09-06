@@ -1764,3 +1764,57 @@ body.chat-page #sendBtn {
         height: var(--app-height, 100dvh) !important;
     }
 }
+.quick-suggestions {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 22px;
+}
+
+.suggestion-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    padding: 9px 14px;
+
+    border: 1px solid rgba(69, 180, 163, 0.22);
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.72);
+
+    color: #294d47;
+    font-size: 13px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 12px rgba(34, 88, 79, 0.05);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.suggestion-chip:hover {
+    transform: translateY(-2px);
+
+    background: rgba(224, 250, 245, 0.9);
+
+    border-color: rgba(82, 199, 181, 0.4);
+
+    box-shadow:
+        0 7px 18px rgba(38, 110, 98, 0.1);
+}
+
+.suggestion-chip:active {
+    transform: scale(0.97);
+}
