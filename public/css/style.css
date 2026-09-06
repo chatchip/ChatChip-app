@@ -1753,6 +1753,13 @@ body.chat-page #sendBtn {
     user-select: none;
 }
 @media (display-mode: standalone) {
+
+    body.chat-page {
+        height: var(--app-height, 100dvh) !important;
+        min-height: var(--app-height, 100dvh) !important;
+        max-height: var(--app-height, 100dvh) !important;
+    }
+
     body.chat-page .main-content {
         height: var(--app-height, 100dvh) !important;
     }
