@@ -2947,3 +2947,43 @@ swipeSendBtn.addEventListener('pointerup', () => {
 
 swipeSendBtn.addEventListener('pointercancel', resetSwipeSend);
     }
+// ============================================================
+// ✨ HIZLI ÖNERİ BUTONLARI
+// ============================================================
+
+document.querySelectorAll('.suggestion-chip').forEach(button => {
+
+    button.addEventListener('click', () => {
+
+        const type = button.dataset.prompt;
+
+        let starterText = '';
+
+        if (type === 'Bir şey araştır') {
+            starterText = 'Şunu araştır: ';
+        }
+
+        else if (type === 'Görsel oluştur') {
+            starterText = 'Şu görseli oluştur: ';
+        }
+
+        else if (type === 'Kod yaz') {
+            starterText = 'Şu konuda kod yaz: ';
+        }
+
+        messageInput.value = starterText;
+
+        // Input'a odaklan
+        messageInput.focus();
+
+        // İmleci yazının sonuna getir
+        messageInput.setSelectionRange(
+            messageInput.value.length,
+            messageInput.value.length
+        );
+
+        // Önerileri gizle
+        quickSuggestions.classList.add('hidden');
+    });
+
+});
