@@ -1833,3 +1833,31 @@ body.chat-page #sendBtn {
     transform: translateY(8px);
     pointer-events: none;
 }
+/* =========================================
+   HIZLI ÖNERİLER - MİKRO ANİMASYON
+========================================= */
+
+.suggestion-chip span:first-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        transform 0.2s ease,
+        filter 0.2s ease;
+}
+
+.suggestion-chip:hover {
+    transform: translateY(-2px);
+}
+
+.suggestion-chip:hover span:first-child {
+    transform: translateY(-1px) scale(1.08);
+
+    filter:
+        drop-shadow(0 0 5px rgba(89, 190, 171, 0.35));
+}
+
+.suggestion-chip:active {
+    transform: translateY(0) scale(0.97);
+}
