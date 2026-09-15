@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="/css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .integration-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:min(620px,100%);margin:22px auto 10px;padding:0 8px;box-sizing:border-box}.integration-card{min-width:0;padding:12px 6px;border:1px solid var(--border);border-radius:14px;background:var(--bg-secondary);display:flex;flex-direction:column;align-items:center;gap:7px}.integration-icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:17px;background:var(--bg);border:1px solid var(--border)}.integration-name{font-size:.76rem;font-weight:600;color:var(--text)}.integration-connect{border:0;border-radius:8px;padding:6px 12px;background:var(--primary);color:#fff;font-size:.7rem;font-weight:700;cursor:pointer}.integration-note{max-width:620px;margin:8px auto 0;padding:0 12px;text-align:center;color:var(--text-light);font-size:.78rem;line-height:1.45}@media(max-width:560px){.integration-row{gap:5px;padding:0 4px}.integration-card{padding:10px 3px;border-radius:11px}.integration-icon{width:30px;height:30px;font-size:15px}.integration-name{font-size:.64rem}.integration-connect{font-size:.62rem;padding:5px 8px}.integration-note{font-size:.72rem}}
+    </style>
 </head>
 <body class="chat-page">
     <div class="app-container">
@@ -79,24 +82,13 @@
     <h2 id="welcomeMessage">Merhaba! 👋</h2>
     <p>Bugün sana nasıl yardımcı olabilirim?</p>
 
-    <div class="quick-suggestions" id="quickSuggestions">
-
-    <button class="suggestion-chip" data-prompt="Bir şey araştır">
-        <span>⌕</span>
-        <span>Araştır</span>
-    </button>
-
-    <button class="suggestion-chip" data-prompt="Görsel oluştur">
-        <span>✦</span>
-        <span>Görsel oluştur</span>
-    </button>
-
-    <button class="suggestion-chip" data-prompt="Kod yaz">
-        <span>⌘</span>
-        <span>Kod yaz</span>
-    </button>
-
-</div>
+    <div class="integration-row" id="quickSuggestions" aria-label="Hesap bağlantıları">
+        <div class="integration-card"><span class="integration-icon" aria-hidden="true">G</span><span class="integration-name">Gmail</span><button type="button" class="integration-connect" data-integration="Gmail">Bağla</button></div>
+        <div class="integration-card"><span class="integration-icon" aria-hidden="true">◎</span><span class="integration-name">Instagram</span><button type="button" class="integration-connect" data-integration="Instagram">Bağla</button></div>
+        <div class="integration-card"><span class="integration-icon" aria-hidden="true">☎</span><span class="integration-name">WhatsApp</span><button type="button" class="integration-connect" data-integration="WhatsApp">Bağla</button></div>
+        <div class="integration-card"><span class="integration-icon" aria-hidden="true">♪</span><span class="integration-name">TikTok</span><button type="button" class="integration-connect" data-integration="TikTok">Bağla</button></div>
+    </div>
+    <p class="integration-note">Hesaplarını bağla, ChatChip senin uygulamalarında senin için çalışsın.</p>
 </div>
                 <div id="messages"></div>
             </main>
@@ -135,10 +127,8 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
          stroke="currentColor" stroke-width="1.8"
          stroke-linecap="round" stroke-linejoin="round">
-        
         <path d="M7 14.5 C8.7 13 10.3 11.6 12 10.2 C13.7 11.6 15.3 13 17 14.5"/>
         <path d="M7 9.5 C8.7 8 10.3 6.6 12 5.2 C13.7 6.6 15.3 8 17 9.5"/>
-        
     </svg>
 </button>
     <button id="stopBtn" title="Yanıtı Durdur" style="display:none;">
@@ -240,6 +230,15 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('menuToggle').addEventListener('click', function() { toggleSidebar('left'); });
             document.getElementById('profileToggle').addEventListener('click', function() { toggleSidebar('right'); });
+            document.querySelectorAll('.integration-connect').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    if (window.Swal) {
+                        Swal.fire({icon:'info',title:'Çok yakında! 🚀',text:'Bu hesap bağlantısı yakında aktif olacaktır.',confirmButtonText:'Tamam'});
+                    } else {
+                        alert('Çok yakında! 🚀 Bu hesap bağlantısı yakında aktif olacaktır.');
+                    }
+                });
+            });
         });
     </script>
 </body>
