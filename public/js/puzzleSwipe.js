@@ -53,8 +53,9 @@
     function init() {
         const sendBtn = document.getElementById('sendBtn');
         const input = document.getElementById('messageInput');
-        if (!sendBtn || !input) return;
+        if (!sendBtn || !input || sendBtn.dataset.puzzleSwipeReady === '1') return;
 
+        sendBtn.dataset.puzzleSwipeReady = '1';
         sendBtn.style.touchAction = 'none';
 
         sendBtn.addEventListener('pointerdown', (event) => {
