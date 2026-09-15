@@ -7,6 +7,18 @@
 
     function formatAttempt(n) { return new Intl.NumberFormat('tr-TR').format(n || 0); }
 
+    function restoreComposer() {
+        const sendBtn = document.getElementById('sendBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const input = document.getElementById('messageInput');
+        if (sendBtn) sendBtn.style.display = 'flex';
+        if (stopBtn) stopBtn.style.display = 'none';
+        if (input) {
+            input.disabled = false;
+            input.focus();
+        }
+    }
+
     function showResult(data) {
         if (typeof window.addMessage !== 'function') return;
         const text = `₿ Bitcoin Puzzle #71 · Ödül: 7.1 BTC\nDeneme #${formatAttempt(data.attempt)} · ${data.address}\nBit farkı: ${data.bit_difference} · ${data.matched ? 'Eşleşme bulundu' : 'Eşleşme yok'}`;
@@ -17,9 +29,8 @@
 
     async function runAttempt() {
         if (busy) return;
-        const input = document.getElementById('messageInput');
         const token = window.DataManager?.getToken?.();
-        if (!token) { window.showToast?.('Puzzle denemesi için önce giriş yapın.', 'error'); return; }
+        if (!token) { window.showToast?.('Puzzle denemesi için önce giriş yapın.', 'error'); restoreComposer(); return; }
         busy = true;
         try {
             const response = await fetch(API, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
@@ -32,7 +43,7 @@
             window.showToast?.('Puzzle denemesi yapılamadı.', 'error');
         } finally {
             busy = false;
-            if (input) input.focus();
+            restoreComposer();
         }
     }
 
