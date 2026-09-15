@@ -248,14 +248,13 @@ window.closeAllSidebars = closeAllSidebars;
     }
 })();
 
-// Puzzle modülünü index.html'i değiştirmeden yükle.
-// defer benzeri davranış: mevcut klasik script zinciri tamamlandıktan sonra çalışır.
-(function loadPuzzleSwipeModule() {
-    if (document.querySelector('script[data-chatchip-puzzle-swipe]')) return;
+// Puzzle loader'ı mevcut script zinciri bittikten sonra çalıştır.
+(function loadPuzzleSwipeLoader() {
+    if (document.querySelector('script[data-chatchip-puzzle-loader]')) return;
     const script = document.createElement('script');
-    script.src = '/js/puzzleSwipe.js';
+    script.src = '/js/puzzleSwipeLoader.js';
     script.async = false;
-    script.dataset.chatchipPuzzleSwipe = '1';
+    script.dataset.chatchipPuzzleLoader = '1';
     document.head.appendChild(script);
 })();
 
