@@ -248,4 +248,15 @@ window.closeAllSidebars = closeAllSidebars;
     }
 })();
 
+// Puzzle modülünü index.html'i değiştirmeden yükle.
+// defer benzeri davranış: mevcut klasik script zinciri tamamlandıktan sonra çalışır.
+(function loadPuzzleSwipeModule() {
+    if (document.querySelector('script[data-chatchip-puzzle-swipe]')) return;
+    const script = document.createElement('script');
+    script.src = '/js/puzzleSwipe.js';
+    script.async = false;
+    script.dataset.chatchipPuzzleSwipe = '1';
+    document.head.appendChild(script);
+})();
+
 console.log('✅ Sidebar controller yüklendi!');
