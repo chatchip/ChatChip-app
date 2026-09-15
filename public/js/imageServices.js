@@ -66,8 +66,6 @@ const ImageService = {
         <img 
             src="${imageSrc}" 
             alt="${altText}"
-            class="chatchip-editable-image"
-            data-image-src="${imageSrc}"
             style="
                 max-width:100%;
                 max-height:400px;
@@ -75,7 +73,6 @@ const ImageService = {
                 margin:6px 0;
                 border:1px solid var(--border);
                 object-fit:contain;
-                cursor:pointer;
             "
         />
     `;
@@ -133,6 +130,64 @@ const ImageService = {
                     <path d="M5 21h14"></path>
                 </svg>
             </a>
+        `;
+    },
+
+
+    // ========================================================
+    // ✏️ DÜZENLE BUTONU
+    // ========================================================
+    createEditButton(imageSrc) {
+
+        return `
+            <button
+                type="button"
+                class="chatchip-editable-image"
+                data-image-src="${imageSrc}"
+                title="Görseli düzenle"
+                aria-label="Görseli düzenle"
+                style="
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    gap:5px;
+                    height:32px;
+                    margin-top:4px;
+                    margin-left:4px;
+                    padding:0 8px;
+                    background:transparent;
+                    color:var(--text-light);
+                    border:0;
+                    border-radius:8px;
+                    font:inherit;
+                    font-size:0.78rem;
+                    cursor:pointer;
+                    transition:all 0.2s ease;
+                "
+                onmouseover="
+                    this.style.background='rgba(0,0,0,0.06)';
+                    this.style.color='var(--text)';
+                "
+                onmouseout="
+                    this.style.background='transparent';
+                    this.style.color='var(--text-light)';
+                "
+            >
+                <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <path d="M12 20h9"></path>
+                    <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                </svg>
+                <span>Düzenle</span>
+            </button>
         `;
     },
 
@@ -263,6 +318,9 @@ const ImageService = {
             const downloadBtn =
                 this.createDownloadButton(imageSrc);
 
+            const editBtn =
+                this.createEditButton(imageSrc);
+
             const privacyNote =
                 this.createPrivacyNote();
 
@@ -282,6 +340,7 @@ const ImageService = {
                         <br>
 
                         ${downloadBtn}
+                        ${editBtn}
                         ${privacyNote}
 
                         <br><br>
@@ -417,6 +476,11 @@ const ImageService = {
                     imageSrc
                 );
 
+            const editBtn =
+                this.createEditButton(
+                    imageSrc
+                );
+
             const privacyNote =
                 this.createPrivacyNote();
 
@@ -438,6 +502,7 @@ const ImageService = {
                         <br>
 
                         ${downloadBtn}
+                        ${editBtn}
                         ${privacyNote}
 
                         <br><br>
