@@ -122,6 +122,8 @@
         }
     }
 
+    // Capture aşamasında Gmail tıklamasını yakala. Böylece index.html'deki
+    // eski genel "Çok yakında" click handler'ı Gmail için hiç çalışmaz.
     document.addEventListener('click', (event) => {
         const button = event.target.closest('.integration-connect');
         if (!button) return;
@@ -130,9 +132,10 @@
 
         if (integration === 'gmail') {
             event.preventDefault();
+            event.stopPropagation();
             connectGmail(button);
         }
-    });
+    }, true);
 
     // Sayfa açıldığında mevcut Composio Gmail bağlantısını kontrol et.
     if (document.readyState === 'loading') {
