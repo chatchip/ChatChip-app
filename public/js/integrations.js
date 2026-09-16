@@ -1,6 +1,7 @@
 // ============================================================
-// 🔌 CHATCHIP ENTEGRASYONLARI
+// 🔌 CHATCHIP ENTEGRASYONLARI + AI ÇALIŞAN GİRİŞİ
 // Gmail OAuth bağlantısı Composio üzerinden backend tarafından başlatılır.
+// Ana ekranda yalnızca Gmail ve AI Çalışanı gösterilir.
 // ============================================================
 
 (function initIntegrations() {
@@ -12,6 +13,45 @@
 
     function getGmailButton() {
         return document.querySelector('.integration-connect[data-integration="Gmail"]');
+    }
+
+    function buildAiEmployeeCard() {
+        const card = document.createElement('div');
+        card.className = 'integration-card';
+        card.dataset.feature = 'ai-employee';
+        card.innerHTML = `
+            <span class="integration-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="3.5"></circle>
+                    <path d="M5 20c.8-3.2 3.2-5 7-5s6.2 1.8 7 5"></path>
+                    <path d="M18.5 4.5v4"></path>
+                    <path d="M16.5 6.5h4"></path>
+                </svg>
+            </span>
+            <span class="integration-name">AI Çalışanı</span>
+            <button type="button" class="integration-connect" data-integration="AIEmployee">Oluştur</button>
+        `;
+        return card;
+    }
+
+    function simplifyQuickActions() {
+        const row = document.getElementById('quickSuggestions');
+        if (!row) return;
+
+        const gmailCard = getGmailButton()?.closest('.integration-card');
+        if (!gmailCard) return;
+
+        // Instagram / WhatsApp / TikTok kartlarını ana ekrandan kaldır.
+        // Gmail kartının kendisine dokunmuyoruz; mevcut OAuth akışı aynen devam eder.
+        row.replaceChildren(gmailCard, buildAiEmployeeCard());
+        row.style.gridTemplateColumns = 'repeat(2, minmax(0, 1fr))';
+        row.style.maxWidth = '360px';
+        row.setAttribute('aria-label', 'ChatChip araçları');
+
+        const note = row.nextElementSibling;
+        if (note?.classList.contains('integration-note')) {
+            note.textContent = "ChatChip'i işine bağla, AI çalışanını oluştur.";
+        }
     }
 
     function setGmailConnected(button, connected) {
@@ -122,8 +162,33 @@
         }
     }
 
-    // Capture aşamasında Gmail tıklamasını yakala. Böylece index.html'deki
-    // eski genel "Çok yakında" click handler'ı Gmail için hiç çalışmaz.
+    function openAiEmployeeBuilder() {
+        const token = getToken();
+
+        if (!token) {
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Giriş gerekli',
+                    text: 'AI çalışanı oluşturmak için önce ChatChip hesabına giriş yap.'
+                });
+            }
+            return;
+        }
+
+        // Builder ekranı bir sonraki adımda bu rotaya bağlanacak.
+        // Şimdilik buton aktif ve kullanıcıya özelliğin giriş noktasını gösteriyor.
+        if (window.Swal) {
+            Swal.fire({
+                icon: 'info',
+                title: 'AI Çalışanı',
+                text: 'AI çalışanını oluşturma ekranı hazırlanıyor.',
+                confirmButtonText: 'Tamam'
+            });
+        }
+    }
+
+    // Capture aşamasında ana aksiyon tıklamalarını yakala.
     document.addEventListener('click', (event) => {
         const button = event.target.closest('.integration-connect');
         if (!button) return;
@@ -134,13 +199,24 @@
             event.preventDefault();
             event.stopPropagation();
             connectGmail(button);
+            return;
+        }
+
+        if (integration === 'aiemployee') {
+            event.preventDefault();
+            event.stopPropagation();
+            openAiEmployeeBuilder();
         }
     }, true);
 
-    // Sayfa açıldığında mevcut Composio Gmail bağlantısını kontrol et.
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', checkGmailStatus, { once: true });
-    } else {
+    function initializeHomeActions() {
+        simplifyQuickActions();
         checkGmailStatus();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeHomeActions, { once: true });
+    } else {
+        initializeHomeActions();
     }
 })();
