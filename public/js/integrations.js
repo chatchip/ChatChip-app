@@ -6,6 +6,7 @@
 
 (function initIntegrations() {
     const API_BASE = 'https://api.thechatchip.com/api';
+    let aiEmployee = null;
 
     function getToken() {
         return window.DataManager?.getToken?.() || localStorage.getItem('chatchip_token');
@@ -13,6 +14,10 @@
 
     function getGmailButton() {
         return document.querySelector('.integration-connect[data-integration="Gmail"]');
+    }
+
+    function getAiEmployeeCard() {
+        return document.querySelector('.integration-card[data-feature="ai-employee"]');
     }
 
     function buildAiEmployeeCard() {
@@ -44,7 +49,48 @@
         row.style.maxWidth = '360px';
         row.setAttribute('aria-label', 'ChatChip araçları');
         const note = row.nextElementSibling;
-        if (note?.classList.contains('integration-note')) note.textContent = "ChatChip'i işine bağla, AI çalışanını oluştur.";
+        if (note?.classList.contains('integration-note')) note.textContent = "ChatChip'i işine bağla, AI çalışanını yönet.";
+    }
+
+    function setAiEmployeeState(agent) {
+        aiEmployee = agent || null;
+        const card = getAiEmployeeCard();
+        if (!card) return;
+        const name = card.querySelector('.integration-name');
+        const button = card.querySelector('.integration-connect[data-integration="AIEmployee"]');
+        if (!name || !button) return;
+        if (aiEmployee) {
+            name.textContent = 'AI Çalışanım';
+            button.textContent = 'Yönet';
+            button.dataset.mode = 'manage';
+            if (aiEmployee.id != null) button.dataset.agentId = String(aiEmployee.id);
+            if (aiEmployee.slug) button.dataset.slug = aiEmployee.slug;
+        } else {
+            name.textContent = 'AI Çalışanı';
+            button.textContent = 'Oluştur';
+            button.dataset.mode = 'create';
+            delete button.dataset.agentId;
+            delete button.dataset.slug;
+        }
+    }
+
+    async function checkAiEmployeeStatus() {
+        const token = getToken();
+        if (!token) { setAiEmployeeState(null); return; }
+        try {
+            const response = await fetch(`${API_BASE}/agents`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` },
+                cache: 'no-store'
+            });
+            let data = null; try { data = await response.json(); } catch (_) {}
+            if (response.status === 403) { setAiEmployeeState(null); return; }
+            if (!response.ok) { console.warn(`⚠️ AI çalışan durum kontrolü başarısız (${response.status}).`); return; }
+            const agents = Array.isArray(data) ? data : (Array.isArray(data?.agents) ? data.agents : []);
+            setAiEmployeeState(agents[0] || null);
+        } catch (error) {
+            console.warn('⚠️ AI çalışan durum kontrolü yapılamadı:', error);
+        }
     }
 
     function setGmailConnected(button, connected) {
@@ -92,11 +138,15 @@
         }
     }
 
-    function openAiEmployeeBuilder() {
+    function openAiEmployee() {
         const token = getToken();
         if (!token) {
-            if (window.Swal) Swal.fire({ icon:'warning', title:'Giriş gerekli', text:'AI çalışanı oluşturmak için önce ChatChip hesabına giriş yap.' });
-            else alert('AI çalışanı oluşturmak için önce giriş yap.');
+            if (window.Swal) Swal.fire({ icon:'warning', title:'Giriş gerekli', text:'AI çalışanını kullanmak için önce ChatChip hesabına giriş yap.' });
+            else alert('AI çalışanını kullanmak için önce giriş yap.');
+            return;
+        }
+        if (aiEmployee?.id != null) {
+            window.location.assign(`/ai-employee.html?id=${encodeURIComponent(aiEmployee.id)}&mode=manage`);
             return;
         }
         window.location.assign('/ai-employee.html');
@@ -107,10 +157,14 @@
         if (!button) return;
         const integration = (button.dataset.integration || '').toLowerCase();
         if (integration === 'gmail') { event.preventDefault(); event.stopPropagation(); connectGmail(button); return; }
-        if (integration === 'aiemployee') { event.preventDefault(); event.stopPropagation(); openAiEmployeeBuilder(); }
+        if (integration === 'aiemployee') { event.preventDefault(); event.stopPropagation(); openAiEmployee(); }
     }, true);
 
-    function initializeHomeActions() { simplifyQuickActions(); checkGmailStatus(); }
+    function initializeHomeActions() {
+        simplifyQuickActions();
+        checkGmailStatus();
+        checkAiEmployeeStatus();
+    }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeHomeActions, { once:true });
     else initializeHomeActions();
 })();
