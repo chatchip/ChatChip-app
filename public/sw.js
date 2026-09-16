@@ -1,5 +1,7 @@
 // ChatChip Service Worker
-const CACHE_NAME = 'chatchip-v2';
+// v3: safe PWA asset refresh. This only manages Cache Storage;
+// localStorage/IndexedDB/auth/crypto keys are never touched.
+const CACHE_NAME = 'chatchip-v3';
 
 const urlsToCache = [
   '/index.html',
@@ -18,16 +20,16 @@ const urlsToCache = [
   '/css/tree-detail.css',
   '/css/cuzdan.css',
 
-'/js/crypto.js',
-'/js/datamanager.js',
-'/js/sidebar.js',
-'/js/imageServices.js',
-'/js/app.js',
-'/js/backoffice.js',
-'/js/admin-panel.js',
-'/js/pricing.js',
-'/js/tree-detail.js',
-'/js/cuzdan.js',
+  '/js/crypto.js',
+  '/js/datamanager.js',
+  '/js/sidebar.js',
+  '/js/imageServices.js',
+  '/js/app.js',
+  '/js/backoffice.js',
+  '/js/admin-panel.js',
+  '/js/pricing.js',
+  '/js/tree-detail.js',
+  '/js/cuzdan.js',
 
   '/assets/logo.svg',
   '/assets/pwalogo.png',
@@ -41,48 +43,60 @@ const urlsToCache = [
   '/assets/icon-512.png'
 ];
 
-// Install
+// Install the new worker and pre-cache the current app shell.
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('📦 Cache açıldı');
-        return cache.addAll(urlsToCache);
-      })
-      .catch(err => console.error('Cache hatası:', err))
+      .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
+      .catch(err => console.error('Cache install hatası:', err))
   );
 });
 
-// Activate
+// Remove only old ChatChip caches. Do not touch caches belonging to anything else.
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('🗑️ Eski cache silindi:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys()
+      .then(cacheNames => Promise.all(
+        cacheNames
+          .filter(name => name.startsWith('chatchip-') && name !== CACHE_NAME)
+          .map(name => caches.delete(name))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// Fetch
+// Navigation + same-origin app assets: network first so deployed updates are seen.
+// If offline/network fails, fall back to the cached app shell.
 self.addEventListener('fetch', event => {
+  const request = event.request;
+
+  if (request.method !== 'GET') return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
-    caches.match(event.request)
+    fetch(request)
       .then(response => {
-        if (response) {
-          return response;
+        if (response && response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+        }
+        return response;
+      })
+      .catch(async () => {
+        const cached = await caches.match(request);
+        if (cached) return cached;
+
+        if (request.mode === 'navigate') {
+          const fallback = await caches.match('/index.html');
+          if (fallback) return fallback;
         }
 
-        return fetch(event.request).catch(() => {
-          return new Response('🚀 ChatChip - Çevrimdışı', {
-            status: 200,
-            headers: { 'Content-Type': 'text/html' }
-          });
+        return new Response('🚀 ChatChip - Çevrimdışı', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' }
         });
       })
   );
