@@ -290,88 +290,47 @@ const ImageService = {
     return;
 }
 
-            // 🔥 KRİTİK NOKTA
-            // String ise URL
-            // Object ise base64 / URL çözümle
-            const imageSrc = this.resolveImageUrl(
-                data.imageUrl
-            );
+            const imageSrc = this.resolveImageUrl(data.imageUrl);
 
             if (!imageSrc) {
-
                console.error('❌ Görsel adresi alınamadı');
-
                 updateMessage(
-    loadingMsgId,
-    '✦ Görsel oluşturuldu ancak görüntü ekrana getirilemedi. Lütfen tekrar dene.'
-);
-
+                    loadingMsgId,
+                    '✦ Görsel oluşturuldu ancak görüntü ekrana getirilemedi. Lütfen tekrar dene.'
+                );
                 return;
             }
 
-            const imageHtml =
-                this.createImageHtml(
-                    imageSrc,
-                    'Üretilen görsel'
-                );
-
-            const downloadBtn =
-                this.createDownloadButton(imageSrc);
-
-            const editBtn =
-                this.createEditButton(imageSrc);
-
-            const privacyNote =
-                this.createPrivacyNote();
-
-            const wrapper =
-                document.getElementById(loadingMsgId);
-
-            const bubble =
-                wrapper?.querySelector('.bubble');
+            const imageHtml = this.createImageHtml(imageSrc, 'Üretilen görsel');
+            const downloadBtn = this.createDownloadButton(imageSrc);
+            const editBtn = this.createEditButton(imageSrc);
+            const privacyNote = this.createPrivacyNote();
+            const wrapper = document.getElementById(loadingMsgId);
+            const bubble = wrapper?.querySelector('.bubble');
 
             if (bubble) {
-
                 bubble.innerHTML = `
                     <div class="markdown-body">
-
                         ${imageHtml}
-
                         <br>
-
                         ${downloadBtn}
                         ${editBtn}
                         ${privacyNote}
-
                         <br><br>
-
                         ✨ Görsel başarıyla oluşturuldu!
-
                     </div>
-
                     <span class="time">
-                        ${new Date().toLocaleTimeString(
-                            'tr-TR',
-                            {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            }
-                        )}
+                        ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                 `;
             }
 
         } catch (error) {
-
-            console.error(
-                '❌ Görsel üretim hatası:',
-                error
-            );
-
+            console.error('❌ Görsel üretim hatası:', error);
             updateMessage(
-    loadingMsgId,
-    '✦ Görsel oluşturulurken bir sorun oluştu. Lütfen tekrar dene.'
-);
+                loadingMsgId,
+                '✦ Görsel oluşturulurken bir sorun oluştu. Lütfen tekrar dene.'
+            );
         }
     },
 
@@ -387,41 +346,31 @@ const ImageService = {
             updateMessage,
         } = callbacks;
 
-        console.log(
-            '🎨 Görsel düzenleme:',
-            prompt
-        );
+        console.log('🎨 Görsel düzenleme:', prompt);
 
-        const loadingMsgId =
-            addMessage('', 'bot', true);
+        const loadingMsgId = addMessage('', 'bot', true);
 
         if (setLoading) {
-            setLoading(
-                loadingMsgId,
-                'Görsel düzenleniyor...'
-            );
+            setLoading(loadingMsgId, 'Görsel düzenleniyor...');
         }
 
         try {
-
             const dm = window.DataManager;
             const token = dm?.getToken();
 
             if (!token) {
-    updateMessage(
-        loadingMsgId,
-        'ℹ️ Görsel oluşturmak için önce giriş yapmalısın.'
-    );
+                updateMessage(
+                    loadingMsgId,
+                    'ℹ️ Görsel oluşturmak için önce giriş yapmalısın.'
+                );
                 return;
             }
 
             if (!imageUrl) {
-                throw new Error(
-                    'Görsel URL bulunamadı'
-                );
+                throw new Error('Görsel URL bulunamadı');
             }
 
-           console.log('📸 Düzenlenecek görsel alındı');
+            console.log('📸 Düzenlenecek görsel alındı');
 
             const response = await fetch(
                 `${this.API_BASE}/edit`,
@@ -443,107 +392,120 @@ const ImageService = {
             console.log('📥 Düzenleme yanıtı alındı');
 
             if (!data.success || !data.imageUrl) {
-
-               updateMessage(
-    loadingMsgId,
-    '✦ Görsel düzenleme isteğini şu anda tamamlayamadım. Lütfen tekrar dene.'
-);
+                updateMessage(
+                    loadingMsgId,
+                    '✦ Görsel düzenleme isteğini şu anda tamamlayamadım. Lütfen tekrar dene.'
+                );
                 return;
             }
 
-            // 🔥🔥🔥
-            // GENERATE İLE AYNI ÇÖZÜMLEME
-            // Base64 burada da data:image/... oluyor
-            const imageSrc =
-                this.resolveImageUrl(
-                    data.imageUrl
-                );
+            const imageSrc = this.resolveImageUrl(data.imageUrl);
 
             if (!imageSrc) {
-                throw new Error(
-                    'Düzenlenen görsel alınamadı'
-                );
+                throw new Error('Düzenlenen görsel alınamadı');
             }
 
-            const imageHtml =
-                this.createImageHtml(
-                    imageSrc,
-                    'Düzenlenen görsel'
-                );
-
-            const downloadBtn =
-                this.createDownloadButton(
-                    imageSrc
-                );
-
-            const editBtn =
-                this.createEditButton(
-                    imageSrc
-                );
-
-            const privacyNote =
-                this.createPrivacyNote();
-
-            const wrapper =
-                document.getElementById(
-                    loadingMsgId
-                );
-
-            const bubble =
-                wrapper?.querySelector('.bubble');
+            const imageHtml = this.createImageHtml(imageSrc, 'Düzenlenen görsel');
+            const downloadBtn = this.createDownloadButton(imageSrc);
+            const editBtn = this.createEditButton(imageSrc);
+            const privacyNote = this.createPrivacyNote();
+            const wrapper = document.getElementById(loadingMsgId);
+            const bubble = wrapper?.querySelector('.bubble');
 
             if (bubble) {
-
                 bubble.innerHTML = `
                     <div class="markdown-body">
-
                         ${imageHtml}
-
                         <br>
-
                         ${downloadBtn}
                         ${editBtn}
                         ${privacyNote}
-
                         <br><br>
-
                         ✨ Görsel başarıyla düzenlendi!
-
                     </div>
-
                     <span class="time">
-                        ${new Date().toLocaleTimeString(
-                            'tr-TR',
-                            {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            }
-                        )}
+                        ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                 `;
             }
 
         } catch (error) {
-
-            console.error(
-                '❌ Düzenleme hatası:',
-                error
-            );
-
+            console.error('❌ Düzenleme hatası:', error);
             updateMessage(
-    loadingMsgId,
-    '✦ Görsel düzenlenirken bir sorun oluştu. Lütfen tekrar dene.'
-);
-
+                loadingMsgId,
+                '✦ Görsel düzenlenirken bir sorun oluştu. Lütfen tekrar dene.'
+            );
         }
     }
 };
 
-
 // ============================================================
 // 🌐 GLOBAL
 // ============================================================
-
 window.ImageService = ImageService;
-
 console.log('🎨 ImageService hazır');
+
+// ============================================================
+// 🎨 ANA INPUT → AKTİF GÖRSEL DÜZENLEME KÖPRÜSÜ
+// imageServices.js index.html'de app.js'den önce yüklenir.
+// Input boşsa hiçbir şeyi yakalamaz: Puzzle akışı aynen devam eder.
+// ============================================================
+(function initMainInputImageEditBridge() {
+    let editing = false;
+
+    async function handleImageEdit(event) {
+        const messageInput = document.getElementById('messageInput');
+        const text = messageInput?.value?.trim() || '';
+        const imageUrl = localStorage.getItem('chatchip_current_image_url');
+
+        // Puzzle koruması: input boşsa mevcut event akışına hiç dokunma.
+        if (!text || !imageUrl || editing) return false;
+
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        const token = window.DataManager?.getToken?.() || localStorage.getItem('chatchip_token');
+        if (!token) {
+            if (typeof showToast === 'function') showToast('❌ Lütfen önce giriş yapın!', 'error');
+            return true;
+        }
+
+        editing = true;
+        try {
+            if (typeof addMessage === 'function') addMessage(text, 'user');
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            if (typeof removeImagePreviewUI === 'function') removeImagePreviewUI();
+
+            await ImageService.edit(text, imageUrl, {
+                addMessage: typeof addMessage === 'function' ? addMessage : undefined,
+                setLoading: typeof setImageLoadingAnimation === 'function' ? setImageLoadingAnimation : undefined,
+                updateMessage: typeof updateMessageMarkdown === 'function' ? updateMessageMarkdown : undefined,
+                showToast: typeof showToast === 'function' ? showToast : undefined
+            });
+
+            const chatAreaEl = document.getElementById('chatArea');
+            if (chatAreaEl) chatAreaEl.scrollTop = chatAreaEl.scrollHeight;
+        } catch (error) {
+            console.error('❌ Ana input görsel düzenleme hatası:', error);
+            if (typeof showToast === 'function') showToast('❌ Görsel düzenlenemedi', 'error');
+        } finally {
+            editing = false;
+        }
+        return true;
+    }
+
+    // Capture phase: app.js'in normal sendMessage listener'ından önce yakalar.
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('#sendBtn')) {
+            handleImageEdit(event);
+        }
+    }, true);
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key !== 'Enter' || event.shiftKey) return;
+        if (event.target?.id !== 'messageInput') return;
+        handleImageEdit(event);
+    }, true);
+})();
