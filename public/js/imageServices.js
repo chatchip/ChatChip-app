@@ -9,7 +9,6 @@ const ImageService = {
     resolveImageUrl(imageUrl) {
         if (!imageUrl) return '';
         if (typeof imageUrl === 'string') return imageUrl;
-
         if (typeof imageUrl === 'object' && imageUrl !== null) {
             const base64Data = imageUrl.data || '';
             const mediaType = imageUrl.media_type || 'image/jpeg';
@@ -21,13 +20,7 @@ const ImageService = {
 
     createImageHtml(imageSrc, altText = 'Görsel') {
         if (!imageSrc) return '';
-        return `
-            <img
-                src="${imageSrc}"
-                alt="${altText}"
-                style="max-width:100%;max-height:400px;border-radius:12px;margin:6px 0;border:1px solid var(--border);object-fit:contain;"
-            />
-        `;
+        return `<img src="${imageSrc}" alt="${altText}" style="max-width:100%;max-height:400px;border-radius:12px;margin:6px 0;border:1px solid var(--border);object-fit:contain;" />`;
     },
 
     createDownloadButton(imageSrc) {
@@ -36,31 +29,24 @@ const ImageService = {
         const fileName = `gorsel_${timestamp}_${random}.jpg`;
         return `
             <a href="${imageSrc}" download="${fileName}" title="Görseli indir"
-               style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;margin-top:8px;background:transparent;color:var(--text-light);border-radius:10px;text-decoration:none;">
+               style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin-top:4px;background:transparent;color:var(--text-light);border-radius:8px;text-decoration:none;transition:all .2s ease;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>
                 </svg>
-            </a>
-        `;
+            </a>`;
     },
 
-    // Görsel düzenleme kendi alanında yapılır. Buton özellikle belirgin tutulur.
+    // Eski, sade Görseli Düzenle butonu.
     createEditButton(imageSrc) {
         return `
-            <button
-                type="button"
-                class="chatchip-editable-image"
-                data-image-src="${imageSrc}"
-                title="Görseli düzenle"
-                aria-label="Görseli düzenle"
-                style="display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;margin-top:8px;margin-left:6px;padding:0 16px;background:var(--primary);color:#fff;border:0;border-radius:11px;font:inherit;font-size:.86rem;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"
-            >
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <button type="button" class="chatchip-editable-image" data-image-src="${imageSrc}"
+                title="Görseli düzenle" aria-label="Görseli düzenle"
+                style="display:inline-flex;align-items:center;justify-content:center;gap:5px;height:32px;margin-top:4px;margin-left:4px;padding:0 8px;background:transparent;color:var(--text-light);border:0;border-radius:8px;font:inherit;font-size:.78rem;cursor:pointer;transition:all .2s ease;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
                 </svg>
-                <span>Görseli Düzenle</span>
-            </button>
-        `;
+                <span>Düzenle</span>
+            </button>`;
     },
 
     createPrivacyNote() {
@@ -79,7 +65,6 @@ const ImageService = {
                 updateMessage(loadingMsgId, 'ℹ️ Görsel oluşturmak için önce giriş yapmalısın.');
                 return;
             }
-
             const currentPlan = getPlan ? getPlan() : null;
             if (currentPlan && currentPlan.isExpired) {
                 updateMessage(loadingMsgId, '⛔ Planınız sona erdi! Görsel üretimi için plan satın alın.');
@@ -88,19 +73,14 @@ const ImageService = {
 
             const response = await fetch(`${this.API_BASE}/generate`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify({ prompt })
             });
             const data = await response.json();
 
             if (!data.success || !data.imageUrl) {
                 let message = '✦ Bu görsel isteğini şu anda oluşturamadım. İstersen farklı bir ifadeyle tekrar deneyebilirsin.';
-                if (data.code === 'IMAGE_POLICY_BLOCK') {
-                    message = '✦ Bu görsel isteği içerik kuralları nedeniyle oluşturulamadı. İsteğini değiştirerek tekrar deneyebilirsin.';
-                }
+                if (data.code === 'IMAGE_POLICY_BLOCK') message = '✦ Bu görsel isteği içerik kuralları nedeniyle oluşturulamadı. İsteğini değiştirerek tekrar deneyebilirsin.';
                 updateMessage(loadingMsgId, message);
                 return;
             }
@@ -114,17 +94,7 @@ const ImageService = {
             const wrapper = document.getElementById(loadingMsgId);
             const bubble = wrapper?.querySelector('.bubble');
             if (bubble) {
-                bubble.innerHTML = `
-                    <div class="markdown-body">
-                        ${this.createImageHtml(imageSrc, 'Üretilen görsel')}
-                        <br>
-                        ${this.createDownloadButton(imageSrc)}
-                        ${this.createEditButton(imageSrc)}
-                        ${this.createPrivacyNote()}
-                        <br><br>✨ Görsel başarıyla oluşturuldu!
-                    </div>
-                    <span class="time">${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
-                `;
+                bubble.innerHTML = `<div class="markdown-body">${this.createImageHtml(imageSrc, 'Üretilen görsel')}<br>${this.createDownloadButton(imageSrc)}${this.createEditButton(imageSrc)}${this.createPrivacyNote()}<br><br>✨ Görsel başarıyla oluşturuldu!</div><span class="time">${new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' })}</span>`;
             }
         } catch (error) {
             console.error('❌ Görsel üretim hatası:', error);
@@ -147,15 +117,11 @@ const ImageService = {
             if (!imageUrl) throw new Error('Görsel URL bulunamadı');
 
             const response = await fetch(`${this.API_BASE}/edit`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ prompt, imageUrl })
+                method:'POST',
+                headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${token}` },
+                body:JSON.stringify({ prompt, imageUrl })
             });
             const data = await response.json();
-
             if (!data.success || !data.imageUrl) {
                 updateMessage(loadingMsgId, '✦ Görsel düzenleme isteğini şu anda tamamlayamadım. Lütfen tekrar dene.');
                 return;
@@ -163,21 +129,10 @@ const ImageService = {
 
             const imageSrc = this.resolveImageUrl(data.imageUrl);
             if (!imageSrc) throw new Error('Düzenlenen görsel alınamadı');
-
             const wrapper = document.getElementById(loadingMsgId);
             const bubble = wrapper?.querySelector('.bubble');
             if (bubble) {
-                bubble.innerHTML = `
-                    <div class="markdown-body">
-                        ${this.createImageHtml(imageSrc, 'Düzenlenen görsel')}
-                        <br>
-                        ${this.createDownloadButton(imageSrc)}
-                        ${this.createEditButton(imageSrc)}
-                        ${this.createPrivacyNote()}
-                        <br><br>✨ Görsel başarıyla düzenlendi!
-                    </div>
-                    <span class="time">${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}</span>
-                `;
+                bubble.innerHTML = `<div class="markdown-body">${this.createImageHtml(imageSrc, 'Düzenlenen görsel')}<br>${this.createDownloadButton(imageSrc)}${this.createEditButton(imageSrc)}${this.createPrivacyNote()}<br><br>✨ Görsel başarıyla düzenlendi!</div><span class="time">${new Date().toLocaleTimeString('tr-TR', { hour:'2-digit', minute:'2-digit' })}</span>`;
             }
         } catch (error) {
             console.error('❌ Düzenleme hatası:', error);
@@ -189,33 +144,46 @@ const ImageService = {
 window.ImageService = ImageService;
 console.log('🎨 ImageService hazır');
 
-// ============================================================
-// 🛡️ ANA INPUT KORUMASI
-// Aktif bir görsel varken ana inputtan gönderim yapılırsa normal chat API'sine
-// düşürme. Kullanıcıyı çalışan görsel düzenleme alanına yönlendir.
+// Görsel düzenleme panelindeki gönder okunu büyük ve belirgin yap.
+(function addImageEditSendButtonStyle() {
+    const style = document.createElement('style');
+    style.textContent = `
+        #imageEditSendBtn {
+            width:52px !important;
+            min-width:52px !important;
+            height:52px !important;
+            border-radius:14px !important;
+            background:var(--primary) !important;
+            color:#fff !important;
+            font-size:27px !important;
+            font-weight:700 !important;
+            box-shadow:0 4px 12px rgba(0,0,0,.14) !important;
+            transition:transform .15s ease, opacity .15s ease !important;
+        }
+        #imageEditSendBtn:hover { transform:scale(1.05); }
+        #imageEditSendBtn:active { transform:scale(.96); }
+        #imageEditSendBtn:disabled { opacity:.55; cursor:not-allowed !important; }
+    `;
+    document.head.appendChild(style);
+})();
+
+// Ana inputta aktif görsel varken normal chat'e düşmesini engelle.
 // Input boşsa hiçbir event yakalanmaz; Puzzle akışı aynen devam eder.
-// ============================================================
 (function initImageEditGuidance() {
     function interceptMainSend(event) {
         const input = document.getElementById('messageInput');
         const text = input?.value?.trim() || '';
         const imageUrl = localStorage.getItem('chatchip_current_image_url');
-
         if (!text || !imageUrl) return;
 
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
 
-        const message = '🖼️ Görseli düzenlemek için görselin altındaki “Görseli Düzenle” alanını ve butonunu kullanın.';
-
-        if (typeof showToast === 'function') {
-            showToast(message, 'info');
-        } else if (typeof addMessage === 'function') {
-            addMessage(message, 'bot');
-        } else {
-            alert(message);
-        }
+        const message = '🖼️ Görseli düzenlemek için görselin altındaki “Düzenle” alanını ve gönder okunu kullanın.';
+        if (typeof showToast === 'function') showToast(message, 'info');
+        else if (typeof addMessage === 'function') addMessage(message, 'bot');
+        else alert(message);
     }
 
     document.addEventListener('click', function(event) {
