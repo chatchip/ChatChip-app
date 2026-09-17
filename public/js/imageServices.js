@@ -111,39 +111,119 @@ const ImageService = {
 window.ImageService = ImageService;
 console.log('🎨 ImageService hazır');
 
-(function addImageEditSendButtonStyle() {
+// ============================================================
+// 🖼️ TAM EKRAN GÖRSEL DÜZENLEYİCİ
+// Düzenle butonunu capture aşamasında yakalar; app.js'deki eski inline panel açılmaz.
+// Gönderme kaydırmasızdır: tek dokunuş doğrudan düzenlemeyi başlatır.
+// ============================================================
+(function initFullscreenImageEditor() {
+    function closeEditor() {
+        const overlay = document.getElementById('imageEditOverlay');
+        if (overlay) overlay.remove();
+        document.body.style.overflow = '';
+    }
+
+    function openEditor(imageSrc) {
+        closeEditor();
+        localStorage.setItem('chatchip_current_image_url', imageSrc);
+
+        const overlay = document.createElement('div');
+        overlay.id = 'imageEditOverlay';
+        overlay.innerHTML = `
+            <div class="cc-image-edit-header">
+                <button type="button" id="imageEditCloseBtn" aria-label="Geri">←</button>
+                <strong>Görseli Düzenle</strong>
+                <span></span>
+            </div>
+            <div class="cc-image-edit-stage">
+                <img src="${imageSrc}" alt="Düzenlenecek görsel">
+            </div>
+            <div class="cc-image-edit-composer">
+                <div class="cc-image-edit-input-wrap">
+                    <textarea id="imageEditPrompt" rows="1" placeholder="Görselde neyi değiştirmek istiyorsun?"></textarea>
+                    <button type="button" id="imageEditSendBtn" aria-label="Gönder">↑</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        const promptInput = overlay.querySelector('#imageEditPrompt');
+        const submitBtn = overlay.querySelector('#imageEditSendBtn');
+        overlay.querySelector('#imageEditCloseBtn').addEventListener('click', closeEditor);
+
+        async function submitEdit() {
+            const prompt = promptInput.value.trim();
+            if (!prompt || submitBtn.disabled) return;
+            submitBtn.disabled = true;
+            promptInput.disabled = true;
+
+            if (typeof addMessage === 'function') addMessage(prompt, 'user');
+            closeEditor();
+
+            await ImageService.edit(prompt, imageSrc, {
+                addMessage: typeof addMessage === 'function' ? addMessage : undefined,
+                setLoading: typeof setImageLoadingAnimation === 'function' ? setImageLoadingAnimation : undefined,
+                updateMessage: typeof updateMessageMarkdown === 'function' ? updateMessageMarkdown : undefined
+            });
+        }
+
+        // Kaydırma yok: click/tap direkt gönderir.
+        submitBtn.addEventListener('click', submitEdit);
+        promptInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitEdit();
+            }
+        });
+        promptInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        });
+
+        setTimeout(() => promptInput.focus(), 80);
+    }
+
+    document.addEventListener('click', function(event) {
+        const editButton = event.target.closest('.chatchip-editable-image');
+        if (!editButton) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        openEditor(editButton.dataset.imageSrc);
+    }, true);
+
     const style = document.createElement('style');
     style.textContent = `
-        #imageEditSendBtn { width:52px !important;min-width:52px !important;height:52px !important;border-radius:14px !important;background:var(--primary) !important;color:#fff !important;font-size:27px !important;font-weight:700 !important;box-shadow:0 4px 12px rgba(0,0,0,.14) !important;transition:transform .15s ease,opacity .15s ease !important; }
-        #imageEditSendBtn:hover { transform:scale(1.05); }
-        #imageEditSendBtn:active { transform:scale(.96); }
-        #imageEditSendBtn:disabled { opacity:.55;cursor:not-allowed !important; }
+        #imageEditOverlay{position:fixed;inset:0;z-index:100000;background:var(--bg-secondary,#fff);display:flex;flex-direction:column;height:100dvh;overflow:hidden;color:var(--text-primary,var(--text,#2D4A44));}
+        .cc-image-edit-header{height:64px;min-height:64px;display:grid;grid-template-columns:48px 1fr 48px;align-items:center;padding:0 14px;border-bottom:1px solid var(--border-color,var(--border,#D4F0EA));background:var(--bg-secondary,#fff);}
+        .cc-image-edit-header strong{text-align:center;font-size:16px;font-weight:650;}
+        #imageEditCloseBtn{width:42px;height:42px;border:0;border-radius:50%;background:transparent;color:inherit;font-size:28px;cursor:pointer;}
+        .cc-image-edit-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px 18px;background:var(--bg-primary,#F2FCF9);overflow:hidden;}
+        .cc-image-edit-stage img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:16px;}
+        .cc-image-edit-composer{flex:0 0 auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:var(--bg-secondary,#fff);border-top:1px solid var(--border-color,var(--border,#D4F0EA));}
+        .cc-image-edit-input-wrap{width:100%;min-height:72px;border:1px solid var(--input-border,#D4F0EA);border-radius:28px;background:var(--input-bg,#F2FCF9);display:flex;align-items:flex-end;gap:8px;padding:12px 12px 10px 20px;box-sizing:border-box;box-shadow:0 5px 18px rgba(45,74,68,.08);}
+        #imageEditPrompt{flex:1;min-width:0;min-height:42px;max-height:120px;resize:none;border:0;outline:0;background:transparent;color:var(--text-primary,var(--text,#2D4A44));font:inherit;font-size:16px;line-height:1.4;padding:9px 0;box-sizing:border-box;overflow-y:auto;}
+        #imageEditPrompt::placeholder{color:var(--text-secondary,#6B8A82);}
+        #imageEditSendBtn{width:52px;min-width:52px;height:52px;border:0;border-radius:50%;background:var(--primary,#7BD3C9);color:#fff;font-size:28px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.12);touch-action:manipulation;}
+        #imageEditSendBtn:active{transform:scale(.96);}
+        #imageEditSendBtn:disabled{opacity:.55;cursor:not-allowed;}
+        @media (min-width:700px){.cc-image-edit-stage{padding:24px 12vw}.cc-image-edit-composer{padding-left:max(14px,15vw);padding-right:max(14px,15vw)}}
     `;
     document.head.appendChild(style);
 })();
 
-// Düzenleme paneli açıkken ANA gönder butonu/Enter normal chat API'sine gitmez.
-// Puzzle korunur: panel açık değilse boş input davranışına hiç müdahale edilmez.
+// Tam ekran düzenleyici açıkken ana input normal chat'e gönderemez.
 (function initImageEditGuidance() {
     function interceptMainSend(event) {
-        const editPanel = document.getElementById('imageEditPanel');
-        const imageUrl = localStorage.getItem('chatchip_current_image_url');
-        if (!editPanel || !imageUrl) return;
-
+        const editorOpen = document.getElementById('imageEditOverlay');
+        if (!editorOpen) return;
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
-
-        const message = '🖼️ Görseli düzenlemek için görselin altındaki “Düzenle” alanını ve gönder okunu kullanın.';
-        if (typeof showToast === 'function') showToast(message, 'info');
-        else if (typeof addMessage === 'function') addMessage(message, 'bot');
-        else alert(message);
     }
-
     document.addEventListener('click', function(event) {
         if (event.target.closest('#sendBtn')) interceptMainSend(event);
     }, true);
-
     document.addEventListener('keydown', function(event) {
         if (event.key !== 'Enter' || event.shiftKey) return;
         if (event.target?.id !== 'messageInput') return;
