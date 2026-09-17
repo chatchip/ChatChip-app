@@ -141,7 +141,12 @@ console.log('🎨 ImageService hazır');
             <div class="cc-image-edit-composer">
                 <div class="cc-image-edit-input-wrap">
                     <textarea id="imageEditPrompt" rows="1" placeholder="Görselde neyi değiştirmek istiyorsun?"></textarea>
-                    <button type="button" id="imageEditSendBtn" aria-label="Gönder">↑</button>
+                    <button type="button" id="imageEditSendBtn" aria-label="Gönder">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M7 14.5 C8.7 13 10.3 11.6 12 10.2 C13.7 11.6 15.3 13 17 14.5"></path>
+                            <path d="M7 9.5 C8.7 8 10.3 6.6 12 5.2 C13.7 6.6 15.3 8 17 9.5"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>`;
         document.body.appendChild(overlay);
@@ -201,12 +206,14 @@ console.log('🎨 ImageService hazır');
         .cc-image-edit-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:16px 18px;background:var(--bg-primary,#F2FCF9);overflow:hidden;}
         .cc-image-edit-stage img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:16px;}
         .cc-image-edit-composer{flex:0 0 auto;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:var(--bg-secondary,#fff);border-top:1px solid var(--border-color,var(--border,#D4F0EA));}
-        .cc-image-edit-input-wrap{width:100%;min-height:72px;border:1px solid var(--input-border,#D4F0EA);border-radius:28px;background:var(--input-bg,#F2FCF9);display:flex;align-items:flex-end;gap:8px;padding:12px 12px 10px 20px;box-sizing:border-box;box-shadow:0 5px 18px rgba(45,74,68,.08);}
-        #imageEditPrompt{flex:1;min-width:0;min-height:42px;max-height:120px;resize:none;border:0;outline:0;background:transparent;color:var(--text-primary,var(--text,#2D4A44));font:inherit;font-size:16px;line-height:1.4;padding:9px 0;box-sizing:border-box;overflow-y:auto;}
+        .cc-image-edit-input-wrap{width:100%;min-height:72px;border:1px solid var(--border-color,var(--input-border,#D4F0EA));border-radius:36px;background:var(--bg-secondary,#fff);display:flex;align-items:flex-end;gap:8px;padding:12px 12px 10px 20px;box-sizing:border-box;box-shadow:0 4px 16px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);}
+        #imageEditPrompt{flex:1;min-width:0;min-height:42px;max-height:120px;resize:none;border:0;outline:0;background:transparent;color:var(--text-primary,var(--text,#2D4A44));font:inherit;font-size:.96rem;line-height:1.55;padding:9px 0;box-sizing:border-box;overflow-y:auto;}
         #imageEditPrompt::placeholder{color:var(--text-secondary,#6B8A82);}
-        #imageEditSendBtn{width:52px;min-width:52px;height:52px;border:0;border-radius:50%;background:var(--primary,#7BD3C9);color:#fff;font-size:28px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.12);touch-action:manipulation;}
+        #imageEditSendBtn{width:38px;min-width:38px;height:38px;min-height:38px;border:0;border-radius:50%;background:var(--primary,#7BD3C9);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0;flex-shrink:0;transition:all .2s ease;touch-action:manipulation;}
+        #imageEditSendBtn:hover{background:var(--primary-dark,#5FB8A0);transform:scale(1.05);}
         #imageEditSendBtn:active{transform:scale(.96);}
-        #imageEditSendBtn:disabled{opacity:.55;cursor:not-allowed;}
+        #imageEditSendBtn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+        #imageEditSendBtn svg{width:20px;height:20px;stroke:#fff;fill:none;}
         @media (min-width:700px){.cc-image-edit-stage{padding:24px 12vw}.cc-image-edit-composer{padding-left:max(14px,15vw);padding-right:max(14px,15vw)}}
     `;
     document.head.appendChild(style);
