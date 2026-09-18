@@ -235,23 +235,6 @@ console.log('🎨 ImageService hazır');
     }, true);
 })();
 
-// Ana sohbet ve görsel düzenleme artık iki ayrı akıştır.
-// Görsel oluşturulmuş olsa bile ana inputtan gönderilen metin normal sohbete gider.
-// Capture aşamasında eski aktif-görsel işaretini temizleyerek app.js'in eski
-// keyword tabanlı edit yönlendirmesinin devreye girmesini engelleriz.
-(function keepMainChatIndependentFromImageEdit() {
-    function clearStaleImageEditState() {
-        if (document.getElementById('imageEditOverlay')) return;
-        localStorage.removeItem('chatchip_current_image_url');
-    }
-
-    document.addEventListener('click', function(event) {
-        if (event.target.closest('#sendBtn')) clearStaleImageEditState();
-    }, true);
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key !== 'Enter' || event.shiftKey) return;
-        if (event.target?.id !== 'messageInput') return;
-        clearStaleImageEditState();
-    }, true);
-})();
+// Yüklenen görselin aktif state'i ana input gönderilmeden önce korunur.
+// app.js, görsel + düzenleme komutu olduğunda /api/image/edit akışına yönlendirir.
+// State normal sohbet tamamlandığında app.js tarafından temizlenir.
