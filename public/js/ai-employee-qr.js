@@ -1,10 +1,10 @@
 (()=>{
-const $=id=>document.getElementById(id);let point=null,points=[],qrObject=null;
+const $=id=>document.getElementById(id);let point=null,points=[],qrObject=null;const PUBLIC_ORIGIN='https://www.thechatchip.com';
 const auth=()=>({Authorization:`Bearer ${token}`,'Content-Type':'application/json'});
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function agentSlug(){const a=typeof lastData!=='undefined'&&lastData?.agent||{};return a.public_slug||a.slug||a.share_slug||''}
 async function request(url,opt={}){const r=await fetch(url,{...opt,headers:{...auth(),...(opt.headers||{})}});let d={};try{d=await r.json()}catch{}if(!r.ok)throw Error(d.error||`İşlem başarısız (${r.status})`);return d}
-function link(p=point){const s=p?.slug||agentSlug();if(!s||!p?.serial)return'';return `${location.origin}/l/${encodeURIComponent(s)}?src=${encodeURIComponent(p.serial)}`}
+function link(p=point){const s=p?.slug||agentSlug();if(!s||!p?.serial)return'';return `${PUBLIC_ORIGIN}/l/${encodeURIComponent(s)}?src=${encodeURIComponent(p.serial)}`}
 function refresh(){if(!$('qrCode'))return;const u=link();$('qrSerial').textContent=point?.serial||'CC-——';$('qrCode').innerHTML='';qrObject=null;if(u&&window.QRCode)qrObject=new QRCode($('qrCode'),{text:u,width:250,height:250,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H})}
 async function makePoint(){const name=($('qrPointName')?.value||'').trim();if(!name)return Swal.fire('Nokta adı gerekli','Örn: Vitrin, Bekleme Salonu veya Masa 7','info');const b=$('qrCreate');b.disabled=true;b.textContent='Oluşturuluyor…';try{const d=await request(`${API}/agents/${encodeURIComponent(id)}/qr-points`,{method:'POST',body:JSON.stringify({point_name:name})});point=d;$('qrPointName').value='';refresh();await loadPoints();Swal.fire({icon:'success',title:'QR noktası oluşturuldu',text:`${d.point_name} · ${d.serial}`,timer:1400,showConfirmButton:false})}catch(e){Swal.fire('QR oluşturulamadı',e.message,'error')}finally{b.disabled=false;b.textContent='＋ Yeni QR Noktası Oluştur'}}
 function exportCanvas(){const c=document.createElement('canvas');c.width=1200;c.height=1380;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);const q=$('qrCode').querySelector('canvas')||$('qrCode').querySelector('img');if(q)x.drawImage(q,100,80,1000,1000);x.fillStyle='#111827';x.textAlign='center';x.font='700 54px Arial';x.fillText(point?.serial||'',600,1190);return c}
