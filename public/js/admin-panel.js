@@ -80,6 +80,7 @@ function renderAdmin(users) {
             <button onclick="switchTab('users')" id="tabUsers" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:#3b82f6;color:#fff;font-weight:600;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};">👥</button>
             <button onclick="switchTab('requests')" id="tabRequests" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};">📋</button>
             <button onclick="switchTab('reports')" id="tabReports" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};">📊</button>
+            <button onclick="switchTab('business')" id="tabBusiness" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};" title="AI İşletmeler">🤖</button>
         </div>
 
         <!-- 🔥 ARA INPUT - TABLO DIŞINDA (SABİT) -->
@@ -97,6 +98,7 @@ function renderAdmin(users) {
         <div id="panelUsers">${renderUserTable()}</div>
         <div id="panelRequests" style="display:none;">📋 Bekleyen istekler yükleniyor...</div>
         <div id="panelReports" style="display:none;">📊 Raporlar yükleniyor...</div>
+        <div id="panelBusiness" style="display:none;">🤖 İşletme verileri yükleniyor...</div>
     `;
 
     content.innerHTML = html;
@@ -258,8 +260,8 @@ function goToPage(page) {
 // ============================================================
 
 function switchTab(tab) {
-    document.querySelectorAll('#panelUsers, #panelRequests, #panelReports').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('#tabUsers, #tabRequests, #tabReports').forEach(el => {
+    document.querySelectorAll('#panelUsers, #panelRequests, #panelReports, #panelBusiness').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('#tabUsers, #tabRequests, #tabReports, #tabBusiness').forEach(el => {
         el.style.background = 'transparent';
         el.style.color = '#6b7280';
     });
@@ -278,6 +280,11 @@ function switchTab(tab) {
         document.getElementById('tabReports').style.background = '#3b82f6';
         document.getElementById('tabReports').style.color = '#fff';
         loadReports();
+    } else if (tab === 'business') {
+        document.getElementById('panelBusiness').style.display = 'block';
+        document.getElementById('tabBusiness').style.background = '#3b82f6';
+        document.getElementById('tabBusiness').style.color = '#fff';
+        loadBusinessOverview();
     }
 }
 
@@ -927,3 +934,83 @@ window.addEventListener('resize', function() {
         document.getElementById('panelUsers').innerHTML = renderUserTable();
     }
 });
+
+
+// ============================================================
+// 🤖 AI İŞLETMELER / KOTA OPERASYON PANELİ
+// ============================================================
+async function loadBusinessOverview() {
+    const container = document.getElementById('panelBusiness');
+    container.innerHTML = '<div style="text-align:center;padding:30px;">⏳ İşletmeler yükleniyor...</div>';
+
+    try {
+        const token = localStorage.getItem('chatchip_token');
+        const res = await fetch('https://chatchip-production.up.railway.app/api/admin/business-overview', {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'İşletme verileri alınamadı');
+
+        const s = data.summary || {};
+        const customers = data.customers || [];
+        const mobile = isMobile();
+
+        const cards = [
+            ['👥 Müşteri', s.total_customers || 0],
+            ['🟢 Aktif', s.active_subscriptions || 0],
+            ['🤖 AI Çalışanı', s.total_agents || 0],
+            ['▦ QR', s.total_qr || 0],
+            ['💬 Bu Ay', s.monthly_messages || 0],
+            ['⚠️ Kota %80+', s.quota_warning_80 || 0],
+            ['⛔ Kota Bitti', s.quota_exhausted || 0]
+        ].map(([label,value]) => `
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px;text-align:center;">
+                <div style="font-size:${mobile?'16px':'22px'};font-weight:700;">${value}</div>
+                <div style="font-size:${mobile?'9px':'11px'};color:#6b7280;margin-top:3px;">${label}</div>
+            </div>`).join('');
+
+        let rows = customers.map(c => {
+            const pct = Number(c.monthly_percent || 0);
+            const status = c.subscription_active ? '🟢 Aktif' : '⚪ Pasif';
+            const last = c.last_activity_at ? new Date(c.last_activity_at).toLocaleString('tr-TR') : '-';
+            const expires = c.plan_expires_at ? new Date(c.plan_expires_at).toLocaleDateString('tr-TR') : '-';
+            return `
+              <tr style="border-bottom:1px solid #f3f4f6;">
+                <td style="padding:8px 10px;"><strong>${c.name || '-'}</strong><br><span style="font-size:10px;color:#6b7280;">${c.email || ''}</span></td>
+                <td style="padding:8px 10px;">${c.plan_type || 'free'}<br><span style="font-size:10px;color:#6b7280;">${expires}</span></td>
+                <td style="padding:8px 10px;">${status}</td>
+                <td style="padding:8px 10px;min-width:160px;">
+                    <div style="display:flex;justify-content:space-between;font-size:11px;"><span>${c.monthly_used || 0} / ${c.monthly_limit || 2000}</span><strong>${pct}%</strong></div>
+                    <div style="height:7px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:5px;"><div style="height:100%;width:${Math.min(100,pct)}%;background:${pct>=100?'#ef4444':pct>=80?'#f59e0b':'#10b981'};"></div></div>
+                    <div style="font-size:10px;color:#6b7280;margin-top:3px;">Kalan: ${c.monthly_remaining || 0}</div>
+                </td>
+                <td style="padding:8px 10px;text-align:center;">${c.agent_count || 0}</td>
+                <td style="padding:8px 10px;text-align:center;">${c.qr_count || 0}</td>
+                <td style="padding:8px 10px;text-align:center;">${c.conversation_count || 0}</td>
+                <td style="padding:8px 10px;text-align:center;">${c.purchase_intent_count || 0}</td>
+                <td style="padding:8px 10px;font-size:11px;white-space:nowrap;">${last}</td>
+              </tr>`;
+        }).join('');
+
+        if (!rows) rows = '<tr><td colspan="9" style="padding:25px;text-align:center;color:#6b7280;">Henüz müşteri verisi yok.</td></tr>';
+
+        container.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <div><strong>🤖 AI İşletme Operasyonları</strong><div style="font-size:11px;color:#6b7280;">Aylık paket kotası: ${data.limit || 2000} mesaj</div></div>
+                <button onclick="loadBusinessOverview()" style="padding:6px 12px;border:1px solid #d1d5db;background:#fff;border-radius:6px;cursor:pointer;">🔄</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:7px;margin-bottom:12px;">${cards}</div>
+            <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:${mobile?'10px':'12px'};min-width:1000px;">
+                <thead><tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
+                  <th style="padding:8px 10px;text-align:left;">Müşteri</th><th style="padding:8px 10px;">Plan</th><th style="padding:8px 10px;">Durum</th>
+                  <th style="padding:8px 10px;">Aylık Kota</th><th style="padding:8px 10px;">AI</th><th style="padding:8px 10px;">QR</th>
+                  <th style="padding:8px 10px;">Görüşme</th><th style="padding:8px 10px;">Satın Alma Niyeti</th><th style="padding:8px 10px;">Son Aktivite</th>
+                </tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>`;
+    } catch (e) {
+        container.innerHTML = '<div style="color:#ef4444;text-align:center;padding:30px;">❌ ' + e.message + '</div>';
+    }
+}
