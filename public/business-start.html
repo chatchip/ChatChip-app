@@ -217,17 +217,20 @@
       const agent = params.get('agent');
       const src = params.get('src');
 
-      const nextParams = new URLSearchParams();
-      nextParams.set('business_start', '1');
-      if (agent) nextParams.set('agent', agent);
-      if (src) nextParams.set('src', src);
+      // ChatChip'in kendi danışman AI çalışanı.
+      // Kaynak bilgilerini src olarak taşımıyoruz; aksi halde danışman ajanın QR istatistiklerine karışabilir.
+      const advisorParams = new URLSearchParams();
+      if (agent) advisorParams.set('origin_agent', agent);
+      if (src) advisorParams.set('origin_src', src);
 
-      const nextUrl = '/index.html?' + nextParams.toString();
-      document.getElementById('startButton').href = nextUrl;
-      document.getElementById('loginLink').href = nextUrl;
+      const advisorUrl = '/l/the-chatchip' + (advisorParams.toString() ? '?' + advisorParams.toString() : '');
+      document.getElementById('startButton').href = advisorUrl;
+
+      // Mevcut ChatChip kullanıcıları normal giriş ekranına gider.
+      document.getElementById('loginLink').href = '/index.html';
 
       // Attribution backend'i bağlanana kadar kaynak bilgisi yalnızca URL boyunca taşınır.
-      // Kullanıcıya teknik kaynak kodunu göstermiyoruz.
+      // origin_agent / origin_src public AI sayfasında QR metriği üretmez.
     })();
   </script>
 </body>
