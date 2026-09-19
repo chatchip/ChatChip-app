@@ -989,10 +989,11 @@ async function loadBusinessOverview() {
                 <td style="padding:8px 10px;text-align:center;">${c.conversation_count || 0}</td>
                 <td style="padding:8px 10px;text-align:center;">${c.purchase_intent_count || 0}</td>
                 <td style="padding:8px 10px;font-size:11px;white-space:nowrap;">${last}</td>
+                <td style="padding:8px 10px;text-align:center;"><button onclick="startSupportSession(${c.id})" style="padding:5px 9px;border:1px solid #3b82f6;background:#fff;color:#2563eb;border-radius:6px;cursor:pointer;font-size:11px;">🛠️ Destek</button></td>
               </tr>`;
         }).join('');
 
-        if (!rows) rows = '<tr><td colspan="9" style="padding:25px;text-align:center;color:#6b7280;">Henüz müşteri verisi yok.</td></tr>';
+        if (!rows) rows = '<tr><td colspan="10" style="padding:25px;text-align:center;color:#6b7280;">Henüz müşteri verisi yok.</td></tr>';
 
         container.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
@@ -1005,12 +1006,34 @@ async function loadBusinessOverview() {
                 <thead><tr style="background:#f9fafb;border-bottom:2px solid #e5e7eb;">
                   <th style="padding:8px 10px;text-align:left;">Müşteri</th><th style="padding:8px 10px;">Plan</th><th style="padding:8px 10px;">Durum</th>
                   <th style="padding:8px 10px;">Aylık Kota</th><th style="padding:8px 10px;">AI</th><th style="padding:8px 10px;">QR</th>
-                  <th style="padding:8px 10px;">Görüşme</th><th style="padding:8px 10px;">Satın Alma Niyeti</th><th style="padding:8px 10px;">Son Aktivite</th>
+                  <th style="padding:8px 10px;">Görüşme</th><th style="padding:8px 10px;">Satın Alma Niyeti</th><th style="padding:8px 10px;">Son Aktivite</th><th style="padding:8px 10px;">Destek</th>
                 </tr></thead>
                 <tbody>${rows}</tbody>
               </table>
             </div>`;
     } catch (e) {
         container.innerHTML = '<div style="color:#ef4444;text-align:center;padding:30px;">❌ ' + e.message + '</div>';
+    }
+}
+
+async function startSupportSession(userId) {
+    try {
+        const adminToken = localStorage.getItem('chatchip_token');
+        const adminUser = localStorage.getItem('chatchip_user');
+        const r = await fetch('https://chatchip-production.up.railway.app/api/admin/support-session/' + encodeURIComponent(userId), {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + adminToken }
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'Destek modu başlatılamadı');
+
+        sessionStorage.setItem('chatchip_support_admin_token', adminToken);
+        sessionStorage.setItem('chatchip_support_admin_user', adminUser || '');
+        sessionStorage.setItem('chatchip_support_customer', JSON.stringify(d.customer || {}));
+        localStorage.setItem('chatchip_token', d.token);
+        localStorage.setItem('chatchip_user', JSON.stringify(d.customer || {}));
+        window.location.href = '/ai-employees.html?support=1';
+    } catch (e) {
+        alert('Destek modu açılamadı: ' + e.message);
     }
 }
