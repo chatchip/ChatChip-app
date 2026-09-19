@@ -4,6 +4,12 @@ let usersData = [];
 let filteredUsers = [];
 let currentPage = 1;
 const PAGE_SIZE = 10;
+const ADMIN_LIST_PAGE_SIZE = 20;
+let businessPage = 1;
+let partnerPage = 1;
+let partnerAssignmentPage = 1;
+let businessCache = null;
+let partnerCache = null;
 
 // Mobil kontrolü
 function isMobile() {
@@ -944,6 +950,37 @@ window.addEventListener('resize', function() {
 });
 
 
+function adminListPager(id,page,total,onPrev,onNext){
+    const pages=Math.max(1,Math.ceil(total/ADMIN_LIST_PAGE_SIZE));
+    const safe=Math.min(Math.max(1,page),pages);
+    return '<div id="'+id+'" style="display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:10px">'+
+      '<button onclick="'+onPrev+'" '+(safe<=1?'disabled':'')+' style="padding:6px 9px;border:1px solid #d1d5db;background:#fff;border-radius:6px;cursor:pointer;'+(safe<=1?'opacity:.45;':'')+'">◀</button>'+
+      '<span style="font-size:11px;color:#64748b;font-weight:700">'+safe+' / '+pages+' · '+total+' kayıt</span>'+
+      '<button onclick="'+onNext+'" '+(safe>=pages?'disabled':'')+' style="padding:6px 9px;border:1px solid #d1d5db;background:#fff;border-radius:6px;cursor:pointer;'+(safe>=pages?'opacity:.45;':'')+'">▶</button>'+
+    '</div>';
+}
+
+function changeBusinessPage(delta){
+    if(!businessCache)return;
+    const pages=Math.max(1,Math.ceil((businessCache.customers||[]).length/ADMIN_LIST_PAGE_SIZE));
+    businessPage=Math.min(Math.max(1,businessPage+delta),pages);
+    renderBusinessOverviewFromCache();
+}
+
+function changePartnerPage(delta){
+    if(!partnerCache)return;
+    const pages=Math.max(1,Math.ceil((partnerCache.partners||[]).length/ADMIN_LIST_PAGE_SIZE));
+    partnerPage=Math.min(Math.max(1,partnerPage+delta),pages);
+    renderPartnersFromCache();
+}
+
+function changePartnerAssignmentPage(delta){
+    if(!partnerCache)return;
+    const pages=Math.max(1,Math.ceil((partnerCache.assignments||[]).length/ADMIN_LIST_PAGE_SIZE));
+    partnerAssignmentPage=Math.min(Math.max(1,partnerAssignmentPage+delta),pages);
+    renderPartnersFromCache();
+}
+
 // ============================================================
 // 🤖 AI İŞLETMELER / KOTA OPERASYON PANELİ
 // ============================================================
@@ -959,8 +996,23 @@ async function loadBusinessOverview() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'İşletme verileri alınamadı');
 
+        businessCache=data;
+        businessPage=1;
+        renderBusinessOverviewFromCache();
+        return;
+    } catch (e) {
+        container.innerHTML = '<div style="color:#ef4444;text-align:center;padding:30px;">❌ ' + e.message + '</div>';
+    }
+}
+
+function renderBusinessOverviewFromCache(){
+        const container = document.getElementById('panelBusiness');
+        const data=businessCache||{};
         const s = data.summary || {};
-        const customers = data.customers || [];
+        const allCustomers = data.customers || [];
+        const pages=Math.max(1,Math.ceil(allCustomers.length/ADMIN_LIST_PAGE_SIZE));
+        businessPage=Math.min(Math.max(1,businessPage),pages);
+        const customers=allCustomers.slice((businessPage-1)*ADMIN_LIST_PAGE_SIZE,businessPage*ADMIN_LIST_PAGE_SIZE);
         const mobile = isMobile();
 
         const cards = [
@@ -1019,10 +1071,8 @@ async function loadBusinessOverview() {
                 </tr></thead>
                 <tbody>${rows}</tbody>
               </table>
-            </div>`;
-    } catch (e) {
-        container.innerHTML = '<div style="color:#ef4444;text-align:center;padding:30px;">❌ ' + e.message + '</div>';
-    }
+            </div>
+            ${adminListPager('businessPager',businessPage,allCustomers.length,'changeBusinessPage(-1)','changeBusinessPage(1)')}`;
 }
 
 async function startSupportSession(userId) {
@@ -1067,8 +1117,24 @@ async function loadPartners(){
     c.innerHTML='<div style="text-align:center;padding:30px;">⏳ Partnerler yükleniyor...</div>';
     try{
         const [pd,ad]=await Promise.all([adminApi('/partners'),adminApi('/partner-assignments')]);
-        const partners=pd.partners||[], assignments=ad.assignments||[];
-        const rows=partners.map((p,rowIndex)=>`<tr style="border-bottom:1px solid #f3f4f6;background:${rowIndex%2===0?'#ffffff':'#f8fafc'};">
+        partnerCache={partners:pd.partners||[],assignments:ad.assignments||[]};
+        partnerPage=1;partnerAssignmentPage=1;
+        renderPartnersFromCache();
+        return;
+    }catch(e){c.innerHTML='<div style="color:#ef4444;text-align:center;padding:30px">❌ '+e.message+'</div>'}
+}
+
+function renderPartnersFromCache(){
+        const c=document.getElementById('panelPartners');
+        const allPartners=(partnerCache&&partnerCache.partners)||[];
+        const allAssignments=(partnerCache&&partnerCache.assignments)||[];
+        const partnerPages=Math.max(1,Math.ceil(allPartners.length/ADMIN_LIST_PAGE_SIZE));
+        const assignmentPages=Math.max(1,Math.ceil(allAssignments.length/ADMIN_LIST_PAGE_SIZE));
+        partnerPage=Math.min(Math.max(1,partnerPage),partnerPages);
+        partnerAssignmentPage=Math.min(Math.max(1,partnerAssignmentPage),assignmentPages);
+        const partners=allPartners.slice((partnerPage-1)*ADMIN_LIST_PAGE_SIZE,partnerPage*ADMIN_LIST_PAGE_SIZE);
+        const assignments=allAssignments.slice((partnerAssignmentPage-1)*ADMIN_LIST_PAGE_SIZE,partnerAssignmentPage*ADMIN_LIST_PAGE_SIZE);
+        const rows=partners.map((p,rowIndex)=>`<tr style="border-bottom:1px solid #f3f4f6;">
             <td style="padding:8px"><strong>${p.name}</strong><br><small>${p.email||''} ${p.phone||''}</small></td>
             <td style="padding:8px"><code>${p.partner_code}</code></td>
             <td style="padding:8px;text-align:center">${p.status==='active'?'🟢 Aktif':'⚪ Pasif'}</td>
@@ -1076,15 +1142,17 @@ async function loadPartners(){
             <td style="padding:8px;text-align:center">${p.active_customer_count||0}</td>
             <td style="padding:8px;text-align:center">% ${Number(p.commission_rate||0).toFixed(1)}</td>
             <td style="padding:8px;text-align:center"><button onclick="assignPartnerPanelAccount(${p.id})" style="padding:4px 7px;border:1px solid #3b82f6;background:white;color:#2563eb;border-radius:5px;cursor:pointer">${p.user_id?'Panel Hesabını Değiştir':'Panel Hesabı Ata'}</button></td>
-        </tr>`).join('')||'<tr><td colspan="6" style="padding:25px;text-align:center;color:#6b7280">Henüz partner yok.</td></tr>';
-        const ar=assignments.map((a,rowIndex)=>`<tr style="border-bottom:1px solid #f3f4f6;background:${rowIndex%2===0?'#ffffff':'#f8fafc'};"><td style="padding:7px">${a.customer_name||'-'}<br><small>${a.customer_email||''}</small></td><td style="padding:7px">${a.partner_name} <code>${a.partner_code}</code></td><td style="padding:7px;text-align:center"><button onclick="removePartnerAssignment(${a.user_id})" style="border:1px solid #ef4444;background:white;color:#ef4444;border-radius:5px;padding:4px 7px;cursor:pointer">Kaldır</button></td></tr>`).join('')||'<tr><td colspan="3" style="padding:20px;text-align:center;color:#6b7280">Henüz işletme ataması yok.</td></tr>';
+        </tr>`).join('')||'<tr><td colspan="7" style="padding:25px;text-align:center;color:#6b7280">Henüz partner yok.</td></tr>';
+        const ar=assignments.map((a,rowIndex)=>`<tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:7px">${a.customer_name||'-'}<br><small>${a.customer_email||''}</small></td><td style="padding:7px">${a.partner_name} <code>${a.partner_code}</code></td><td style="padding:7px;text-align:center"><button onclick="removePartnerAssignment(${a.user_id})" style="border:1px solid #ef4444;background:white;color:#ef4444;border-radius:5px;padding:4px 7px;cursor:pointer">Kaldır</button></td></tr>`).join('')||'<tr><td colspan="3" style="padding:20px;text-align:center;color:#6b7280">Henüz işletme ataması yok.</td></tr>';
         c.innerHTML=`
           <div style="display:flex;justify-content:space-between;align-items:${isMobile()?'flex-start':'center'};gap:8px;margin-bottom:12px;flex-wrap:wrap"><div style="min-width:0"><strong>🤝 Partner / Bayi Yönetimi</strong><div style="font-size:11px;color:#6b7280">MLM sisteminden bağımsız satış ve attribution altyapısı.</div></div><button onclick="openPartnerCreate()" style="padding:7px 12px;background:#3b82f6;color:white;border:0;border-radius:6px;cursor:pointer;white-space:nowrap">➕ Partner</button></div>
-          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;max-width:100%;width:100%;margin-bottom:14px;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:${isMobile()?'560px':'650px'};margin:0"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">Partner</th><th>Kod</th><th>Durum</th><th>Müşteri</th><th>Aktif</th><th>Komisyon</th><th>Panel</th></tr></thead><tbody>${rows}</tbody></table></div>
-          <div style="display:flex;justify-content:space-between;align-items:${isMobile()?'flex-start':'center'};gap:8px;flex-wrap:wrap;margin-bottom:7px"><strong>🏢 İşletme → Partner Bağlantısı</strong><button onclick="openPartnerAssign()" style="padding:6px 10px;border:1px solid #3b82f6;background:white;color:#2563eb;border-radius:6px;cursor:pointer;white-space:nowrap">🔗 İşletme Ata</button></div>
-          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;max-width:100%;width:100%;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:${isMobile()?'440px':'550px'};margin:0"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">İşletme</th><th>Partner</th><th>İşlem</th></tr></thead><tbody>${ar}</tbody></table></div>`;
-    }catch(e){c.innerHTML='<div style="color:#ef4444;text-align:center;padding:30px">❌ '+e.message+'</div>'}
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;max-width:100%;width:100%;margin-bottom:6px;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:${isMobile()?'560px':'650px'};margin:0"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">Partner</th><th>Kod</th><th>Durum</th><th>Müşteri</th><th>Aktif</th><th>Komisyon</th><th>Panel</th></tr></thead><tbody>${rows}</tbody></table></div>
+          ${adminListPager('partnerPager',partnerPage,allPartners.length,'changePartnerPage(-1)','changePartnerPage(1)')}
+          <div style="display:flex;justify-content:space-between;align-items:${isMobile()?'flex-start':'center'};gap:8px;flex-wrap:wrap;margin:16px 0 7px"><strong>🏢 İşletme → Partner Bağlantısı</strong><button onclick="openPartnerAssign()" style="padding:6px 10px;border:1px solid #3b82f6;background:white;color:#2563eb;border-radius:6px;cursor:pointer;white-space:nowrap">🔗 İşletme Ata</button></div>
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;max-width:100%;width:100%;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:${isMobile()?'440px':'550px'};margin:0"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">İşletme</th><th>Partner</th><th>İşlem</th></tr></thead><tbody>${ar}</tbody></table></div>
+          ${adminListPager('partnerAssignmentPager',partnerAssignmentPage,allAssignments.length,'changePartnerAssignmentPage(-1)','changePartnerAssignmentPage(1)')}`;
 }
+
 
 function openPartnerCreate(){
     const name=prompt('Partner / danışman adı:'); if(!name)return;
