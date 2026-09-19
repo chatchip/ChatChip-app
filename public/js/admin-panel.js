@@ -1143,10 +1143,38 @@ async function removePartnerAssignment(userId){
 
 async function assignPartnerPanelAccount(partnerId){
  try{
-  const bd=await adminApi('/business-overview'), customers=bd.customers||[];
-  const userId=prompt('Bayi paneline giriş yapacak ChatChip hesabının ID’si:\n'+customers.slice(0,40).map(x=>x.id+' - '+x.name+' ('+x.email+')').join('\n'));
-  if(!userId)return;
-  await adminApi('/partners/'+encodeURIComponent(partnerId)+'/account',{method:'PUT',body:JSON.stringify({user_id:Number(userId)})});
-  alert('✅ Bayilik yetkisi merkez tarafından hesaba atandı.'); loadPartners();
+  const users=usersData||[];
+  if(!users.length)return alert('Kullanıcı listesi bulunamadı.');
+  document.getElementById('partnerAccountModal')?.remove();
+  const options=users.map(u=>`<option value="${u.id}">${escapePartnerHtml(u.name||'İsimsiz')} — ${escapePartnerHtml(u.email||'')}</option>`).join('');
+  document.body.insertAdjacentHTML('beforeend',`
+   <div id="partnerAccountModal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px">
+    <div style="background:white;width:500px;max-width:100%;border-radius:12px;padding:20px">
+     <h3 style="margin:0 0 8px">👤 Bayi Panel Hesabı Ata</h3>
+     <div style="font-size:12px;color:#6b7280;margin-bottom:12px">Kullanıcıyı adı veya e-postasıyla ara ve seç. Bayilik yetkisini yalnızca merkez atar.</div>
+     <input id="partnerAccountSearch" type="text" placeholder="🔍 Kullanıcı ara..." oninput="filterPartnerAccountUsers()" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:7px;margin-bottom:8px">
+     <select id="partnerAccountUser" size="8" style="width:100%;padding:8px;border:1px solid #d1d5db;border-radius:7px;margin-bottom:14px">${options}</select>
+     <div style="display:flex;gap:8px">
+      <button onclick="savePartnerPanelAccount(${partnerId})" style="flex:1;padding:10px;background:#3b82f6;color:white;border:0;border-radius:7px;cursor:pointer;font-weight:700">Hesabı Ata</button>
+      <button onclick="document.getElementById('partnerAccountModal')?.remove()" style="flex:1;padding:10px;background:#f3f4f6;border:0;border-radius:7px;cursor:pointer">İptal</button>
+     </div>
+    </div>
+   </div>`);
+  document.getElementById('partnerAccountSearch')?.focus();
+ }catch(e){alert('❌ '+e.message)}
+}
+function filterPartnerAccountUsers(){
+ const q=(document.getElementById('partnerAccountSearch')?.value||'').toLowerCase().trim();
+ const sel=document.getElementById('partnerAccountUser'); if(!sel)return;
+ sel.innerHTML=(usersData||[]).filter(u=>!q||(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q)).map(u=>`<option value="${u.id}">${escapePartnerHtml(u.name||'İsimsiz')} — ${escapePartnerHtml(u.email||'')}</option>`).join('');
+}
+async function savePartnerPanelAccount(partnerId){
+ const userId=Number(document.getElementById('partnerAccountUser')?.value);
+ if(!userId)return alert('Bir kullanıcı seçin.');
+ try{
+  await adminApi('/partners/'+encodeURIComponent(partnerId)+'/account',{method:'PUT',body:JSON.stringify({user_id:userId})});
+  document.getElementById('partnerAccountModal')?.remove();
+  alert('✅ Bayilik panel hesabı merkez tarafından atandı.');
+  loadPartners();
  }catch(e){alert('❌ '+e.message)}
 }
