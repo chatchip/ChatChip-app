@@ -81,6 +81,7 @@ function renderAdmin(users) {
             <button onclick="switchTab('requests')" id="tabRequests" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};">📋</button>
             <button onclick="switchTab('reports')" id="tabReports" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};">📊</button>
             <button onclick="switchTab('business')" id="tabBusiness" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};" title="AI İşletmeler">🤖</button>
+            <button onclick="switchTab('partners')" id="tabPartners" style="flex:1;padding:${isMobile() ? '6px 8px' : '8px 16px'};border:none;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-size:${isMobile() ? '11px' : '13px'};" title="Partner / Bayi">🤝</button>
         </div>
 
         <!-- 🔥 ARA INPUT - TABLO DIŞINDA (SABİT) -->
@@ -99,6 +100,7 @@ function renderAdmin(users) {
         <div id="panelRequests" style="display:none;">📋 Bekleyen istekler yükleniyor...</div>
         <div id="panelReports" style="display:none;">📊 Raporlar yükleniyor...</div>
         <div id="panelBusiness" style="display:none;">🤖 İşletme verileri yükleniyor...</div>
+        <div id="panelPartners" style="display:none;">🤝 Partner verileri yükleniyor...</div>
     `;
 
     content.innerHTML = html;
@@ -260,8 +262,8 @@ function goToPage(page) {
 // ============================================================
 
 function switchTab(tab) {
-    document.querySelectorAll('#panelUsers, #panelRequests, #panelReports, #panelBusiness').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('#tabUsers, #tabRequests, #tabReports, #tabBusiness').forEach(el => {
+    document.querySelectorAll('#panelUsers, #panelRequests, #panelReports, #panelBusiness, #panelPartners').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('#tabUsers, #tabRequests, #tabReports, #tabBusiness, #tabPartners').forEach(el => {
         el.style.background = 'transparent';
         el.style.color = '#6b7280';
     });
@@ -285,6 +287,11 @@ function switchTab(tab) {
         document.getElementById('tabBusiness').style.background = '#3b82f6';
         document.getElementById('tabBusiness').style.color = '#fff';
         loadBusinessOverview();
+    } else if (tab === 'partners') {
+        document.getElementById('panelPartners').style.display = 'block';
+        document.getElementById('tabPartners').style.background = '#3b82f6';
+        document.getElementById('tabPartners').style.color = '#fff';
+        loadPartners();
     }
 }
 
@@ -1036,4 +1043,69 @@ async function startSupportSession(userId) {
     } catch (e) {
         alert('Destek modu açılamadı: ' + e.message);
     }
+}
+
+
+// ============================================================
+// 🤝 PARTNER / BAYİ YÖNETİMİ — MLM'DEN BAĞIMSIZ
+// ============================================================
+async function adminApi(path, options={}) {
+    const token=localStorage.getItem('chatchip_token');
+    const r=await fetch('https://chatchip-production.up.railway.app/api/admin'+path,{
+        ...options,
+        headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json',...(options.headers||{})}
+    });
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||'İşlem başarısız');
+    return d;
+}
+
+async function loadPartners(){
+    const c=document.getElementById('panelPartners');
+    c.innerHTML='<div style="text-align:center;padding:30px;">⏳ Partnerler yükleniyor...</div>';
+    try{
+        const [pd,ad]=await Promise.all([adminApi('/partners'),adminApi('/partner-assignments')]);
+        const partners=pd.partners||[], assignments=ad.assignments||[];
+        const rows=partners.map(p=>`<tr style="border-bottom:1px solid #f3f4f6;">
+            <td style="padding:8px"><strong>${p.name}</strong><br><small>${p.email||''} ${p.phone||''}</small></td>
+            <td style="padding:8px"><code>${p.partner_code}</code></td>
+            <td style="padding:8px;text-align:center">${p.status==='active'?'🟢 Aktif':'⚪ Pasif'}</td>
+            <td style="padding:8px;text-align:center">${p.customer_count||0}</td>
+            <td style="padding:8px;text-align:center">${p.active_customer_count||0}</td>
+            <td style="padding:8px;text-align:center">% ${Number(p.commission_rate||0).toFixed(1)}</td>
+        </tr>`).join('')||'<tr><td colspan="6" style="padding:25px;text-align:center;color:#6b7280">Henüz partner yok.</td></tr>';
+        const ar=assignments.map(a=>`<tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:7px">${a.customer_name||'-'}<br><small>${a.customer_email||''}</small></td><td style="padding:7px">${a.partner_name} <code>${a.partner_code}</code></td><td style="padding:7px;text-align:center"><button onclick="removePartnerAssignment(${a.user_id})" style="border:1px solid #ef4444;background:white;color:#ef4444;border-radius:5px;padding:4px 7px;cursor:pointer">Kaldır</button></td></tr>`).join('')||'<tr><td colspan="3" style="padding:20px;text-align:center;color:#6b7280">Henüz işletme ataması yok.</td></tr>';
+        c.innerHTML=`
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><div><strong>🤝 Partner / Bayi Yönetimi</strong><div style="font-size:11px;color:#6b7280">MLM sisteminden bağımsız satış ve attribution altyapısı.</div></div><button onclick="openPartnerCreate()" style="padding:7px 12px;background:#3b82f6;color:white;border:0;border-radius:6px;cursor:pointer">➕ Partner</button></div>
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:650px"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">Partner</th><th>Kod</th><th>Durum</th><th>Müşteri</th><th>Aktif</th><th>Komisyon</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px"><strong>🏢 İşletme → Partner Bağlantısı</strong><button onclick="openPartnerAssign()" style="padding:6px 10px;border:1px solid #3b82f6;background:white;color:#2563eb;border-radius:6px;cursor:pointer">🔗 İşletme Ata</button></div>
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:550px"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">İşletme</th><th>Partner</th><th>İşlem</th></tr></thead><tbody>${ar}</tbody></table></div>`;
+    }catch(e){c.innerHTML='<div style="color:#ef4444;text-align:center;padding:30px">❌ '+e.message+'</div>'}
+}
+
+function openPartnerCreate(){
+    const name=prompt('Partner / danışman adı:'); if(!name)return;
+    const email=prompt('E-posta (opsiyonel):')||'';
+    const phone=prompt('Telefon (opsiyonel):')||'';
+    const rate=prompt('Devam komisyon oranı (%)','10'); if(rate===null)return;
+    adminApi('/partners',{method:'POST',body:JSON.stringify({name,email,phone,commission_rate:Number(rate)})}).then(d=>{alert('✅ Partner oluşturuldu. Kod: '+d.partner.partner_code);loadPartners()}).catch(e=>alert('❌ '+e.message));
+}
+
+async function openPartnerAssign(){
+    try{
+        const [pd,bd]=await Promise.all([adminApi('/partners'),adminApi('/business-overview')]);
+        const partners=(pd.partners||[]).filter(p=>p.status==='active');
+        const customers=bd.customers||[];
+        if(!partners.length)return alert('Önce aktif bir partner oluşturun.');
+        const userId=prompt('İşletme/Müşteri ID:\n'+customers.slice(0,30).map(x=>x.id+' - '+x.name+' ('+x.email+')').join('\n'));
+        if(!userId)return;
+        const partnerId=prompt('Partner ID:\n'+partners.map(x=>x.id+' - '+x.name+' ['+x.partner_code+']').join('\n'));
+        if(!partnerId)return;
+        await adminApi('/users/'+encodeURIComponent(userId)+'/partner',{method:'PUT',body:JSON.stringify({partner_id:Number(partnerId)})});
+        alert('✅ İşletme partnere bağlandı.'); loadPartners();
+    }catch(e){alert('❌ '+e.message)}
+}
+async function removePartnerAssignment(userId){
+    if(!confirm('Bu işletmenin partner bağlantısı kaldırılsın mı?'))return;
+    try{await adminApi('/users/'+encodeURIComponent(userId)+'/partner',{method:'DELETE'});loadPartners()}catch(e){alert('❌ '+e.message)}
 }
