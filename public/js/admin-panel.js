@@ -145,9 +145,10 @@ function renderUserTable() {
             </tr>
         `;
     } else {
-        pageUsers.forEach(u => {
+        pageUsers.forEach((u,rowIndex) => {
+            const rowBg = rowIndex % 2 === 0 ? '#ffffff' : '#f8fafc';
             html += `
-                <tr style="border-bottom:1px solid #f3f4f6;">
+                <tr style="border-bottom:1px solid #f3f4f6;background:${rowBg};">
                     <td style="padding:${mobile ? '4px 4px' : '8px 10px'};">${u.id}</td>
                     <td style="padding:${mobile ? '4px 4px' : '8px 10px'};${mobile ? 'max-width:40px;overflow:hidden;text-overflow:ellipsis;' : ''}">${u.name}</td>
                     ${!mobile ? `<td style="padding:8px 10px;">${u.email}</td>` : ''}
@@ -332,7 +333,7 @@ async function loadRequests() {
         `;
         data.forEach(r => {
             html += `
-                <tr style="border-bottom:1px solid #f3f4f6;">
+                <tr style="border-bottom:1px solid #f3f4f6;background:${rowBg};">
                     <td style="padding:${mobile ? '4px 4px' : '8px 10px'};">${r.id}</td>
                     <td style="padding:${mobile ? '4px 4px' : '8px 10px'};">${r.user_name || 'Bilinmiyor'}</td>
                     <td style="padding:${mobile ? '4px 4px' : '8px 10px'};">${r.plan_name}</td>
@@ -976,7 +977,8 @@ async function loadBusinessOverview() {
                 <div style="font-size:${mobile?'9px':'11px'};color:#6b7280;margin-top:3px;">${label}</div>
             </div>`).join('');
 
-        let rows = customers.map(c => {
+        let rows = customers.map((c,rowIndex) => {
+            const rowBg = rowIndex % 2 === 0 ? '#ffffff' : '#f8fafc';
             const pct = Number(c.monthly_percent || 0);
             const status = c.subscription_active ? '🟢 Aktif' : '⚪ Pasif';
             const last = c.last_activity_at ? new Date(c.last_activity_at).toLocaleString('tr-TR') : '-';
@@ -1066,7 +1068,7 @@ async function loadPartners(){
     try{
         const [pd,ad]=await Promise.all([adminApi('/partners'),adminApi('/partner-assignments')]);
         const partners=pd.partners||[], assignments=ad.assignments||[];
-        const rows=partners.map(p=>`<tr style="border-bottom:1px solid #f3f4f6;">
+        const rows=partners.map((p,rowIndex)=>`<tr style="border-bottom:1px solid #f3f4f6;background:${rowIndex%2===0?'#ffffff':'#f8fafc'};">
             <td style="padding:8px"><strong>${p.name}</strong><br><small>${p.email||''} ${p.phone||''}</small></td>
             <td style="padding:8px"><code>${p.partner_code}</code></td>
             <td style="padding:8px;text-align:center">${p.status==='active'?'🟢 Aktif':'⚪ Pasif'}</td>
@@ -1075,7 +1077,7 @@ async function loadPartners(){
             <td style="padding:8px;text-align:center">% ${Number(p.commission_rate||0).toFixed(1)}</td>
             <td style="padding:8px;text-align:center"><button onclick="assignPartnerPanelAccount(${p.id})" style="padding:4px 7px;border:1px solid #3b82f6;background:white;color:#2563eb;border-radius:5px;cursor:pointer">${p.user_id?'Panel Hesabını Değiştir':'Panel Hesabı Ata'}</button></td>
         </tr>`).join('')||'<tr><td colspan="6" style="padding:25px;text-align:center;color:#6b7280">Henüz partner yok.</td></tr>';
-        const ar=assignments.map(a=>`<tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:7px">${a.customer_name||'-'}<br><small>${a.customer_email||''}</small></td><td style="padding:7px">${a.partner_name} <code>${a.partner_code}</code></td><td style="padding:7px;text-align:center"><button onclick="removePartnerAssignment(${a.user_id})" style="border:1px solid #ef4444;background:white;color:#ef4444;border-radius:5px;padding:4px 7px;cursor:pointer">Kaldır</button></td></tr>`).join('')||'<tr><td colspan="3" style="padding:20px;text-align:center;color:#6b7280">Henüz işletme ataması yok.</td></tr>';
+        const ar=assignments.map((a,rowIndex)=>`<tr style="border-bottom:1px solid #f3f4f6;background:${rowIndex%2===0?'#ffffff':'#f8fafc'};"><td style="padding:7px">${a.customer_name||'-'}<br><small>${a.customer_email||''}</small></td><td style="padding:7px">${a.partner_name} <code>${a.partner_code}</code></td><td style="padding:7px;text-align:center"><button onclick="removePartnerAssignment(${a.user_id})" style="border:1px solid #ef4444;background:white;color:#ef4444;border-radius:5px;padding:4px 7px;cursor:pointer">Kaldır</button></td></tr>`).join('')||'<tr><td colspan="3" style="padding:20px;text-align:center;color:#6b7280">Henüz işletme ataması yok.</td></tr>';
         c.innerHTML=`
           <div style="display:flex;justify-content:space-between;align-items:${isMobile()?'flex-start':'center'};gap:8px;margin-bottom:12px;flex-wrap:wrap"><div style="min-width:0"><strong>🤝 Partner / Bayi Yönetimi</strong><div style="font-size:11px;color:#6b7280">MLM sisteminden bağımsız satış ve attribution altyapısı.</div></div><button onclick="openPartnerCreate()" style="padding:7px 12px;background:#3b82f6;color:white;border:0;border-radius:6px;cursor:pointer;white-space:nowrap">➕ Partner</button></div>
           <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;max-width:100%;width:100%;margin-bottom:14px;-webkit-overflow-scrolling:touch"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:${isMobile()?'560px':'650px'};margin:0"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">Partner</th><th>Kod</th><th>Durum</th><th>Müşteri</th><th>Aktif</th><th>Komisyon</th><th>Panel</th></tr></thead><tbody>${rows}</tbody></table></div>
