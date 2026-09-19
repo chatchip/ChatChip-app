@@ -278,3 +278,12 @@ td {
         overflow-x: auto !important;
     }
 }
+
+
+/* Satır takibini kolaylaştıran hafif zebra görünümü */
+.admin-content tbody tr:nth-child(odd) td {
+    background: #ffffff;
+}
+.admin-content tbody tr:nth-child(even) td {
+    background: #f7f9fb;
+}
