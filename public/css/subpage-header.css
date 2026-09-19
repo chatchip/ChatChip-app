@@ -1,0 +1,103 @@
+/* ChatChip shared subpage header */
+body.cc-subpage{
+  display:block;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+.cc-subpage .app{
+  width:100%;
+  max-width:1200px;
+  min-height:100dvh;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
+}
+.cc-subpage .header{
+  width:100%;
+  min-height:62px;
+  padding:9px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-shrink:0;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid #dceae7;
+}
+.cc-subpage .header .logo{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+  color:#2D4A44;
+  font-weight:800;
+  white-space:nowrap;
+}
+.cc-subpage .header .logo img{width:32px;height:32px;flex:0 0 auto}
+.cc-subpage .header .logo > span:first-of-type{font-size:18px}
+.cc-subpage .subpage-name{
+  display:inline-flex;
+  align-items:center;
+  min-height:26px;
+  padding:4px 9px;
+  border-radius:999px;
+  background:#eefaf7;
+  color:#487069;
+  font-size:11px!important;
+  font-weight:800;
+}
+.cc-subpage .header-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  flex-wrap:nowrap;
+}
+.cc-subpage .header-actions .nav-btn,
+.cc-subpage .header-actions .btn-profile{
+  height:36px;
+  min-width:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  border:1px solid #e2e8e6;
+  border-radius:10px;
+  background:#fff;
+  color:#2D4A44;
+  padding:0 10px;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:750;
+  line-height:1;
+  cursor:pointer;
+  transition:.16s ease;
+}
+.cc-subpage .header-actions .nav-btn:hover,
+.cc-subpage .header-actions .btn-profile:hover{
+  background:#f3fbf9;
+  border-color:#b9ded8;
+}
+@media(max-width:600px){
+  .cc-subpage .header{min-height:58px;padding:8px 12px}
+  .cc-subpage .header .logo{gap:7px}
+  .cc-subpage .header .logo > span:first-of-type{font-size:16px}
+  .cc-subpage .subpage-name{font-size:10px!important;padding:4px 7px}
+  .cc-subpage .header-actions{gap:4px}
+  .cc-subpage .header-actions .nav-btn{
+    width:36px;
+    min-width:36px;
+    padding:0;
+    font-size:0;
+  }
+  .cc-subpage .header-actions .nav-btn[data-nav="backoffice"]::before{content:"←";font-size:18px}
+  .cc-subpage .header-actions .nav-btn[data-nav="chat"]::before{content:"💬";font-size:17px}
+  .cc-subpage .header-actions .nav-btn[data-nav="wallet"]::before{content:"💰";font-size:17px}
+  .cc-subpage .header-actions .nav-btn[data-nav="partner"]::before{content:"🤝";font-size:17px}
+  .cc-subpage .header-actions .btn-profile{width:36px;min-width:36px;padding:0}
+}
+@media(max-width:390px){
+  .cc-subpage .subpage-name{display:none}
+}
