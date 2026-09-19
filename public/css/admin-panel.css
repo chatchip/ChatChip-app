@@ -287,3 +287,89 @@ td {
 .admin-content tbody tr:nth-child(even) td {
     background: #f7f9fb;
 }
+
+
+/* ===== 2026 UI POLISH ===== */
+:root{
+    --cc-brand:#7BD3C9;
+    --cc-brand-deep:#2D4A44;
+    --cc-action:#3B82F6;
+    --cc-success:#10B981;
+    --cc-warning:#F59E0B;
+    --cc-danger:#EF4444;
+    --cc-surface:#FFFFFF;
+    --cc-soft:#F7FAF9;
+    --cc-line:#E5E7EB;
+}
+.app > .header{
+    min-height:64px;
+    padding:10px 16px;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid #DCEDEA;
+}
+.app > .header .logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:18px;
+    color:var(--cc-brand-deep);
+}
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-wrap:wrap;
+}
+.header-actions .nav-btn,
+.btn-profile{
+    min-height:36px;
+    border:1px solid var(--cc-line);
+    border-radius:10px;
+    background:#fff;
+    color:var(--cc-brand-deep);
+    padding:7px 10px;
+    text-decoration:none;
+    font-size:12px;
+    font-weight:750;
+    cursor:pointer;
+}
+.header-actions .nav-btn:hover,.btn-profile:hover{background:#F3FAF8;border-color:#CBEAE5}
+.admin-content{max-width:1180px;margin:0 auto}
+.admin-content button{transition:background .16s ease,border-color .16s ease,transform .16s ease}
+.admin-content button:active{transform:translateY(1px)}
+.admin-content input,.admin-content select,.admin-content textarea{font-family:inherit}
+.admin-content > div{min-width:0}
+#panelBusiness,#panelPartners,#panelUsers,#panelRequests,#panelReports{min-width:0}
+#panelBusiness table th:first-child,#panelBusiness table td:first-child,
+#panelPartners table th:first-child,#panelPartners table td:first-child{
+    position:sticky;
+    left:0;
+    z-index:3;
+    box-shadow:1px 0 0 #E8ECEF;
+}
+#panelBusiness table thead th:first-child,#panelPartners table thead th:first-child{
+    z-index:5;
+    background:#F8FAFC!important;
+}
+#panelBusiness tbody tr:nth-child(odd) td:first-child,
+#panelPartners tbody tr:nth-child(odd) td:first-child{background:#fff!important}
+#panelBusiness tbody tr:nth-child(even) td:first-child,
+#panelPartners tbody tr:nth-child(even) td:first-child{background:#f7f9fb!important}
+#panelBusiness table,#panelPartners table{font-size:12px!important}
+#panelBusiness th,#panelPartners th{font-weight:800;color:#334155}
+#panelBusiness td,#panelPartners td{vertical-align:middle}
+.admin-content strong{color:var(--cc-brand-deep)}
+@media(max-width:768px){
+    .app > .header{min-height:58px;padding:8px 12px}
+    .app > .header .logo span{font-size:16px}
+    .header-actions{gap:4px;justify-content:flex-end}
+    .header-actions .nav-btn{font-size:0;width:36px;height:36px;padding:0;display:grid;place-items:center}
+    .header-actions .nav-btn[href="/backoffice.html"]::before{content:"←";font-size:18px}
+    .header-actions .nav-btn[href="/index.html"]::before{content:"💬";font-size:17px}
+    .btn-profile{width:36px;height:36px;padding:0}
+    .admin-content{padding:12px!important}
+    #panelBusiness table,#panelPartners table{font-size:12px!important}
+    #panelBusiness td,#panelBusiness th,#panelPartners td,#panelPartners th{padding-top:10px!important;padding-bottom:10px!important}
+}
