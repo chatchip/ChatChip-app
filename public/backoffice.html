@@ -18,6 +18,7 @@
             <div class="header-actions">
                 <a href="/index.html" class="nav-btn">💬 Sohbet</a>
                 <a href="/cuzdan.html" class="nav-btn">💰 Cüzdan</a>
+                <a href="/partner-panel.html" class="nav-btn" id="partnerPanelBtn" style="display:none">🤝 Bayi Paneli</a>
                 <button class="btn-profile" id="profileBtn">👤</button>
             </div>
         </header>
@@ -56,6 +57,8 @@
             }
             
             console.log('✅ Giriş yapılmış, kullanıcı:', user.name);
+            fetch('https://chatchip-production.up.railway.app/api/partner/me',{headers:{'Authorization':'Bearer '+token}})
+              .then(r=>r.ok?r.json():null).then(d=>{if(d?.is_partner){const x=document.getElementById('partnerPanelBtn');if(x)x.style.display='inline-flex';}}).catch(()=>{});
             console.log('🆔 Kullanıcı ID:', user.id);
             
             // Profile butonunu güncelle
