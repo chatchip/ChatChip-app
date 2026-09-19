@@ -7,17 +7,18 @@
     <meta name="theme-color" content="#7BD3C9">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/pricing.css">
+    <link rel="stylesheet" href="/css/subpage-header.css">
 </head>
-<body>
+<body class="cc-subpage">
     <div class="app">
         <header class="header">
             <div class="logo">
                 <img src="/assets/logo.svg" alt="ChatChip" width="32" height="32">
-                <span>ChatChip</span>
+                <span>ChatChip</span><span class="subpage-name">Planlar</span>
             </div>
             <div class="header-actions">
-                <a href="/backoffice.html" class="nav-btn">← Backoffice</a>
-                <a href="/index.html" class="nav-btn">💬 Sohbet</a>
+                <a href="/backoffice.html" class="nav-btn" data-nav="backoffice" title="Backoffice">← Backoffice</a>
+                <a href="/index.html" class="nav-btn" data-nav="chat" title="Sohbet">💬 Sohbet</a>
                 <button class="btn-profile" id="profileBtn">👤</button>
             </div>
         </header>
