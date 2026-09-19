@@ -1097,14 +1097,44 @@ async function openPartnerAssign(){
         const partners=(pd.partners||[]).filter(p=>p.status==='active');
         const customers=bd.customers||[];
         if(!partners.length)return alert('Önce aktif bir partner oluşturun.');
-        const userId=prompt('İşletme/Müşteri ID:\n'+customers.slice(0,30).map(x=>x.id+' - '+x.name+' ('+x.email+')').join('\n'));
-        if(!userId)return;
-        const partnerId=prompt('Partner ID:\n'+partners.map(x=>x.id+' - '+x.name+' ['+x.partner_code+']').join('\n'));
-        if(!partnerId)return;
-        await adminApi('/users/'+encodeURIComponent(userId)+'/partner',{method:'PUT',body:JSON.stringify({partner_id:Number(partnerId)})});
-        alert('✅ İşletme partnere bağlandı.'); loadPartners();
+        if(!customers.length)return alert('Bağlanabilecek işletme bulunamadı.');
+
+        document.getElementById('partnerAssignModal')?.remove();
+        const customerOptions=customers.map(x=>`<option value="${x.id}">${escapePartnerHtml(x.name||'İsimsiz')} — ${escapePartnerHtml(x.email||'')}</option>`).join('');
+        const partnerOptions=partners.map(x=>`<option value="${x.id}">${escapePartnerHtml(x.name)} — ${escapePartnerHtml(x.partner_code)}</option>`).join('');
+        document.body.insertAdjacentHTML('beforeend',`
+          <div id="partnerAssignModal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px">
+            <div style="background:white;width:460px;max-width:100%;border-radius:12px;padding:20px">
+              <h3 style="margin:0 0 16px">🔗 İşletmeyi Partnere Bağla</h3>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:5px">İşletme</label>
+              <select id="partnerAssignCustomer" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:7px;margin-bottom:14px">${customerOptions}</select>
+              <label style="display:block;font-size:12px;font-weight:700;margin-bottom:5px">Partner / Danışman</label>
+              <select id="partnerAssignPartner" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:7px;margin-bottom:18px">${partnerOptions}</select>
+              <div style="display:flex;gap:8px">
+                <button onclick="savePartnerAssignment()" style="flex:1;padding:10px;background:#3b82f6;color:white;border:0;border-radius:7px;cursor:pointer;font-weight:700">Bağla</button>
+                <button onclick="document.getElementById('partnerAssignModal')?.remove()" style="flex:1;padding:10px;background:#f3f4f6;border:0;border-radius:7px;cursor:pointer">İptal</button>
+              </div>
+            </div>
+          </div>`);
     }catch(e){alert('❌ '+e.message)}
 }
+
+function escapePartnerHtml(v){
+    return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+async function savePartnerAssignment(){
+    const userId=Number(document.getElementById('partnerAssignCustomer')?.value);
+    const partnerId=Number(document.getElementById('partnerAssignPartner')?.value);
+    if(!userId||!partnerId)return alert('İşletme ve partner seçin.');
+    try{
+        await adminApi('/users/'+encodeURIComponent(userId)+'/partner',{method:'PUT',body:JSON.stringify({partner_id:partnerId})});
+        document.getElementById('partnerAssignModal')?.remove();
+        alert('✅ İşletme partnere bağlandı.');
+        loadPartners();
+    }catch(e){alert('❌ '+e.message)}
+}
+
 async function removePartnerAssignment(userId){
     if(!confirm('Bu işletmenin partner bağlantısı kaldırılsın mı?'))return;
     try{await adminApi('/users/'+encodeURIComponent(userId)+'/partner',{method:'DELETE'});loadPartners()}catch(e){alert('❌ '+e.message)}
