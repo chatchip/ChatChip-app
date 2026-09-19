@@ -1073,11 +1073,12 @@ async function loadPartners(){
             <td style="padding:8px;text-align:center">${p.customer_count||0}</td>
             <td style="padding:8px;text-align:center">${p.active_customer_count||0}</td>
             <td style="padding:8px;text-align:center">% ${Number(p.commission_rate||0).toFixed(1)}</td>
+            <td style="padding:8px;text-align:center"><button onclick="assignPartnerPanelAccount(${p.id})" style="padding:4px 7px;border:1px solid #3b82f6;background:white;color:#2563eb;border-radius:5px;cursor:pointer">${p.user_id?'Panel Hesabını Değiştir':'Panel Hesabı Ata'}</button></td>
         </tr>`).join('')||'<tr><td colspan="6" style="padding:25px;text-align:center;color:#6b7280">Henüz partner yok.</td></tr>';
         const ar=assignments.map(a=>`<tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:7px">${a.customer_name||'-'}<br><small>${a.customer_email||''}</small></td><td style="padding:7px">${a.partner_name} <code>${a.partner_code}</code></td><td style="padding:7px;text-align:center"><button onclick="removePartnerAssignment(${a.user_id})" style="border:1px solid #ef4444;background:white;color:#ef4444;border-radius:5px;padding:4px 7px;cursor:pointer">Kaldır</button></td></tr>`).join('')||'<tr><td colspan="3" style="padding:20px;text-align:center;color:#6b7280">Henüz işletme ataması yok.</td></tr>';
         c.innerHTML=`
           <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px"><div><strong>🤝 Partner / Bayi Yönetimi</strong><div style="font-size:11px;color:#6b7280">MLM sisteminden bağımsız satış ve attribution altyapısı.</div></div><button onclick="openPartnerCreate()" style="padding:7px 12px;background:#3b82f6;color:white;border:0;border-radius:6px;cursor:pointer">➕ Partner</button></div>
-          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:650px"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">Partner</th><th>Kod</th><th>Durum</th><th>Müşteri</th><th>Aktif</th><th>Komisyon</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto;margin-bottom:14px"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:650px"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">Partner</th><th>Kod</th><th>Durum</th><th>Müşteri</th><th>Aktif</th><th>Komisyon</th><th>Panel</th></tr></thead><tbody>${rows}</tbody></table></div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px"><strong>🏢 İşletme → Partner Bağlantısı</strong><button onclick="openPartnerAssign()" style="padding:6px 10px;border:1px solid #3b82f6;background:white;color:#2563eb;border-radius:6px;cursor:pointer">🔗 İşletme Ata</button></div>
           <div style="background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:12px;min-width:550px"><thead><tr style="background:#f9fafb"><th style="padding:8px;text-align:left">İşletme</th><th>Partner</th><th>İşlem</th></tr></thead><tbody>${ar}</tbody></table></div>`;
     }catch(e){c.innerHTML='<div style="color:#ef4444;text-align:center;padding:30px">❌ '+e.message+'</div>'}
@@ -1138,4 +1139,14 @@ async function savePartnerAssignment(){
 async function removePartnerAssignment(userId){
     if(!confirm('Bu işletmenin partner bağlantısı kaldırılsın mı?'))return;
     try{await adminApi('/users/'+encodeURIComponent(userId)+'/partner',{method:'DELETE'});loadPartners()}catch(e){alert('❌ '+e.message)}
+}
+
+async function assignPartnerPanelAccount(partnerId){
+ try{
+  const bd=await adminApi('/business-overview'), customers=bd.customers||[];
+  const userId=prompt('Bayi paneline giriş yapacak ChatChip hesabının ID’si:\n'+customers.slice(0,40).map(x=>x.id+' - '+x.name+' ('+x.email+')').join('\n'));
+  if(!userId)return;
+  await adminApi('/partners/'+encodeURIComponent(partnerId)+'/account',{method:'PUT',body:JSON.stringify({user_id:Number(userId)})});
+  alert('✅ Bayilik yetkisi merkez tarafından hesaba atandı.'); loadPartners();
+ }catch(e){alert('❌ '+e.message)}
 }
