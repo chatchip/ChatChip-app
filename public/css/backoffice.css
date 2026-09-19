@@ -319,3 +319,42 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ===== CHATCHIP UI SYSTEM ALIGNMENT ===== */
+.bo-content{
+    width:100%;
+    max-width:1180px;
+    margin:0 auto;
+    padding:18px;
+}
+.career-card,.stat-card,.leg,.ref-card,.team-item{
+    border-color:#e5e7eb;
+    border-radius:16px;
+    box-shadow:0 4px 16px rgba(45,74,68,.045);
+}
+.career-card{background:#fff}
+.stat-card,.leg,.ref-card,.team-item{background:#fff}
+.section-title,.section-header .section-title{color:#2D4A44;font-weight:800}
+.action-btn,.ref-card .copy-btn{
+    border:1px solid #d8e7e4;
+    background:#fff;
+    color:#2D4A44;
+    border-radius:10px;
+    font-weight:750;
+}
+.action-btn:hover,.ref-card .copy-btn:hover{
+    background:#eefaf7;
+    color:#2D4A44;
+    border-color:#7BD3C9;
+}
+.requirement{background:#eefaf7;color:#2D4A44}
+.requirement.met{background:#7BD3C9;color:#fff}
+.progress-fill{background:linear-gradient(90deg,#7BD3C9,#5FB8A0)}
+.team-item:nth-child(even){background:#f7f9fb}
+@media(max-width:600px){
+    .bo-content{padding:14px 12px}
+    .career-card{padding:16px}
+    .stats-grid{gap:8px}
+    .stat-card{padding:12px 10px}
+}
