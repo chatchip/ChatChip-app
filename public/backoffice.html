@@ -7,18 +7,19 @@
     <meta name="theme-color" content="#7BD3C9">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/backoffice.css">
+    <link rel="stylesheet" href="/css/subpage-header.css">
 </head>
-<body>
+<body class="cc-subpage">
     <div class="app">
         <header class="header">
             <div class="logo">
                 <img src="/assets/logo.svg" alt="ChatChip" width="32" height="32">
-                <span>ChatChip</span>
+                <span>ChatChip</span><span class="subpage-name">Backoffice</span>
             </div>
             <div class="header-actions">
-                <a href="/index.html" class="nav-btn">💬 Sohbet</a>
-                <a href="/cuzdan.html" class="nav-btn">💰 Cüzdan</a>
-                <a href="/partner-panel.html" class="nav-btn" id="partnerPanelBtn" style="display:none">🤝 Bayi Paneli</a>
+                <a href="/index.html" class="nav-btn" data-nav="chat" title="Sohbet">💬 Sohbet</a>
+                <a href="/cuzdan.html" class="nav-btn" data-nav="wallet" title="Cüzdan">💰 Cüzdan</a>
+                <a href="/partner-panel.html" class="nav-btn" data-nav="partner" title="Bayi Paneli" id="partnerPanelBtn" style="display:none">🤝 Bayi Paneli</a>
                 <button class="btn-profile" id="profileBtn">👤</button>
             </div>
         </header>
