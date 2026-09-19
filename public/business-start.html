@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>AI Çalışanınızı Kurun | ChatChip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:#111827;
+      background:
+        radial-gradient(circle at 10% 0%,rgba(123,211,201,.24),transparent 34%),
+        radial-gradient(circle at 100% 20%,rgba(139,92,246,.14),transparent 32%),
+        #f8fafc;
+    }
+    .page{min-height:100vh;display:flex;flex-direction:column}
+    .topbar{
+      width:min(1100px,calc(100% - 32px));
+      margin:0 auto;
+      padding:22px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#111827;font-weight:800;font-size:1.05rem}
+    .brand img{width:34px;height:34px}
+    .login-link{color:#6b7280;text-decoration:none;font-size:.9rem;font-weight:600}
+    .login-link:hover{color:#111827}
+    main{
+      flex:1;
+      width:min(1100px,calc(100% - 32px));
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+      align-items:center;
+      gap:64px;
+      padding:54px 0 90px;
+    }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border:1px solid rgba(123,211,201,.55);
+      background:rgba(255,255,255,.72);
+      border-radius:999px;
+      color:#337f78;
+      font-size:.78rem;
+      font-weight:800;
+      letter-spacing:.02em;
+      margin-bottom:18px;
+      backdrop-filter:blur(10px);
+    }
+    h1{
+      margin:0;
+      max-width:720px;
+      font-size:clamp(2.45rem,6vw,4.9rem);
+      line-height:.98;
+      letter-spacing:-.055em;
+      color:#0f172a;
+    }
+    .accent{
+      background:linear-gradient(135deg,#45aa9e,#7c3aed);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+    .lead{
+      margin:25px 0 0;
+      max-width:650px;
+      font-size:clamp(1rem,2vw,1.18rem);
+      line-height:1.7;
+      color:#64748b;
+    }
+    .actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:32px}
+    .primary{
+      border:0;
+      border-radius:14px;
+      padding:15px 21px;
+      background:linear-gradient(135deg,#55bfb2,#7c3aed);
+      color:white;
+      font:inherit;
+      font-size:.98rem;
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:none;
+      box-shadow:0 14px 32px rgba(89,102,211,.20);
+      transition:transform .18s ease,box-shadow .18s ease;
+    }
+    .primary:hover{transform:translateY(-2px);box-shadow:0 18px 38px rgba(89,102,211,.27)}
+    .micro{font-size:.78rem;color:#94a3b8}
+    .panel{
+      position:relative;
+      border:1px solid rgba(148,163,184,.23);
+      border-radius:28px;
+      background:rgba(255,255,255,.82);
+      box-shadow:0 30px 80px rgba(15,23,42,.11);
+      padding:26px;
+      backdrop-filter:blur(18px);
+      overflow:hidden;
+    }
+    .panel:before{
+      content:"";
+      position:absolute;
+      width:180px;height:180px;border-radius:50%;
+      background:rgba(123,211,201,.19);
+      right:-70px;top:-80px;
+    }
+    .agent-head{position:relative;display:flex;align-items:center;gap:14px;padding-bottom:21px;border-bottom:1px solid #eef2f7}
+    .agent-avatar{
+      width:54px;height:54px;border-radius:17px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#dff7f3,#ede9fe);
+      font-size:1.7rem;
+    }
+    .agent-title strong{display:block;font-size:1rem;color:#0f172a}
+    .agent-title span{display:block;margin-top:4px;color:#94a3b8;font-size:.8rem}
+    .online{margin-left:auto;display:flex;align-items:center;gap:6px;color:#33887e;font-size:.76rem;font-weight:700}
+    .online i{width:8px;height:8px;border-radius:50%;background:#4cc7a8;display:block;box-shadow:0 0 0 4px rgba(76,199,168,.12)}
+    .feature-list{position:relative;display:grid;gap:12px;margin-top:21px}
+    .feature{
+      display:flex;align-items:flex-start;gap:12px;
+      padding:14px;
+      border:1px solid #eef2f7;
+      border-radius:16px;
+      background:rgba(248,250,252,.75);
+    }
+    .icon{width:35px;height:35px;flex:0 0 35px;border-radius:11px;display:grid;place-items:center;background:white;box-shadow:0 5px 13px rgba(15,23,42,.05)}
+    .feature strong{display:block;font-size:.86rem;color:#1e293b}
+    .feature span{display:block;margin-top:4px;font-size:.76rem;line-height:1.45;color:#94a3b8}
+    .source-note{display:none;margin-top:18px;font-size:.7rem;color:#c0c7d2;text-align:center}
+    footer{padding:18px 16px 30px;text-align:center;color:#a0a9b6;font-size:.72rem}
+    @media(max-width:800px){
+      .topbar{padding:18px 0}
+      main{grid-template-columns:1fr;gap:38px;padding:34px 0 64px}
+      h1{font-size:clamp(2.6rem,12vw,4.2rem)}
+      .panel{border-radius:22px;padding:20px}
+    }
+    @media(max-width:520px){
+      .topbar,main{width:min(100% - 24px,1100px)}
+      .login-link{font-size:.8rem}
+      .brand span{font-size:.98rem}
+      .actions{align-items:stretch;flex-direction:column}
+      .primary{text-align:center;width:100%}
+      .micro{text-align:center}
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="/index.html" aria-label="ChatChip ana sayfa">
+        <img src="/assets/logo.svg" alt="ChatChip">
+        <span>ChatChip</span>
+      </a>
+      <a class="login-link" id="loginLink" href="/index.html">Zaten hesabım var →</a>
+    </header>
+
+    <main>
+      <section>
+        <div class="eyebrow">⚡ CHATChIP AI ÇALIŞAN</div>
+        <h1>İşletmenize <span class="accent">7/24 çalışan</span> bir AI çalışan kazandırın.</h1>
+        <p class="lead">
+          Müşterilerinizi karşılasın, ürün ve hizmetlerinizi anlatsın, soruları yanıtlasın ve satış fırsatlarını sizin için toplasın.
+        </p>
+        <div class="actions">
+          <a class="primary" id="startButton" href="/index.html">AI Çalışanımı Kur →</a>
+          <span class="micro">Kurulum birkaç adımda başlar.</span>
+        </div>
+      </section>
+
+      <aside class="panel" aria-label="AI çalışan özellikleri">
+        <div class="agent-head">
+          <div class="agent-avatar">✨</div>
+          <div class="agent-title">
+            <strong>AI Çalışanınız</strong>
+            <span>Müşterileriniz için her an hazır</span>
+          </div>
+          <div class="online"><i></i> Aktif</div>
+        </div>
+
+        <div class="feature-list">
+          <div class="feature">
+            <div class="icon">💬</div>
+            <div><strong>Müşterileri karşılar</strong><span>Soruları anında yanıtlar ve işletmenizi doğru şekilde anlatır.</span></div>
+          </div>
+          <div class="feature">
+            <div class="icon">🧠</div>
+            <div><strong>İşletmenizi öğrenir</strong><span>Ürünlerinizi, hizmetlerinizi, fiyatlarınızı ve çalışma şeklinizi bilir.</span></div>
+          </div>
+          <div class="feature">
+            <div class="icon">📈</div>
+            <div><strong>Fırsatları toplar</strong><span>Müşteri taleplerini ve satın alma niyetlerini işletmeniz için görünür hale getirir.</span></div>
+          </div>
+          <div class="feature">
+            <div class="icon">📱</div>
+            <div><strong>QR ve bağlantıyla çalışır</strong><span>Müşteriniz bulunduğu yerden AI çalışanınıza doğrudan ulaşabilir.</span></div>
+          </div>
+        </div>
+        <div class="source-note" id="sourceNote"></div>
+      </aside>
+    </main>
+
+    <footer>ChatChip · İşletmeniz için çalışan yapay zekâ</footer>
+  </div>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(window.location.search);
+      const agent = params.get('agent');
+      const src = params.get('src');
+
+      const nextParams = new URLSearchParams();
+      nextParams.set('business_start', '1');
+      if (agent) nextParams.set('agent', agent);
+      if (src) nextParams.set('src', src);
+
+      const nextUrl = '/index.html?' + nextParams.toString();
+      document.getElementById('startButton').href = nextUrl;
+      document.getElementById('loginLink').href = nextUrl;
+
+      // Attribution backend'i bağlanana kadar kaynak bilgisi yalnızca URL boyunca taşınır.
+      // Kullanıcıya teknik kaynak kodunu göstermiyoruz.
+    })();
+  </script>
+</body>
+</html>
