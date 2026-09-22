@@ -6,14 +6,6 @@ const input = document.getElementById('messageInput');
 const sendBtn = document.getElementById('sendBtn');
 const stopBtn = document.getElementById('stopBtn');
 
-let isProcessing = false;
-let currentUser = null;
-let currentPlan = null;
-let currentSessionId = null;
-let sessions = [];
-let isFirstMessage = true;
-let abortController = null;
-let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App başlatıldı (Model + Koç)');
@@ -59,16 +51,21 @@ function setupAuthEventListeners() {
 // 🔥 STOP MESSAGE
 // ============================================================
 function stopMessage() {
-    if (!isProcessing) return;
+    const appState = window.ChatChipAppState;
+    if (!appState.getProcessing()) return;
+
     console.log('⏹️ Yanıt durduruluyor...');
-    if (abortController) {
-        abortController.abort();
-        abortController = null;
+
+    const controller = appState.getAbortController();
+    if (controller) {
+        controller.abort();
+        appState.setAbortController(null);
     }
+
     sendBtn.style.display = 'flex';
     stopBtn.style.display = 'none';
     input.disabled = false;
-    isProcessing = false;
+    appState.setProcessing(false);
     showToast('⏹️ Yanıt durduruldu', 'info');
 }
 // ============================================================
@@ -88,32 +85,35 @@ async function generateAndShowImage(prompt, originalText) {
 
         showToast: showToast,
 
-        getPlan: () => currentPlan
+        getPlan: () => window.ChatChipAppState.getPlan()
 
     });
 }
 function getChatEngineContext() {
+    const appState = window.ChatChipAppState;
+
     return {
         input,
         sendBtn,
         stopBtn,
         chatArea,
 
-        getCurrentUser: () => currentUser,
-        getCurrentPlan: () => currentPlan,
+        getCurrentUser: appState.getUser,
+        getCurrentPlan: appState.getPlan,
 
-        getSessionId: () => currentSessionId,
-        setSessionId: value => { currentSessionId = value; },
+        getSessionId: appState.getSessionId,
+        setSessionId: appState.setSessionId,
 
-        getSessions: () => sessions,
-        getFirstMessage: () => isFirstMessage,
-        setFirstMessage: value => { isFirstMessage = value; },
+        getSessions: appState.getSessions,
+        setSessions: appState.setSessions,
+        getFirstMessage: appState.getFirstMessage,
+        setFirstMessage: appState.setFirstMessage,
 
-        getCryptoKey: () => currentCryptoKey,
-        setCryptoKey: value => { currentCryptoKey = value; },
+        getCryptoKey: appState.getCryptoKey,
+        setCryptoKey: appState.setCryptoKey,
 
-        setProcessing: value => { isProcessing = value; },
-        setAbortController: value => { abortController = value; },
+        setProcessing: appState.setProcessing,
+        setAbortController: appState.setAbortController,
 
         addMessage,
         updateMessageMarkdown,
@@ -133,7 +133,7 @@ async function sendMessage() {
     console.log('📸 Aktif görsel:', activeImageUrl ? 'var' : 'yok');
 
     if (!text && !activeImageUrl) return;
-    if (isProcessing) return;
+    if (window.ChatChipAppState.getProcessing()) return;
 
     const intent = window.ChatChipMessageRouter?.resolveIntent?.(text, {
         hasActiveImage: Boolean(activeImageUrl)
