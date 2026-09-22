@@ -1193,11 +1193,6 @@ function updateThemeIcon() {
 // ============================================================
 window.toggleSidebar = toggleSidebar;
 window.closeAllSidebars = closeAllSidebars;
-window.startNewChat = startNewChat;
-window.loadSession = loadSession;
-window.renameSession = renameSession;
-window.togglePin = togglePin;
-window.deleteSession = deleteSession;
 window.searchChats = searchChats;
 window.saveSystemPrompt = saveSystemPrompt;
 window.toggleDarkMode = toggleDarkMode;
