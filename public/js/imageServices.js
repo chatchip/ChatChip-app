@@ -124,7 +124,6 @@ console.log('🎨 ImageService hazır');
 
     function openEditor(imageSrc) {
         closeEditor();
-        localStorage.setItem('chatchip_current_image_url', imageSrc);
 
         const overlay = document.createElement('div');
         overlay.id = 'imageEditOverlay';
