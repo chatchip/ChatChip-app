@@ -1,11 +1,11 @@
 // ChatChip Service Worker
 // v4: public AI Employee routes keep their own shell/fallback.
-const CACHE_NAME = 'chatchip-v5';
+const CACHE_NAME = 'chatchip-v6';
 
 const urlsToCache = [
   '/index.html','/l/index.html','/backoffice.html','/admin-panel.html','/pricing.html','/register.html','/tree-detail.html','/cuzdan.html',
   '/css/style.css','/css/backoffice.css','/css/admin-panel.css','/css/pricing.css','/css/register.css','/css/tree-detail.css','/css/cuzdan.css',
-  '/js/crypto.js','/js/datamanager.js','/js/sidebar.js?v=20260922-hotfix2','/js/puzzleSwipeLoader.js?v=20260922-hotfix2','/js/integrations.js?v=20260922-hotfix2','/js/imageServices.js','/js/app.js','/js/backoffice.js','/js/admin-panel.js','/js/pricing.js','/js/tree-detail.js','/js/cuzdan.js',
+  '/js/crypto.js','/js/datamanager.js','/js/sidebar.js?v=20260922-hotfix3','/js/puzzleSwipeLoader.js?v=20260922-hotfix2','/js/integrations.js?v=20260922-hotfix2','/js/imageServices.js?v=20260922-hotfix3','/js/app.js?v=20260922-hotfix3','/js/backoffice.js','/js/admin-panel.js','/js/pricing.js','/js/tree-detail.js','/js/cuzdan.js',
   '/assets/logo.svg','/assets/pwalogo.png','/assets/icon-72.png','/assets/icon-96.png','/assets/icon-128.png','/assets/icon-144.png','/assets/icon-152.png','/assets/icon-192.png','/assets/icon-384.png','/assets/icon-512.png'
 ];
 
