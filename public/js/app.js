@@ -68,70 +68,6 @@ function renderMarkdown(text) {
 }
 
 // ============================================================
-// KİŞİSELLEŞTİRME
-// ============================================================
-function loadSystemPrompt() {
-    const saved = localStorage.getItem("chatchip_system_prompt");
-    const input = document.getElementById("systemPromptInput");
-    if (saved && input) {
-        input.value = saved;
-    }
-}
-function saveSystemPrompt() {
-    const input = document.getElementById("systemPromptInput");
-    if (!input) return;
-    const prompt = input.value;
-    localStorage.setItem("chatchip_system_prompt", prompt);
-    showToast("✅ Sistem promptu kaydedildi!", "success");
-    closePromptPanel();
-}
-// ============================================================
-// SIDEBAR
-// ============================================================
-function toggleSidebar(side) {
-    console.log('🔄 toggleSidebar:', side);
-    const left = document.getElementById('sidebarLeft');
-    const right = document.getElementById('sidebarRight');
-    const overlay = document.getElementById('overlay');
-    
-    if (side === 'left' && left) {
-        left.classList.toggle('active');
-    } else if (side === 'right' && right) {
-        right.classList.toggle('active');
-    }
-    
-    if (overlay) {
-        if (left?.classList.contains('active') || right?.classList.contains('active')) {
-            overlay.classList.add('active');
-        } else {
-            overlay.classList.remove('active');
-        }
-    }
-}
-
-function closeAllSidebars() {
-    const left = document.getElementById('sidebarLeft');
-    const right = document.getElementById('sidebarRight');
-    const overlay = document.getElementById('overlay');
-    
-    if (left) left.classList.remove('active');
-    if (right) right.classList.remove('active');
-    if (overlay) overlay.classList.remove('active');
-}
-
-// ============================================================
-// SOHBET ARAMA
-// ============================================================
-function searchChats() {
-    const query = document.getElementById('searchChatInput').value.toLowerCase();
-    const items = document.querySelectorAll('.history-item');
-    items.forEach(item => {
-        const text = item.textContent.toLowerCase();
-        item.style.display = text.includes(query) ? 'flex' : 'none';
-    });
-}
-
-// ============================================================
 // CHAT MESAJ
 // ============================================================
 function setupEventListeners() {
@@ -775,10 +711,6 @@ function showToast(msg, type = 'info') {
 // ============================================================
 // GLOBAL
 // ============================================================
-window.toggleSidebar = toggleSidebar;
-window.closeAllSidebars = closeAllSidebars;
-window.searchChats = searchChats;
-window.saveSystemPrompt = saveSystemPrompt;
 
 console.log('✅ App yüklendi! (Model + Koç)');
 
