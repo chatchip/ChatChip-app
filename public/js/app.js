@@ -13,7 +13,7 @@ let currentSessionId = null;
 let sessions = [];
 let isFirstMessage = true;
 let abortController = null;
-let currentImageUrl = localStorage.getItem('chatchip_current_image_url') || null;
+let currentImageUrl = null;
 let previewContainer = null;
 let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
@@ -150,16 +150,7 @@ async function sendMessage() {
     const text = input.value.trim();
     console.log('🔴 sendMessage çalıştı! text:', text);
 
-    // Görsel varsa localStorage'dan yükle
-    const savedImageUrl = localStorage.getItem('chatchip_current_image_url');
-
-    if (savedImageUrl) {
-        currentImageUrl = savedImageUrl;
-        console.log('📸 Görsel localStorage\'dan yüklendi:', currentImageUrl);
-    } else {
-        currentImageUrl = null;
-        console.log('📸 Aktif görsel yok');
-    }
+    console.log('📸 Aktif görsel:', currentImageUrl ? 'var' : 'yok');
 
     if (!text && !currentImageUrl) return;
     if (isProcessing) return;
@@ -216,6 +207,7 @@ await ImageService.edit(
     }
 );
 
+        clearCurrentImage();
         chatArea.scrollTop = chatArea.scrollHeight;
         return;
     }
@@ -1060,6 +1052,8 @@ async function submitImageEdit() {
             updateMessage: updateMessageMarkdown
         }
     );
+
+    clearCurrentImage();
 }
 
 if (sendBtn) {
