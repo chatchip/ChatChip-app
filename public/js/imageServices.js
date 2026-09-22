@@ -119,6 +119,7 @@ console.log('🎨 ImageService hazır');
         const overlay = document.getElementById('imageEditOverlay');
         if (overlay) overlay.remove();
         document.body.style.overflow = '';
+        localStorage.removeItem('chatchip_current_image_url');
     }
 
     function openEditor(imageSrc) {
