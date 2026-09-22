@@ -94,7 +94,20 @@
         setSessionId: value => set('currentSessionId', value),
 
         getSessions: () => get('sessions'),
-        setSessions: value => set('sessions', Array.isArray(value) ? value : []),
+        setSessions: value => set(
+            'sessions',
+            Array.isArray(value) ? [...value] : []
+        ),
+        updateSessions: updater => {
+            const current = get('sessions');
+            const next = typeof updater === 'function'
+                ? updater([...current])
+                : current;
+            return set(
+                'sessions',
+                Array.isArray(next) ? [...next] : [...current]
+            );
+        },
 
         getFirstMessage: () => get('isFirstMessage'),
         setFirstMessage: value => set('isFirstMessage', Boolean(value)),
