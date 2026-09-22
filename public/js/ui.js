@@ -56,40 +56,4 @@ function updateThemeIcon() {
     }
 }
 
-// ============================================================
-// 🔥 VERSİYON GÖSTERİMİ
-// ============================================================
-const PLAN_VERSION_MAP = {
-    'free': 'ChatChip 1.0',
-    'Lite': 'ChatChip 1.0',
-    'Plus': 'ChatChip 2.0',
-    'Pro': 'ChatChip 2.1'
-};
-
-function updateVersionDisplay() {
-    const versionDisplay = document.getElementById('versionDisplay');
-    if (!versionDisplay) return;
-    
-    const dm = window.DataManager;
-    if (!dm) return;
-    
-    dm.getPlanStatus().then(result => {
-        if (result && result.success && result.plan) {
-            const planType = result.plan.type || 'free';
-            const version = PLAN_VERSION_MAP[planType] || 'ChatChip 1.0';
-            versionDisplay.textContent = version;
-            console.log('📋 Versiyon güncellendi:', planType, '→', version);
-        }
-    }).catch(err => {
-        console.error('Versiyon güncelleme hatası:', err);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(updateVersionDisplay, 500);
-});
-
-window.updateVersionDisplay = updateVersionDisplay;
-
 window.toggleDarkMode = toggleDarkMode;
-window.updateVersionDisplay = updateVersionDisplay;
