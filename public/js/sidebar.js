@@ -109,7 +109,7 @@ window.closeAllSidebars = closeAllSidebars;
 (function loadPuzzleSwipeLoader(){
     if(document.querySelector('script[data-chatchip-puzzle-loader]')) return;
     const script=document.createElement('script');
-    script.src='/js/puzzleSwipeLoader.js';
+    script.src='/js/puzzleSwipeLoader.js?v=20260922-hotfix2';
     script.async=false;
     script.dataset.chatchipPuzzleLoader='1';
     document.head.appendChild(script);
