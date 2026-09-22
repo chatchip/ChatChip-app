@@ -66,7 +66,7 @@ function renderPricing(plans) {
     let html = `
         <div class="pricing-header">
             <h2>💰 Planlar ve Fiyatlandırma</h2>
-            <p>Her plan satın alımında CV puanınız artar</p>
+            <p>İhtiyacınıza uygun planı seçin.</p>
             <p style="font-size:0.85rem; color:#8B5CF6; margin-top:4px;">
                 🧠 <strong>Tüm planlarda Coach.AI modülü HEDİYE!</strong>
             </p>
@@ -106,20 +106,6 @@ function renderPricing(plans) {
                         ${isPopular ? '<div class="popular-badge">🔥 Popüler</div>' : ''}
                         <div class="plan-name">${plan.name}</div>
                         <div class="plan-price">$${price} <span>/ ${duration}</span></div>
-                        <div class="plan-stats">
-                            <div class="stat-item">
-                                <span class="label">CV</span>
-                                <span class="value">+${cv}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="label">PV</span>
-                                <span class="value">+${pv}</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="label">KV</span>
-                                <span class="value">+${kv}</span>
-                            </div>
-                        </div>
                         <ul class="features">
                             ${(plan.features || ['Temel Özellikler']).map(f => `<li>${f}</li>`).join('')}
                         </ul>
@@ -131,15 +117,8 @@ function renderPricing(plans) {
                 `;
             }).join('')}
         </div>
-
         <div class="info-box">
-            💡 Her satın alımda CV, PV ve KV puanlarınız artar.
-            <br>
-            <strong>Kariyerinizi yükseltin!</strong>
-            <br><br>
-            <span style="font-size:0.85rem; color:#8B5CF6;">🧠 <strong>Coach.AI modülü</strong> tüm planlarda HEDİYE!</span>
-            <br>
-            <span style="font-size:0.75rem; color:var(--text-light);">MLM Koçu, Akademik Koç ve Kişisel Gelişim Koçu aktif!</span>
+            Planınızı seçin ve kullanımınıza devam edin.
         </div>
     `;
 
@@ -178,7 +157,7 @@ function setPeriod(period) {
 async function purchasePlan(planName, period, price, cv, kv) {
     const methodText = selectedPaymentMethod === 'bank_transfer' ? 'Havale/EFT' : 'Kredi Kartı';
     
-    const confirmMsg = `${planName} - ${period} planını $${price} karşılığında ${methodText} ile satın almak istediğinize emin misiniz?\n\nCV: +${cv}\nPV: +${cv}\nKV: +${kv}\n\n🧠 Coach.AI modülü HEDİYE!`;
+    const confirmMsg = `${planName} - ${period} planını ${price} karşılığında ${methodText} ile satın almak istediğinize emin misiniz?`;
     
     if (!confirm(confirmMsg)) {
         return;
