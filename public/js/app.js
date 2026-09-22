@@ -148,13 +148,14 @@ async function sendMessage() {
     const text = input.value.trim();
     console.log('🔴 sendMessage çalıştı! text:', text);
 
-    console.log('📸 Aktif görsel:', currentImageUrl ? 'var' : 'yok');
+    const activeImageUrl = window.ChatChipImageState?.getCurrent?.() || null;
+    console.log('📸 Aktif görsel:', activeImageUrl ? 'var' : 'yok');
 
-    if (!text && !currentImageUrl) return;
+    if (!text && !activeImageUrl) return;
     if (isProcessing) return;
 
     // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
-    if (currentImageUrl && text) {
+    if (activeImageUrl && text) {
         const editKeywords = [
             'değiştir',
             'düzenle',
@@ -190,7 +191,8 @@ async function sendMessage() {
         input.style.height = 'auto';
         removeImagePreviewUI();
 
-const editImageUrl = currentImageUrl;
+const editImageUrl =
+    window.ChatChipImageState?.consumeCurrent?.() || activeImageUrl;
 
 await ImageService.edit(
     text,
@@ -208,6 +210,11 @@ await ImageService.edit(
         return;
     }
 }
+    // Aktif görsel düzenleme komutu değilse state'i normal chat'e taşımayız.
+    if (activeImageUrl) {
+        window.ChatChipImageState?.clear?.();
+    }
+
    // ============================================================
 // 🔥 GÖRSEL ÜRETİM KONTROLÜ - NET KOMUT
 // ============================================================
