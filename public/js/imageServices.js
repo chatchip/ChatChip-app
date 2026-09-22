@@ -165,11 +165,17 @@ console.log('🎨 ImageService hazır');
             if (typeof addMessage === 'function') addMessage(prompt, 'user');
             closeEditor();
 
-            await ImageService.edit(prompt, imageSrc, {
-                addMessage: typeof addMessage === 'function' ? addMessage : undefined,
-                setLoading: typeof setImageLoadingAnimation === 'function' ? setImageLoadingAnimation : undefined,
-                updateMessage: typeof updateMessageMarkdown === 'function' ? updateMessageMarkdown : undefined
-            });
+            try {
+                await ImageService.edit(prompt, imageSrc, {
+                    addMessage: typeof addMessage === 'function' ? addMessage : undefined,
+                    setLoading: typeof setImageLoadingAnimation === 'function' ? setImageLoadingAnimation : undefined,
+                    updateMessage: typeof updateMessageMarkdown === 'function' ? updateMessageMarkdown : undefined
+                });
+            } finally {
+                if (window.ChatChipImageState) {
+                    window.ChatChipImageState.clear();
+                }
+            }
         }
 
         submitBtn.addEventListener('click', submitEdit);
