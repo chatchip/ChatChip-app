@@ -1,11 +1,11 @@
 // ChatChip Service Worker
 // v4: public AI Employee routes keep their own shell/fallback.
-const CACHE_NAME = 'chatchip-v8';
+const CACHE_NAME = 'chatchip-v9';
 
 const urlsToCache = [
   '/index.html','/l/index.html','/admin-panel.html','/pricing.html','/register.html',
   '/css/style.css','/css/admin-panel.css','/css/pricing.css','/css/register.css',
-  '/js/crypto.js','/js/datamanager.js','/js/sidebar.js','/js/imageServices.js','/js/imageUpload.js','/js/app.js','/js/voice.js','/js/admin-panel.js','/js/pricing.js',
+  '/js/crypto.js','/js/datamanager.js','/js/sidebar.js','/js/imageServices.js','/js/imageUpload.js','/js/app.js','/js/sessions.js','/js/voice.js','/js/admin-panel.js','/js/pricing.js',
   '/assets/logo.svg','/assets/pwalogo.png','/assets/icon-72.png','/assets/icon-96.png','/assets/icon-128.png','/assets/icon-144.png','/assets/icon-152.png','/assets/icon-192.png','/assets/icon-384.png','/assets/icon-512.png'
 ];
 
