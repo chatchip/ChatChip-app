@@ -125,5 +125,36 @@
         resetAuthState
     };
 
+    // Transitional aliases keep older classic scripts working while state
+    // ownership remains centralized here. New code should use ChatChipAppState.
+    const compatibilityAliases = {
+        currentUser: 'currentUser',
+        currentPlan: 'currentPlan',
+        currentSessionId: 'currentSessionId',
+        sessions: 'sessions',
+        isFirstMessage: 'isFirstMessage',
+        isProcessing: 'isProcessing',
+        abortController: 'abortController',
+        currentCryptoKey: 'currentCryptoKey'
+    };
+
+    Object.entries(compatibilityAliases).forEach(([globalName, stateKey]) => {
+        const descriptor = Object.getOwnPropertyDescriptor(window, globalName);
+        if (descriptor && descriptor.configurable === false) return;
+
+        Object.defineProperty(window, globalName, {
+            configurable: true,
+            enumerable: false,
+            get: () => get(stateKey),
+            set: value => {
+                if (stateKey === 'sessions') {
+                    window.ChatChipAppState.setSessions(value);
+                    return;
+                }
+                set(stateKey, value);
+            }
+        });
+    });
+
     console.log('🧠 App state yüklendi');
 })();
