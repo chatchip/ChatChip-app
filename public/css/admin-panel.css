@@ -366,7 +366,7 @@ td {
     .app > .header .logo span{font-size:16px}
     .header-actions{gap:4px;justify-content:flex-end}
     .header-actions .nav-btn{font-size:0;width:36px;height:36px;padding:0;display:grid;place-items:center}
-    .header-actions .nav-btn[href="/backoffice.html"]::before{content:"←";font-size:18px}
+    
     .header-actions .nav-btn[href="/index.html"]::before{content:"💬";font-size:17px}
     .btn-profile{width:36px;height:36px;padding:0}
     .admin-content{padding:12px!important}
