@@ -127,9 +127,8 @@ async function handleFileUpload(event) {
             }
 
             imageUrl = encodeURI(imageUrl);
-            currentImageUrl = imageUrl;
-            localStorage.setItem('chatchip_current_image_url', currentImageUrl);
-            console.log('📸 currentImageUrl set:', currentImageUrl);
+            ChatChipImageState.setCurrent(imageUrl);
+            console.log('📸 currentImageUrl set:', ChatChipImageState.getCurrent());
 
             const input = document.getElementById('messageInput');
             if (input) {
@@ -138,7 +137,7 @@ async function handleFileUpload(event) {
                 input.focus();
             }
 
-            showImagePreview(currentImageUrl);
+            ChatChipImageState.showPreview(imageUrl);
             showToast(`✅ ${file.name} yüklendi! Mesajını yaz ve gönder.`, 'success');
         } else {
             showToast('❌ ' + (data.error || 'Dosya yüklenirken hata oluştu!'), 'error');
