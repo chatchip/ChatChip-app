@@ -324,45 +324,6 @@ class DataManager {
         return res.json();
     }
 
-    // ============ TEAM ============
-    async getTree() {
-        const res = await fetch(`${this.apiBase}/team/tree`, {
-            headers: this.getHeaders()
-        });
-        return res.json();
-    }
-
-    async getTeamStats() {
-        const res = await fetch(`${this.apiBase}/team/stats`, {
-            headers: this.getHeaders()
-        });
-        return res.json();
-    }
-
-    // ============ MLM ============
-    async getMLMStatus() {
-        const res = await fetch(`${this.apiBase}/mlm/status`, {
-            headers: this.getHeaders()
-        });
-        return res.json();
-    }
-
-    async runMatch() {
-        const res = await fetch(`${this.apiBase}/mlm/match`, {
-            method: 'POST',
-            headers: this.getHeaders()
-        });
-        return res.json();
-    }
-
-    async calculateCareer() {
-        const res = await fetch(`${this.apiBase}/mlm/career`, {
-            method: 'POST',
-            headers: this.getHeaders()
-        });
-        return res.json();
-    }
-
     // ============ PRICING ============
     async getPlans() {
         const res = await fetch(`${this.apiBase}/pricing`);
