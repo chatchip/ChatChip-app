@@ -119,11 +119,13 @@ console.log('🎨 ImageService hazır');
         const overlay = document.getElementById('imageEditOverlay');
         if (overlay) overlay.remove();
         document.body.style.overflow = '';
+        if (window.ChatChipImageState) {
+            window.ChatChipImageState.clear();
+        }
     }
 
     function openEditor(imageSrc) {
         closeEditor();
-        localStorage.setItem('chatchip_current_image_url', imageSrc);
 
         const overlay = document.createElement('div');
         overlay.id = 'imageEditOverlay';
