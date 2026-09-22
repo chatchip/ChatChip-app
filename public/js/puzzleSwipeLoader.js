@@ -9,7 +9,7 @@ window.addEventListener('load', () => {
 
     if (!document.querySelector('script[data-chatchip-integrations]')) {
         const integrationsScript = document.createElement('script');
-        integrationsScript.src = '/js/integrations.js';
+        integrationsScript.src = '/js/integrations.js?v=20260922-hotfix2';
         integrationsScript.dataset.chatchipIntegrations = '1';
         document.head.appendChild(integrationsScript);
     }
