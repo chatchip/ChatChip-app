@@ -5,9 +5,12 @@
 // AUTH
 // ============================================================
 async function checkAuth() {
+    const appState = window.ChatChipAppState;
     const dm = window.DataManager;
     const token = dm.getToken();
-    currentUser = dm.currentUser;
+    const currentUser = dm.currentUser;
+    appState.setUser(currentUser);
+    let currentCryptoKey = appState.getCryptoKey();
 
     const avatar = document.getElementById('profileAvatar');
     const name = document.getElementById('profileName');
@@ -32,6 +35,7 @@ async function checkAuth() {
                 true,
                 ['encrypt', 'decrypt']
             );
+            appState.setCryptoKey(currentCryptoKey);
 
             console.log('✅ CryptoKey JWK\'dan geri yüklendi');
         } catch (e) {
@@ -59,6 +63,7 @@ if (expiryDate) {
         localStorage.removeItem('chatchip_password_expiry');
         localStorage.removeItem('chatchip_encrypted_password');
         currentCryptoKey = null;
+        appState.setCryptoKey(null);
 
         console.log('⏰ 7 gün doldu, oturum temizlendi');
     }
@@ -118,6 +123,7 @@ if (!currentCryptoKey && !isSevenDaySession) {
 // ============================================================
 async function handleLogin(e) {
     e.preventDefault();
+    const appState = window.ChatChipAppState;
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value.trim();
     
@@ -133,13 +139,15 @@ async function handleLogin(e) {
     console.log('🔑 Password:', result.user?.password ? '✅ Var' : '❌ Yok');
     
     if (result.success) {
-        currentUser = result.user;
-        window.currentUser = result.user;
+        const currentUser = result.user;
+        appState.setUser(currentUser);
+        let currentCryptoKey = appState.getCryptoKey();
         
         // 🔐 1. Şifreden CryptoKey türet
         if (result.user && result.user.password) {
             try {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(result.user.password);
+                appState.setCryptoKey(currentCryptoKey);
                 console.log('✅ CryptoKey başarıyla türetildi');
                 // 🔐 CryptoKey'i JWK olarak localStorage'a kaydet
 try {
@@ -200,11 +208,9 @@ console.log('✅ 7 günlük oturum süresi kaydedildi');
 }
 async function handleLogout() {
     if (confirm('Oturumu kapatmak istediğinize emin misiniz?')) {
+        const appState = window.ChatChipAppState;
         window.DataManager.logout();
-        currentUser = null;
-        currentSessionId = null;
-        isFirstMessage = true;
-        sessions = [];
+        appState.resetAuthState();
         messagesDiv.innerHTML = '';
         
         // 🔥 YENİ: JWK ve diğer verileri temizle
@@ -212,7 +218,6 @@ async function handleLogout() {
         localStorage.removeItem('chatchip_password_expiry');
         localStorage.removeItem('chatchip_encrypted_password');
         sessionStorage.removeItem('user_password');
-        currentCryptoKey = null;
         
         await checkAuth();
         renderSessions();
