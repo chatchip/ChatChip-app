@@ -1861,3 +1861,38 @@ body.chat-page #sendBtn {
 .suggestion-chip:active {
     transform: translateY(0) scale(0.97);
 }
+
+
+/* ============================================================
+   🌙 DARK MODE - CHAT HEADER INLINE STYLE OVERRIDES
+   ============================================================ */
+[data-theme="dark"] body.chat-page .cc-main-header {
+    background: rgba(30, 41, 59, 0.96) !important;
+    border-bottom-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] body.chat-page #menuToggle,
+[data-theme="dark"] body.chat-page #profileToggle {
+    background: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] body.chat-page .cc-main-header .label-text {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] body.chat-page #coachSelector {
+    background: var(--bg-primary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] body.chat-page .header::after {
+    background: linear-gradient(
+        to bottom,
+        var(--bg-secondary),
+        transparent
+    ) !important;
+}
