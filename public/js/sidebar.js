@@ -106,13 +106,6 @@ window.closeAllSidebars = closeAllSidebars;
     if(document.readyState==='loading'){document.addEventListener('readystatechange',function onReadyStateChange(){if(document.readyState==='interactive'){document.removeEventListener('readystatechange',onReadyStateChange);activateHardening();}});}else{activateHardening();}
 })();
 
-(function loadPuzzleSwipeLoader(){
-    if(document.querySelector('script[data-chatchip-puzzle-loader]')) return;
-    const script=document.createElement('script');
-    script.src='/js/puzzleSwipeLoader.js';
-    script.async=false;
-    script.dataset.chatchipPuzzleLoader='1';
-    document.head.appendChild(script);
-})();
+
 
 console.log('✅ Sidebar controller yüklendi!');
