@@ -67,8 +67,10 @@ async function ensureSession(text, context) {
         context.setSessionId(sessionId);
         context.setFirstMessage(false);
 
-        const sessions = context.getSessions();
-        sessions.unshift(result.session);
+        context.setSessions([
+            result.session,
+            ...context.getSessions()
+        ]);
         context.renderSessions();
 
         const pageTitle = document.querySelector('.page-title');
@@ -92,7 +94,13 @@ async function ensureSession(text, context) {
                 const result = await dm.updateSession(sessionId, newTitle);
 
                 if (result.success) {
-                    session.title = result.session.title;
+                    context.setSessions(
+                        context.getSessions().map(item =>
+                            item.id === sessionId
+                                ? { ...item, title: result.session.title }
+                                : item
+                        )
+                    );
                     context.renderSessions();
 
                     const pageTitle = document.querySelector('.page-title');
