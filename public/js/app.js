@@ -863,9 +863,7 @@ async function sendMessage() {
         input.style.height = 'auto';
         removeImagePreviewUI();
 
-const editImageUrl =
-    currentImageUrl ||
-    localStorage.getItem('chatchip_current_image_url');
+const editImageUrl = currentImageUrl;
 
 await ImageService.edit(
     text,
@@ -1529,7 +1527,7 @@ async function handleFileUpload(event) {
             // 🔥 URL'yi encode et (boşluklar ve özel karakterler için)
             imageUrl = encodeURI(imageUrl);
             currentImageUrl = imageUrl;
-            localStorage.setItem('chatchip_current_image_url', currentImageUrl);
+            
             console.log('📸 currentImageUrl set:', currentImageUrl);
             
             const input = document.getElementById('messageInput');
@@ -2590,10 +2588,7 @@ document.addEventListener('click', function (e) {
 
     currentImageUrl = imageSrc;
 
-    localStorage.setItem(
-        'chatchip_current_image_url',
-        imageSrc
-    );
+    
 
     // Eski panel varsa kaldır
     const oldPanel = document.getElementById('imageEditPanel');
