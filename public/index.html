@@ -71,5 +71,31 @@
 })();
 </script>
     <script src="/js/crypto.js"></script><script src="/js/datamanager.js"></script><script src="/js/sidebar.js?v=20260922-hotfix3"></script><script src="/js/imageServices.js?v=20260922-hotfix4"></script><script src="/js/app.js?v=20260922-hotfix4"></script><script>document.addEventListener('DOMContentLoaded',function(){document.getElementById('menuToggle').addEventListener('click',function(){toggleSidebar('left');});document.getElementById('profileToggle').addEventListener('click',function(){toggleSidebar('right');});document.querySelectorAll('.integration-connect').forEach(function(button){button.addEventListener('click',function(){if(window.Swal){Swal.fire({icon:'info',title:'Çok yakında! 🚀',text:'Bu hesap bağlantısı yakında aktif olacaktır.',confirmButtonText:'Tamam'});}else{alert('Çok yakında! 🚀 Bu hesap bağlantısı yakında aktif olacaktır.');}});});});</script>
+<script>
+(function(){
+  if (!('serviceWorker' in navigator)) return;
+
+  let reloading = false;
+
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    if (reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+
+  window.addEventListener('load', async function() {
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js?v=20260922-pwa-force1', {
+        scope: '/',
+        updateViaCache: 'none'
+      });
+      await registration.update();
+      console.log('✅ PWA service worker güncelleme kontrolü tamamlandı');
+    } catch (error) {
+      console.warn('⚠️ Service worker güncellenemedi:', error);
+    }
+  }, { once: true });
+})();
+</script>
 </body>
 </html>
