@@ -23,11 +23,13 @@ function updateVersionDisplayFromPlan(plan) {
 // ============================================================
 async function checkPlan() {
     try {
+        const appState = window.ChatChipAppState;
         const dm = window.DataManager;
         const result = await dm.getPlanStatus();
         
         if (result.success && result.plan) {
-            currentPlan = result.plan;
+            const currentPlan = result.plan;
+            appState.setPlan(currentPlan);
             updateVersionDisplayFromPlan(currentPlan);
             
             const planName = document.getElementById('planName');
@@ -94,24 +96,27 @@ async function checkPlan() {
 
 function startPlanWatcher() {
     setInterval(async () => {
-        if (currentUser) {
+        if (window.ChatChipAppState.getUser()) {
             await checkPlan();
         }
     }, 60000);
 }
 
 async function updateVersionDisplay() {
+    const currentPlan = window.ChatChipAppState.getPlan();
+
     if (currentPlan) {
         updateVersionDisplayFromPlan(currentPlan);
         return;
     }
+
     await checkPlan();
 }
 
 window.ChatChipPlan = {
     refresh: checkPlan,
     startWatcher: startPlanWatcher,
-    getCurrent: () => currentPlan,
+    getCurrent: () => window.ChatChipAppState.getPlan(),
     updateVersionDisplay
 };
 
