@@ -225,3 +225,10 @@ async function deleteSession(id) {
         showToast('❌ Sohbet silinemedi', 'error');
     }
 }
+
+// Global exports used by inline UI handlers.
+window.startNewChat = startNewChat;
+window.loadSession = loadSession;
+window.renameSession = renameSession;
+window.togglePin = togglePin;
+window.deleteSession = deleteSession;
