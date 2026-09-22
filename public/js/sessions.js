@@ -6,13 +6,14 @@
 // ============================================================
 async function loadSessions() {
     try {
+        const appState = window.ChatChipAppState;
         const dm = window.DataManager;
         const result = await dm.getSessions();
         
         if (result.success) {
-            sessions = result.sessions || [];
+            appState.setSessions(result.sessions || []);
             renderSessions();
-            console.log('📋 Sohbetler yüklendi:', sessions.length);
+            console.log('📋 Sohbetler yüklendi:', appState.getSessions().length);
         }
     } catch (error) {
         console.error('Sessions yükleme hatası:', error);
@@ -20,6 +21,8 @@ async function loadSessions() {
 }
 
 function renderSessions() {
+    const appState = window.ChatChipAppState;
+    const sessions = appState.getSessions();
     const container = document.getElementById('chatHistory');
     if (!container) return;
     
@@ -55,15 +58,17 @@ function renderSessions() {
 // ============================================================
 async function loadSession(id) {
     try {
+        const appState = window.ChatChipAppState;
         console.log("📂 Session yükleniyor:", id);
         const dm = window.DataManager;
         const result = await dm.getSession(id);
         console.log("📦 Session sonucu:", result);
         
         if (result && result.success) {
-            currentSessionId = id;
-            isFirstMessage = false;
+            appState.setSessionId(id);
+            appState.setFirstMessage(false);
             messagesDiv.innerHTML = "";
+            let currentCryptoKey = appState.getCryptoKey();
              if (!currentCryptoKey) {
     // 🔥 ÖNCE JWK'dan dene!
     const savedJwk = localStorage.getItem('chatchip_crypto_key_jwk');
@@ -76,6 +81,7 @@ async function loadSession(id) {
                 true,
                 ["encrypt", "decrypt"]
             );
+            appState.setCryptoKey(currentCryptoKey);
             console.log('✅ CryptoKey JWK\'dan yüklendi (loadSession)');
         } catch (e) {
             console.warn('⚠️ CryptoKey import edilemedi:', e);
@@ -88,6 +94,7 @@ async function loadSession(id) {
         if (savedPassword) {
             try {
                 currentCryptoKey = await ChatChipCrypto.deriveKey(savedPassword);
+                appState.setCryptoKey(currentCryptoKey);
                 console.log('✅ CryptoKey sessionStorage şifresinden türetildi (loadSession)');
             } catch (e) {
                 console.warn('⚠️ CryptoKey türetilemedi:', e);
@@ -141,13 +148,17 @@ async function loadSession(id) {
 
 async function startNewChat() {
     try {
+        const appState = window.ChatChipAppState;
         const dm = window.DataManager;
         const result = await dm.createSession('Yeni Sohbet');
         
         if (result.success) {
-            currentSessionId = result.session.id;
-            isFirstMessage = true;
-            sessions.unshift(result.session);
+            appState.setSessionId(result.session.id);
+            appState.setFirstMessage(true);
+            appState.setSessions([
+                result.session,
+                ...appState.getSessions()
+            ]);
             renderSessions();
             messagesDiv.innerHTML = '';
             document.querySelector('.page-title').textContent = '💬 Yeni Sohbet';
@@ -161,6 +172,7 @@ async function startNewChat() {
 }
 
 async function renameSession(id, currentTitle) {
+    const appState = window.ChatChipAppState;
     const newTitle = prompt('Sohbet başlığını girin:', currentTitle);
     if (!newTitle || newTitle.trim().length === 0) return;
     
@@ -169,11 +181,15 @@ async function renameSession(id, currentTitle) {
         const result = await dm.updateSession(id, newTitle.trim());
         
         if (result.success) {
-            const session = sessions.find(s => s.id === id);
-            if (session) session.title = result.session.title;
+            const sessions = appState.getSessions().map(session =>
+                session.id === id
+                    ? { ...session, title: result.session.title }
+                    : session
+            );
+            appState.setSessions(sessions);
             renderSessions();
             
-            if (currentSessionId === id) {
+            if (appState.getSessionId() === id) {
                 document.querySelector('.page-title').textContent = '💬 ' + result.session.title;
             }
             showToast('✅ Başlık güncellendi!', 'success');
@@ -186,12 +202,17 @@ async function renameSession(id, currentTitle) {
 
 async function togglePin(id, currentState) {
     try {
+        const appState = window.ChatChipAppState;
         const dm = window.DataManager;
         const result = await dm.pinSession(id, !currentState);
         
         if (result.success) {
-            const session = sessions.find(s => s.id === id);
-            if (session) session.is_pinned = result.session.is_pinned;
+            const sessions = appState.getSessions().map(session =>
+                session.id === id
+                    ? { ...session, is_pinned: result.session.is_pinned }
+                    : session
+            );
+            appState.setSessions(sessions);
             renderSessions();
             showToast(result.session.is_pinned ? '📌 Sabitlendi!' : '📌 Sabitlik kaldırıldı', 'success');
         }
@@ -205,16 +226,19 @@ async function deleteSession(id) {
     if (!confirm('Bu sohbeti silmek istediğinize emin misiniz?')) return;
     
     try {
+        const appState = window.ChatChipAppState;
         const dm = window.DataManager;
         const result = await dm.deleteSession(id);
         
         if (result.success) {
-            sessions = sessions.filter(s => s.id !== id);
+            appState.setSessions(
+                appState.getSessions().filter(session => session.id !== id)
+            );
             renderSessions();
             
-            if (currentSessionId === id) {
-                currentSessionId = null;
-                isFirstMessage = true;
+            if (appState.getSessionId() === id) {
+                appState.setSessionId(null);
+                appState.setFirstMessage(true);
                 messagesDiv.innerHTML = '';
                 document.querySelector('.page-title').textContent = '💬 Sohbet';
             }
