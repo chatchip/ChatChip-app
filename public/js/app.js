@@ -20,24 +20,17 @@ let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 App başlatıldı (Model + Koç)');
-     // 🔥 Uygulama kapanma/tekrar açılma kontrolü
+
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            // Uygulama kapatıldı
-            localStorage.setItem('chatchip_last_close_time', Date.now().toString());
-            console.log('⏰ Uygulama kapatıldı, zaman kaydedildi');
-        } else {
-    console.log('👁️ Uygulama tekrar görünür oldu');
-
-    updateAppViewportHeight();
-
-    setTimeout(() => {
-        updateAppViewportHeight();
-    }, 300);
-
-    autoLoginWithBiometric();
-}
+        if (!document.hidden) {
+            console.log('👁️ Uygulama tekrar görünür oldu');
+            updateAppViewportHeight();
+            setTimeout(() => {
+                updateAppViewportHeight();
+            }, 300);
+        }
     });
+
     await checkAuth();
     checkPlan();
     loadModels();
@@ -48,20 +41,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(addDarkModeToggle, 200);
     setTimeout(updateThemeIcon, 300);
     startPlanWatcher();
-    
-    // 🔥 Biyometrik desteği kontrol et (YENİ)
-    setTimeout(checkBiometricSupport, 500);
-        // 🔥 Biyometrik buton event listener'ları
-    const biometricLoginBtn = document.getElementById('biometricLoginBtn');
-    const biometricRegisterBtn = document.getElementById('biometricRegisterBtn');
-
-    if (biometricLoginBtn) {
-        biometricLoginBtn.addEventListener('click', loginWithBiometric);
-    }
-
-    if (biometricRegisterBtn) {
-        biometricRegisterBtn.addEventListener('click', registerBiometric);
-    }
 });
 
 // ============================================================
