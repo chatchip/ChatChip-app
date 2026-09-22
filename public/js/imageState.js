@@ -13,6 +13,12 @@ function setCurrentImage(imageUrl) {
     return currentImageUrl;
 }
 
+function consumeCurrentImage() {
+    const imageUrl = currentImageUrl;
+    clearCurrentImage();
+    return imageUrl;
+}
+
 function showImagePreview(imageUrl) {
     setCurrentImage(imageUrl);
 
@@ -154,6 +160,7 @@ if (document.readyState === 'loading') {
 window.ChatChipImageState = {
     getCurrent: getCurrentImage,
     setCurrent: setCurrentImage,
+    consumeCurrent: consumeCurrentImage,
     showPreview: showImagePreview,
     clear: clearCurrentImage,
     clearPreview: clearImagePreview,
