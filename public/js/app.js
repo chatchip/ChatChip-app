@@ -102,31 +102,12 @@ async function sendMessage() {
     if (!text && !activeImageUrl) return;
     if (isProcessing) return;
 
-    // 🔥 GÖRSEL DÜZENLEME KONTROLÜ
-    if (activeImageUrl && text) {
-        const editKeywords = [
-            'değiştir',
-            'düzenle',
-            'çevir',
-            'ekle',
-            'kaldır',
-            'renk',
-            'style',
-            'tarz',
-            'anime',
-            'karikatür',
-            'çizim',
-            'filtre',
-            'boya',
-            'değiş'
-        ];
+    const intent = window.ChatChipMessageRouter?.resolveIntent?.(text, {
+        hasActiveImage: Boolean(activeImageUrl)
+    }) || { type: 'chat', cleanPrompt: text };
 
-        const isEditCommand = editKeywords.some(k =>
-            text.toLowerCase().includes(k)
-        );
-
-        if (isEditCommand) {
-            console.log('🎨 Görsel düzenleme isteği:', text);
+    if (intent.type === 'image_edit') {
+        console.log('🎨 Görsel düzenleme isteği:', text);
 
         const token = localStorage.getItem('chatchip_token');
         if (!token) {
@@ -139,89 +120,40 @@ async function sendMessage() {
         input.style.height = 'auto';
         removeImagePreviewUI();
 
-const editImageUrl =
-    window.ChatChipImageState?.consumeCurrent?.() || activeImageUrl;
+        const editImageUrl =
+            window.ChatChipImageState?.consumeCurrent?.() || activeImageUrl;
 
-await ImageService.edit(
-    text,
-    editImageUrl,
-    {
-        addMessage: addMessage,
-        setLoading: setImageLoadingAnimation,
-        updateMessage: updateMessageMarkdown,
-        showToast: showToast
-    }
-);
+        await ImageService.edit(
+            text,
+            editImageUrl,
+            {
+                addMessage: addMessage,
+                setLoading: setImageLoadingAnimation,
+                updateMessage: updateMessageMarkdown,
+                showToast: showToast
+            }
+        );
 
         clearCurrentImage();
         chatArea.scrollTop = chatArea.scrollHeight;
         return;
     }
-}
+
     // Aktif görsel düzenleme komutu değilse state'i normal chat'e taşımayız.
     if (activeImageUrl) {
         window.ChatChipImageState?.clear?.();
     }
 
-   // ============================================================
-// 🔥 GÖRSEL ÜRETİM KONTROLÜ - NET KOMUT
-// ============================================================
-const imagePatterns = [
-    /resim\s*(yap|oluştur|üret|çiz|göster|iste|ver)/i,
-    /fotoğraf\s*(yap|oluştur|üret|çek|göster|iste|ver)/i,
-    /görsel\s*(yap|oluştur|üret|çiz|göster|iste|ver)/i,
-    /çiz\s*(yap|oluştur|üret|göster|iste|ver)/i,
-    /göster\s*(resim|fotoğraf|görsel|çizim)/i,
-    /make\s*(image|photo|picture)/i,
-    /create\s*(image|photo|picture)/i,
-    /generate\s*(image|photo|picture)/i,
-    /draw\s*(a|an|)/i,
-    /kedi\s*(resmi|görseli|fotoğrafı|çizimi)/i,
-    /köpek\s*(resmi|görseli|fotoğrafı|çizimi)/i,
-    /manzara\s*(resmi|görseli|fotoğrafı|çizimi)/i,
-    /portre\s*(yap|çiz|oluştur|göster|iste|ver)/i,
-    /karikatür\s*(yap|çiz|oluştur|göster|iste|ver)/i,
-    /bana\s*(bir|)\s*(resim|fotoğraf|görsel|çizim)\s*(yap|oluştur|üret|çiz|göster|iste|ver)/i,
-    /[a-zA-ZğüşıöçĞÜŞİÖÇ]+\s*(resmi|görseli|fotoğrafı|çizimi)/i,
-    /(yapar\s*mısın|yapabilir\s*misin|çizebilir\s*misin|gösterebilir\s*misin)/i
-];
+    if (intent.type === 'image_generate') {
+        input.value = '';
+        input.style.height = 'auto';
+        removeImagePreviewUI();
 
-const lower = text.toLowerCase();
-
-// 🔥 SADECE BİLGİ SORULARINI ENGELLE (yapar mısın? tarzı sorulara izin ver!)
-const isInfoQuestion = lower.includes('nasıl') || 
-                       lower.includes('nedir') || 
-                       lower.includes('ne yapmalıyım') || 
-                       lower.includes('ne yapmam lazım') ||
-                       lower.includes('önerir misin') ||
-                       lower.includes('tavsiye') ||
-                       lower.includes('yardım');
-
-const isImageCommand = imagePatterns.some(pattern => pattern.test(text));
-    console.log('🖼️ IMAGE DEBUG:', {
-    text,
-    isImageCommand,
-    isInfoQuestion
-});
-
-if (isImageCommand && !isInfoQuestion) {
-    let cleanPrompt = text
-        .replace(/resim|fotoğraf|göster|yap|oluştur|üret|çiz|çek|make|create|generate|draw|portre|karikatür|lütfen|rica|bana|bir|tane|mısın|misin|yapar|yapabilir|çizebilir|gösterebilir/gi, '')
-        .trim();
-    
-    if (!cleanPrompt || cleanPrompt.length < 2) {
-        cleanPrompt = text;
+        addMessage(text, 'user');
+        await generateAndShowImage(intent.cleanPrompt, text);
+        chatArea.scrollTop = chatArea.scrollHeight;
+        return;
     }
-
-input.value = '';
-input.style.height = 'auto';
-removeImagePreviewUI();
-   
-    addMessage(text, 'user');
-    await generateAndShowImage(cleanPrompt, text);
-    chatArea.scrollTop = chatArea.scrollHeight;
-    return;
-}
 
     // ============================================================
     // 🔥 NORMAL CHAT (Görsel değilse buraya gelir)
