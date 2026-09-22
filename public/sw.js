@@ -1,6 +1,6 @@
 // ChatChip Service Worker
 // v4: public AI Employee routes keep their own shell/fallback.
-const CACHE_NAME = 'chatchip-v16';
+const CACHE_NAME = 'chatchip-v17';
 
 const urlsToCache = [
   '/index.html','/l/index.html','/admin-panel.html','/pricing.html','/register.html',
