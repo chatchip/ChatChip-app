@@ -12,7 +12,6 @@ let currentPlan = null;
 let currentSessionId = null;
 let sessions = [];
 let isFirstMessage = true;
-let availableModels = [];
 let abortController = null;
 let currentImageUrl = localStorage.getItem('chatchip_current_image_url') || null;
 let previewContainer = null;
@@ -66,55 +65,6 @@ function renderMarkdown(text) {
         console.error('Markdown render error:', e);
         return text;
     }
-}
-
-// ============================================================
-// 🔥 MODELLERİ YÜKLE
-// ============================================================
-async function loadModels() {
-    try {
-        const dm = window.DataManager;
-        const result = await dm.getAvailableModels();
-        
-        if (result.success && result.models) {
-            availableModels = result.models;
-            updateModelSelector();
-        }
-    } catch (error) {
-        console.error('Model yükleme hatası:', error);
-    }
-}
-
-function updateModelSelector() {
-    const selector = document.getElementById('modelSelector');
-    if (!selector) return;
-    
-    const currentValue = selector.value;
-    selector.innerHTML = '';
-    
-    availableModels.forEach(model => {
-        const option = document.createElement('option');
-        option.value = model.version;
-        option.textContent = model.label;
-        option.disabled = !model.isAvailable;
-        selector.appendChild(option);
-    });
-    
-    if (!availableModels.find(m => m.version === currentValue) || currentValue === '') {
-        const firstAvailable = availableModels.find(m => m.isAvailable);
-        selector.value = firstAvailable ? firstAvailable.version : availableModels[0]?.version || '1.0';
-    } else {
-        selector.value = currentValue;
-    }
-    
-    localStorage.setItem('chatchip_selected_model', selector.value);
-}
-
-// ============================================================
-// 🔥 KOÇ DURUMU
-// ============================================================
-function updateCoachStatus() {
-    // Boş, sadece hata vermesin
 }
 
 // ============================================================
@@ -206,18 +156,6 @@ function setupEventListeners() {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', handleLogout);
-    }
-    
-    const modelSelector = document.getElementById('modelSelector');
-    if (modelSelector) {
-        modelSelector.addEventListener('change', function() {
-            localStorage.setItem('chatchip_selected_model', this.value);
-        });
-    }
-    
-    const coachSelector = document.getElementById('coachSelector');
-    if (coachSelector) {
-        coachSelector.addEventListener('change', updateCoachStatus);
     }
 }
 
@@ -841,7 +779,6 @@ window.toggleSidebar = toggleSidebar;
 window.closeAllSidebars = closeAllSidebars;
 window.searchChats = searchChats;
 window.saveSystemPrompt = saveSystemPrompt;
-window.loadModels = loadModels;
 
 console.log('✅ App yüklendi! (Model + Koç)');
 
