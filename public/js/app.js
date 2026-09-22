@@ -13,8 +13,6 @@ let currentSessionId = null;
 let sessions = [];
 let isFirstMessage = true;
 let abortController = null;
-let currentImageUrl = null;
-let previewContainer = null;
 let currentCryptoKey = null;  // 🔐 Güvenli şifreleme anahtarı (CryptoKey)
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -192,9 +190,7 @@ async function sendMessage() {
         input.style.height = 'auto';
         removeImagePreviewUI();
 
-const editImageUrl =
-    currentImageUrl ||
-    localStorage.getItem('chatchip_current_image_url');
+const editImageUrl = currentImageUrl;
 
 await ImageService.edit(
     text,
@@ -486,9 +482,7 @@ if (fullText && currentCryptoKey) {
     input.disabled = false;
     isProcessing = false;
     abortController = null;
-    currentImageUrl = null;
-localStorage.removeItem('chatchip_current_image_url');
-removeImagePreviewUI();
+    clearCurrentImage();
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
@@ -707,156 +701,6 @@ function showToast(msg, type = 'info') {
 console.log('✅ App yüklendi! (Model + Koç)');
 
 // ============================================================
-// 🖼️ GÖRSEL PREVIEW
-// ============================================================
-
-function showImagePreview(imageUrl) {
-    if (previewContainer) {
-        previewContainer.remove();
-        previewContainer = null;
-    }
-    
-    previewContainer = document.createElement('div');
-    previewContainer.className = 'image-preview-container';
-    previewContainer.style.cssText = `
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 12px;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        margin-bottom: 6px;
-        animation: fadeIn 0.3s ease;
-    `;
-    
-    const img = document.createElement('img');
-    img.src = imageUrl;
-    img.style.cssText = `
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 6px;
-        border: 1px solid var(--border);
-    `;
-    
-    const info = document.createElement('span');
-    info.className = 'info';
-    info.textContent = '📷 Görsel eklendi';
-    info.style.cssText = `
-        font-size: 0.8rem;
-        color: var(--text-light);
-        flex: 1;
-    `;
-    
-    const removeBtn = document.createElement('button');
-    removeBtn.className = 'remove-btn';
-    removeBtn.textContent = '✕';
-    removeBtn.style.cssText = `
-        background: none;
-        border: none;
-        color: var(--text-light);
-        cursor: pointer;
-        font-size: 1rem;
-        padding: 4px 8px;
-        border-radius: 4px;
-        transition: all 0.2s;
-    `;
-    removeBtn.onmouseover = function() {
-        this.style.background = 'rgba(239, 68, 68, 0.1)';
-        this.style.color = '#EF4444';
-    };
-    removeBtn.onmouseout = function() {
-        this.style.background = 'none';
-        this.style.color = 'var(--text-light)';
-    };
-    removeBtn.onclick = function() {
-        clearImagePreview();
-        showToast('📷 Görsel kaldırıldı', 'info');
-    };
-    
-    previewContainer.appendChild(img);
-    previewContainer.appendChild(info);
-    previewContainer.appendChild(removeBtn);
-    
-    const inputWrapper = document.querySelector('.input-wrapper');
-    if (inputWrapper) {
-        inputWrapper.parentNode.insertBefore(previewContainer, inputWrapper);
-    }
-}
-
-// ============================================================
-// 🗑️ GÖRSEL PREVIEW TEMİZLE
-// ============================================================
-
-function clearImagePreview() {
-    // Preview kutusunu kaldır
-    if (previewContainer) {
-        previewContainer.remove();
-        previewContainer = null;
-    }
-
-    // Aktif görseli temizle
-    currentImageUrl = null;
-
-    // LocalStorage'daki görseli temizle
-    localStorage.removeItem('chatchip_current_image_url');
-
-    // File input'u temizle
-    const fileInput = document.getElementById('fileInput');
-    if (fileInput) {
-        fileInput.value = '';
-    }
-
-    // Mesaj kutusunu normale döndür
-    const input = document.getElementById('messageInput');
-    if (input) {
-        input.placeholder = 'Mesajınızı yazın...';
-    }
-
-    console.log('🗑️ Görsel preview temizlendi');
-}
-// ============================================================
-// 🗑️ GÖRSEL STATE YÖNETİMİ
-// ============================================================
-
-// SADECE preview UI'ı temizle (görsel URL'sini silme!)
-function removeImagePreviewUI() {
-    if (previewContainer) {
-        previewContainer.remove();
-        previewContainer = null;
-    }
-    const input = document.getElementById('messageInput');
-    if (input) {
-        input.placeholder = 'Mesajını yaz...';
-    }
-}
-
-// Görsel state'ini temizle (UI + veri)
-function clearCurrentImage() {
-    currentImageUrl = null;
-    localStorage.removeItem('chatchip_current_image_url');
-    removeImagePreviewUI();
-    console.log('🗑️ Görsel temizlendi');
-}
-
-// Event listener'lar
-document.addEventListener('DOMContentLoaded', function() {
-    const fileUploadBtn = document.getElementById('fileUploadBtn');
-    const fileInput = document.getElementById('fileInput');
-    
-    if (fileUploadBtn) {
-        fileUploadBtn.addEventListener('click', openFileUpload);
-        console.log('📎 Dosya yükleme butonu hazır');
-    }
-    
-    if (fileInput) {
-        fileInput.addEventListener('change', handleFileUpload);
-        console.log('📎 Dosya input hazır');
-    }
-});
-
-// ============================================================
 // 📝 SİSTEM PROMPTU PANELİ
 // ============================================================
 
@@ -916,160 +760,6 @@ function shareMessage(button) {
     }
 }
 
-// ============================================================
-// 🖼️ ÜRETİLEN GÖRSELE TIKLAMA + DÜZENLEME PANELİ
-// ============================================================
-
-document.addEventListener('click', function (e) {
-
-    const image = e.target.closest('.chatchip-editable-image');
-
-    if (!image) return;
-
-    const imageSrc = image.dataset.imageSrc;
-
-    console.log('🖌️ Düzenlenecek görsel seçildi');
-
-    currentImageUrl = imageSrc;
-
-    localStorage.setItem(
-        'chatchip_current_image_url',
-        imageSrc
-    );
-
-    // Eski panel varsa kaldır
-    const oldPanel = document.getElementById('imageEditPanel');
-
-    if (oldPanel) {
-        oldPanel.remove();
-    }
-
-    // Düzenleme paneli
-    const panel = document.createElement('div');
-
-    panel.id = 'imageEditPanel';
-
-    panel.innerHTML = `
-        <div style="
-            margin-top:12px;
-            padding:12px;
-            border:1px solid var(--border);
-            border-radius:14px;
-            background:var(--background);
-        ">
-
-            <img
-                src="${imageSrc}"
-                alt="Düzenlenecek görsel"
-                style="
-                    width:100%;
-                    max-height:420px;
-                    object-fit:contain;
-                    border-radius:12px;
-                    display:block;
-                    margin-bottom:12px;
-                "
-            />
-
-            <div style="
-                display:flex;
-                gap:8px;
-                align-items:center;
-            ">
-
-                <input
-                    type="text"
-                    id="imageEditPrompt"
-                    placeholder="Görselde neyi değiştirmek istiyorsun?"
-                    style="
-                        flex:1;
-                        min-width:0;
-                        padding:12px 14px;
-                        border:1px solid var(--border);
-                        border-radius:12px;
-                        background:var(--background);
-                        color:var(--text);
-                        font-size:13px;
-                        outline:none;
-                    "
-                />
-
-                <button
-                    type="button"
-                    id="imageEditSendBtn"
-                    style="
-                        width:44px;
-                        height:44px;
-                        border:none;
-                        border-radius:12px;
-                        cursor:pointer;
-                        background:transparent;
-                        color:#9CA3AF;
-                        font-size:18px;
-                    "
-                >
-                    ↑
-                </button>
-
-            </div>
-        </div>
-    `;
-
-    image.parentElement.appendChild(panel);
-
-    const input = document.getElementById('imageEditPrompt');
-
-    if (input) {
-    input.focus();
-}
-
-const sendBtn = document.getElementById('imageEditSendBtn');
-
-async function submitImageEdit() {
-
-    const prompt = input?.value.trim();
-
-    if (!prompt) return;
-
-    if (sendBtn) {
-        sendBtn.disabled = true;
-    }
-
-    if (input) {
-        input.disabled = true;
-    }
-
-    addMessage(prompt, 'user');
-
-    panel.remove();
-
-    await ImageService.edit(
-        prompt,
-        imageSrc,
-        {
-            addMessage: addMessage,
-            setLoading: setImageLoadingAnimation,
-            updateMessage: updateMessageMarkdown
-        }
-    );
-
-    clearCurrentImage();
-}
-
-if (sendBtn) {
-    sendBtn.addEventListener('click', submitImageEdit);
-}
-
-if (input) {
-    input.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            submitImageEdit();
-        }
-    });
-}
-
-});
 // ============================================================
 // 📱 PWA - SAYFAYA GERİ DÖNÜŞTE VIEWPORT YÜKSEKLİĞİNİ DÜZELT
 // ============================================================
