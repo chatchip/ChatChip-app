@@ -1,6 +1,6 @@
 // ChatChip Service Worker
 // v4: public AI Employee routes keep their own shell/fallback.
-const CACHE_NAME = 'chatchip-v7';
+const CACHE_NAME = 'chatchip-v8';
 
 const urlsToCache = [
   '/index.html','/l/index.html','/backoffice.html','/admin-panel.html','/pricing.html','/register.html','/tree-detail.html','/cuzdan.html',
@@ -14,7 +14,33 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(names => Promise.all(names.filter(name => name.startsWith('chatchip-') && name !== CACHE_NAME).map(name => caches.delete(name)))).then(() => self.clients.claim()));
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(
+      names
+        .filter(name => name.startsWith('chatchip-') && name !== CACHE_NAME)
+        .map(name => caches.delete(name))
+    );
+
+    await self.clients.claim();
+
+    const clients = await self.clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    });
+
+    await Promise.all(
+      clients.map(client => {
+        try {
+          const url = new URL(client.url);
+          if (url.origin === self.location.origin) {
+            return client.navigate(client.url);
+          }
+        } catch (_) {}
+        return Promise.resolve();
+      })
+    );
+  })());
 });
 
 self.addEventListener('fetch', event => {
